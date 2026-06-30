@@ -245,60 +245,50 @@
   .honchip .sav{width:40px;height:40px;border-radius:50%;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;border:2px solid #fff;box-shadow:var(--shadow-sm)}
   .honchip span{font-size:11.5px;font-weight:600;text-align:center}
   .ftground{height:48px;margin:14px 0 0;background:radial-gradient(120% 80% at 50% 100%, #cbd7b8 0%, #dde6cf 45%, transparent 78%)}
-  /* Unwritten music video */
-  .uw-intro{font-size:13.5px;line-height:1.55;color:var(--muted);margin:0 0 12px}
-  .uw-prog{height:8px;border-radius:99px;background:var(--sage-soft);overflow:hidden;margin:2px 0 5px}
-  .uw-prog>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--lake));transition:width .5s}
-  .uw-proglab{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:13px}
-  .uw-tabs{display:flex;gap:7px;overflow-x:auto;padding-bottom:9px;margin-bottom:4px}
+  /* Unwritten music video (dark, condensed) */
+  .uwwrap{margin:-8px -16px calc(-28px - env(safe-area-inset-bottom));background:#0f231c;color:#eef3ea;padding:0 14px 26px;min-height:90vh}
+  .uw-bar{position:sticky;top:0;z-index:6;display:flex;align-items:center;gap:10px;background:#0f231c;padding:12px 0 10px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px}
+  .uw-back{background:rgba(255,255,255,.1);border:none;color:#eef3ea;font-size:14px;font-weight:700;padding:7px 13px;border-radius:99px;cursor:pointer}
+  .uw-bartitle{font-weight:800;font-size:15px}
+  .uw-intro{font-size:12.5px;line-height:1.5;color:#9db5a6;margin:0 0 10px}
+  .uw-prog{height:7px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden;margin:2px 0 5px}
+  .uw-prog>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#e0a73e,#5aa0a6);transition:width .5s}
+  .uw-proglab{display:flex;justify-content:space-between;font-size:11.5px;color:#9db5a6;font-weight:600;margin-bottom:11px}
+  .uw-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:4px}
   .uw-tabs::-webkit-scrollbar{display:none}
-  .uw-tab{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);color:var(--muted);padding:7px 13px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
-  .uw-tab .n{opacity:.55;margin-left:4px;font-weight:700}
-  .uw-tab.on{background:var(--sage-deep);color:#fff;border-color:var(--sage-deep)}
-  .uw-row{position:relative;padding-left:26px;margin-bottom:12px}
-  .uw-row:before{content:"";position:absolute;left:5px;top:6px;bottom:-12px;width:2px;background:var(--line)}
-  .uw-row:last-child:before{display:none}
-  .uw-dot{position:absolute;left:0;top:18px;width:12px;height:12px;border-radius:50%;background:var(--gold);border:2px solid var(--paper);box-shadow:0 0 0 2px var(--gold)}
-  .uw-row.claimed .uw-dot{background:var(--lake);box-shadow:0 0 0 2px var(--lake)}
-  .uw-row.family .uw-dot{background:#d98b6a;box-shadow:0 0 0 2px #d98b6a}
-  .uw-card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:13px 14px;box-shadow:var(--shadow-sm)}
-  .uw-card.claimed{background:var(--cream)}
-  .uw-card.family{background:linear-gradient(135deg,#5c7460,#456657);border:none;color:#f4efe2}
-  .uw-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .uw-time{font-weight:800;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
-  .uw-card.family .uw-time{color:var(--gold-soft)}
-  .uw-chip{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:4px 9px;border-radius:99px;white-space:nowrap}
-  .uw-chip.av{background:var(--gold-soft);color:#9c7d3b}
-  .uw-chip.cl{background:var(--sage-soft);color:var(--sage-deep)}
-  .uw-chip.fa{background:rgba(255,255,255,.2);color:var(--gold-soft)}
-  .uw-ttl{font-weight:800;font-size:16px;margin:8px 0 2px}
-  .uw-lyr{font-size:15px;line-height:1.45;margin:3px 0 0}
-  .uw-lyr.ph{font-style:italic;opacity:.5}
-  .uw-cue{font-size:12px;color:var(--muted);margin-top:5px}
-  .uw-card.family .uw-cue{color:rgba(255,255,255,.72)}
-  .uw-by{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-  .uw-by .l{font-size:12px;color:var(--muted);font-weight:600}
-  .uw-pill{background:var(--sage-soft);color:var(--sage-deep);border-radius:99px;padding:3px 9px;font-size:12px;font-weight:700}
-  .uw-spots{font-size:12px;color:var(--muted);font-weight:600;margin-top:8px}
-  .uw-ideas{margin-top:10px}
-  .uw-ibtn{display:inline-flex;align-items:center;gap:5px;background:none;border:1px dashed var(--line);color:#9c7d3b;font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:99px;cursor:pointer}
-  .uw-card.family .uw-ibtn{border-color:rgba(255,255,255,.32);color:var(--gold-soft)}
-  .uw-ibody{max-height:0;overflow:hidden;transition:max-height .3s,opacity .3s;opacity:0}
-  .uw-ibody.open{max-height:260px;opacity:1;margin-top:8px}
-  .uw-iinner{background:var(--gold-soft);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.5;color:#6b5a2e}
-  .uw-card.family .uw-iinner{background:rgba(255,255,255,.13);color:rgba(255,255,255,.88)}
-  .uw-iinner b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.7;margin-bottom:3px;font-weight:800}
-  .uw-fam{margin-top:10px;background:rgba(255,255,255,.13);border-radius:12px;padding:10px 12px;font-size:13.5px;line-height:1.45}
-  .uw-fam b{color:var(--gold-soft)}
-  .uw-fullbtn{background:var(--sand)!important;color:var(--muted)!important}
-  .uw-fld{margin-bottom:11px}
-  .uw-fld label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
-  .uw-fld label span{color:var(--muted);font-weight:500}
-  .uw-fld input{width:100%;border:1.5px solid var(--line);border-radius:11px;padding:11px;font-size:15px;background:var(--paper);color:var(--ink);font-family:inherit}
-  .uw-fld input:focus{outline:none;border-color:var(--sage)}
-  .uw-hint{font-size:11.5px;color:var(--muted);margin-top:3px}
-  .uw-row2{display:flex;gap:9px;margin-top:4px}
-  @media(hover:hover){.uw-ideas:hover .uw-ibody{max-height:260px;opacity:1;margin-top:8px}}
+  .uw-tab{flex:0 0 auto;border:1px solid rgba(255,255,255,.14);background:transparent;color:#9db5a6;padding:6px 12px;border-radius:99px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+  .uw-tab .n{opacity:.6;margin-left:4px;font-weight:700}
+  .uw-tab.on{background:#f2ede0;color:#143a2c;border-color:#f2ede0}
+  .uw-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:10px 12px;margin-bottom:8px}
+  .uw-card.family{background:linear-gradient(135deg,rgba(217,139,106,.2),rgba(224,167,62,.14));border-color:rgba(224,167,62,.28)}
+  .uw-hd{display:flex;align-items:center;gap:9px;cursor:pointer}
+  .uw-time{font-weight:800;font-size:13px;color:#cfe0d4;font-variant-numeric:tabular-nums;flex:0 0 auto}
+  .uw-hdmid{flex:1;min-width:0}
+  .uw-ttl{font-weight:700;font-size:14.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .uw-sub{font-size:11.5px;color:#9db5a6;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .uw-chip{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:3px 7px;border-radius:99px;white-space:nowrap;flex:0 0 auto}
+  .uw-chip.av{background:rgba(224,167,62,.2);color:#f0c876}
+  .uw-chip.cl{background:rgba(90,160,166,.22);color:#8fd0d4}
+  .uw-chip.fa{background:rgba(224,167,62,.2);color:#f0c876}
+  .uw-chev{flex:0 0 auto;color:#7f9a8b;font-size:13px;transition:transform .2s}
+  .uw-card.open .uw-chev{transform:rotate(90deg)}
+  .uw-body{max-height:0;overflow:hidden;transition:max-height .35s,opacity .3s;opacity:0}
+  .uw-body.open{max-height:700px;opacity:1;margin-top:9px}
+  .uw-lyr{font-size:14px;line-height:1.45;margin:0;color:#eef3ea}
+  .uw-pill{display:inline-block;background:rgba(255,255,255,.1);color:#cfe0d4;border-radius:99px;padding:2px 8px;font-size:11.5px;font-weight:700;margin:2px 4px 0 0}
+  .uw-spots{font-size:11.5px;color:#9db5a6;font-weight:600;margin-top:6px}
+  .uw-iinner{background:rgba(255,255,255,.06);border-radius:10px;padding:9px 11px;font-size:12.5px;line-height:1.45;color:#c9d8ce;margin-top:8px}
+  .uw-fam{margin-top:8px;font-size:12.5px;line-height:1.4;color:#e7d2a8}
+  .uw-claimbtn{display:block;width:100%;text-align:center;border:none;border-radius:11px;padding:10px;font-size:14px;font-weight:800;cursor:pointer;margin-top:9px;background:linear-gradient(90deg,#2f7a5c,#3a8f6b);color:#fff;flex:1}
+  .uw-claimbtn.full{background:rgba(255,255,255,.08);color:#9db5a6;cursor:default}
+  .uw-fld{margin-bottom:10px}
+  .uw-fld label{display:block;font-size:12px;font-weight:700;color:#cfe0d4;margin-bottom:4px}
+  .uw-fld label span{color:#9db5a6;font-weight:500}
+  .uw-fld input{width:100%;border:1.5px solid rgba(255,255,255,.16);border-radius:10px;padding:10px;font-size:15px;background:rgba(255,255,255,.06);color:#eef3ea;font-family:inherit}
+  .uw-fld input::placeholder{color:#7f9a8b}
+  .uw-fld input:focus{outline:none;border-color:#5aa0a6}
+  .uw-hint{font-size:11px;color:#9db5a6;margin-top:3px}
+  .uw-row2{display:flex;gap:9px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -445,9 +435,17 @@ function evCard(ev,isNext){
   const k=joinKey(ev);let foot="";
   if(poc) foot+=`<div class="poc"><span class="pocav">${initials(poc)}</span>Point of Contact: ${esc(first(poc))}</div>`;
   if(meal){const setup=mealField(meal,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(meal,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;if(crews)foot+=`<div class="crewrow">${crews}</div>`;let dd=meal.Menu?`<b>Menu:</b> ${esc(meal.Menu)}`:"";if(dd)foot+=`<div class="evnote">${dd}</div>`;}
-  if(joinable(ev)){const kids=myKids();const cnt=joinCount(k)+goingBase(k,ev);const ins=statusOf(k,ME)==="in",outs=statusOf(k,ME)==="out";const kk=esc(k).replace(/'/g,"\\'");
-    foot+=`<div class="rsvp"><button class="rbtn yes ${ins?'on':''}" onclick="setMy(event,'${kk}','in')">✓ I’m Coming</button><button class="rbtn no ${outs?'on':''}" onclick="setMy(event,'${kk}','out')">✗ Can’t Make It</button></div><div class="muted" style="font-size:12px">${cnt} coming</div>`;
-    if(kids.length)foot+=`<div class="kidsignup"><span class="ksl">Add your kids</span>${kids.map(kd=>`<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`).join("")}</div>`;}
+  if(joinable(ev)){const kids=myKids();const kk=esc(k).replace(/'/g,"\\'");const cnt=joinCount(k)+goingBase(k,ev);
+    if(ev.Category==="Kids"){
+      foot+=`<div class="ksl">Sign up your kids — parents don’t need to attend</div>`;
+      foot+= kids.length? `<div class="kidsignup">${kids.map(kd=>`<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`).join("")}</div>` : `<div class="muted" style="font-size:12px">Add your kids to your profile, then sign them up here.</div>`;
+      foot+=`<div class="muted" style="font-size:12px;margin-top:6px">${cnt} kids coming</div>`;
+    } else {
+      const ins=statusOf(k,ME)==="in",outs=statusOf(k,ME)==="out";
+      foot+=`<div class="rsvp"><button class="rbtn yes ${ins?'on':''}" onclick="setMy(event,'${kk}','in')">✓ I’m Coming</button><button class="rbtn no ${outs?'on':''}" onclick="setMy(event,'${kk}','out')">✗ Can’t Make It</button></div><div class="muted" style="font-size:12px">${cnt} coming</div>`;
+      if(kids.length)foot+=`<div class="kidsignup"><span class="ksl">Add your kids</span>${kids.map(kd=>`<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`).join("")}</div>`;
+    }
+  }
   if(ev.Notes && !meal) foot+=`<div class="evnote">${esc(ev.Notes)}</div>`;
   if(offSite(ev)){const q=encodeURIComponent((ev.Location||'')+' '+(info().Address||''));foot+=`<a class="maplink" href="https://maps.google.com/?q=${q}" target="_blank">📍 Open in Maps</a>`;}
   return `<div class="ev"><div class="evtop" onclick="(function(el){var ff=el.parentNode.querySelector('.evfoot');ff.style.display=ff.style.display==='flex'?'none':'flex';})(this)"><div class="evthumb">${im?`<img src="${esc(im)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="ph">${catEmoji(ev.Category)}</div>`}</div><div class="evbody"><div class="evtime">${esc(tparts[0]||"")} ${esc(tparts[1]||"")}${isNext?'<span class="nowtag">UP NEXT</span>':''}</div><div class="evttl">${esc(ev.Title)}</div><div class="evmeta"><span class="pill ${catClass(ev.Category)}">${esc(ev.Category||"Event")}</span> &nbsp;${esc(ev.Location||"")}</div></div></div><div class="evfoot" style="display:${isNext?'flex':'none'}">${foot||'<div class="muted">Tap for details.</div>'}</div></div>`;
@@ -626,14 +624,14 @@ function vPhotos(){
   openSheetFull(h,"Photos");
 }
 
-/* ===== Unwritten family music video ===== */
+/* ===== Unwritten family music video (dark, condensed) ===== */
 let UWFILTER="available";
 function uwTrue(v){return String(v||"").trim().toLowerCase()==="true";}
-function uwPH(s){return /^\s*\[.*\]\s*$/.test(s||"");}
+function uwPH(s){return !s||/^\s*\[.*\]\s*$/.test(s);}
 function uwSecs(){return (DATA["Unwritten"]||[]).slice().filter(s=>s.slot_id).sort((a,b)=>(+a.display_order||0)-(+b.display_order||0));}
 function uwMax(s){const m=parseInt(s.max_people,10);return isNaN(m)?4:m;}
 function uwAllClaims(){
-  const sheet=(DATA["Unwritten Claims"]||[]).map(o=>({slot_id:o.slot_id||o.Slot||"",name:o.name||o.Name||"",group_members:o.group_members||o.members||o.Members||"",group_name:o.group_name||o.Group||"",contact:o.contact||""}));
+  const sheet=(DATA["Unwritten Claims"]||[]).map(o=>({slot_id:o.slot_id||o.Slot||"",name:o.name||o.Name||"",group_members:o.group_members||o.members||o.Members||"",group_name:o.group_name||o.Group||""}));
   const merged=sheet.concat(LS.uwClaims());const seen={},out=[];
   merged.forEach(c=>{if(!c.slot_id)return;const k=c.slot_id+"|"+(c.name||"").toLowerCase()+"|"+(c.group_name||"").toLowerCase();if(seen[k])return;seen[k]=1;out.push(c);});
   return out;
@@ -643,28 +641,26 @@ function uwCount(id){let n=0;uwClaimsFor(id).forEach(c=>{n+=1;n+=(c.group_member
 function uwNames(id){const out=[];uwClaimsFor(id).forEach(c=>{if(c.group_name)out.push(c.group_name);else{if(c.name)out.push(first(c.name));(c.group_members||"").split(/[,/&]+| and /i).forEach(n=>{n=n.trim();if(n)out.push(first(n));});}});return out;}
 function uwState(s){if(uwTrue(s.full_family_reserved)||!uwTrue(s.claimable))return "family";return uwCount(s.slot_id)>0?"claimed":"available";}
 function uwCounts(){const c={all:0,available:0,claimed:0,family:0};uwSecs().forEach(s=>{c.all++;c[uwState(s)]++;});return c;}
-function uwIdeas(s){if(!s.creative_ideas_hover)return"";const fam=uwState(s)==="family";return `<div class="uw-ideas"><button class="uw-ibtn" onclick="event.stopPropagation();this.nextElementSibling.classList.toggle('open')">💡 ${fam?"What this part is for":"Need an idea?"}</button><div class="uw-ibody"><div class="uw-iinner"><b>${fam?"The plan":"Just some fun ideas — optional"}</b>${esc(s.creative_ideas_hover)}</div></div></div>`;}
 function uwCard(s){
   const st=uwState(s),id=s.slot_id;
-  const time=esc(s.start_time)+" – "+esc(s.end_time);
-  const title=esc(s.app_display_title||s.section_name);
-  const lyr=uwPH(s.lyrics_text)?'<p class="uw-lyr ph">Lyrics coming soon</p>':'<p class="uw-lyr">“'+esc(s.lyrics_text)+'”</p>';
-  const cue=s.lyrics_cue?'<div class="uw-cue">'+esc(s.lyrics_cue)+'</div>':"";
-  let chip,body;
+  const hasLyr=!uwPH(s.lyrics_text);
+  const sub=hasLyr?("“"+esc(s.lyrics_text)+"”"):esc(s.lyrics_cue||"");
+  const lyrHtml=hasLyr?('<p class="uw-lyr">“'+esc(s.lyrics_text)+'”</p>'):"";
+  const ideas=s.creative_ideas_hover?('<div class="uw-iinner">'+esc(s.creative_ideas_hover)+'</div>'):"";
+  let chip,body="";
   if(st==="family"){
-    chip='<span class="uw-chip fa">★ Full family moment</span>';
-    body=lyr+cue+uwIdeas(s)+'<div class="uw-fam"><b>Reserved for the whole family</b> — everyone’s in this one. Get ready to belt it together! 🎉</div>';
+    chip='<span class="uw-chip fa">★ Everyone</span>';
+    body=lyrHtml+ideas+'<div class="uw-fam">Filmed all together on music video night — nothing to claim here. 🎬</div>';
   }else if(st==="claimed"){
     const cnt=uwCount(id),mx=uwMax(s),full=cnt>=mx;
-    chip='<span class="uw-chip cl">Already claimed</span>';
-    const pills=uwNames(id).map(n=>'<span class="uw-pill">'+esc(n)+'</span>').join(" ");
-    body=lyr+cue+uwIdeas(s)+'<div class="uw-by"><span class="l">Recorded by</span> '+pills+'</div>'+
-      (full?'<button class="btn full uw-fullbtn" style="margin-top:10px">This part’s full</button>':'<div class="uw-spots">'+(mx-cnt)+' more can join</div><button class="btn full" style="margin-top:8px" onclick="uwClaim(\''+id+'\')">Join this part</button>');
+    chip='<span class="uw-chip cl">Claimed</span>';
+    body=lyrHtml+ideas+'<div style="margin-top:7px">'+uwNames(id).map(n=>'<span class="uw-pill">'+esc(n)+'</span>').join("")+'</div>'+
+      (full?'<button class="uw-claimbtn full">This part’s full</button>':'<div class="uw-spots">'+(mx-cnt)+' more can join</div><button class="uw-claimbtn" onclick="uwClaim(\''+id+'\')">Join this part</button>');
   }else{
-    chip='<span class="uw-chip av">Available</span>';
-    body=lyr+cue+uwIdeas(s)+'<button class="btn full" style="margin-top:10px" onclick="uwClaim(\''+id+'\')">'+esc(s.claim_button_text||"Claim this part")+'</button>';
+    chip='<span class="uw-chip av">Open</span>';
+    body=lyrHtml+ideas+'<button class="uw-claimbtn" onclick="uwClaim(\''+id+'\')">'+esc(s.claim_button_text||"Claim this part")+'</button>';
   }
-  return '<div class="uw-row '+st+'"><div class="uw-dot"></div><div class="uw-card '+st+'"><div class="uw-top"><span class="uw-time">'+time+'</span>'+chip+'</div><div class="uw-ttl">'+title+'</div>'+body+'</div></div>';
+  return '<div class="uw-card '+st+'"><div class="uw-hd" onclick="var c=this.closest(\'.uw-card\');c.classList.toggle(\'open\');c.querySelector(\'.uw-body\').classList.toggle(\'open\')"><span class="uw-time">'+esc(s.start_time)+'</span><div class="uw-hdmid"><div class="uw-ttl">'+esc(s.app_display_title||s.section_name)+'</div><div class="uw-sub">'+sub+'</div></div>'+chip+'<span class="uw-chev">▸</span></div><div class="uw-body">'+body+'</div></div>';
 }
 function vUnwritten(){
   window._reopenSheet=vUnwritten;
@@ -672,33 +668,35 @@ function vUnwritten(){
   const claimable=secs.filter(s=>uwTrue(s.claimable)&&!uwTrue(s.full_family_reserved));
   const done=claimable.filter(s=>uwCount(s.slot_id)>0).length;
   const pct=claimable.length?Math.round(done/claimable.length*100):0;
-  let h='<p class="uw-intro">Pick a part of the song, record yourself (or your group) singing or lip-syncing it, and send it in. We’ll stitch every clip into one family music video. 🎬</p>';
+  let h='<div class="uwwrap"><div class="uw-bar"><button class="uw-back" onclick="closeModal()">‹ Close</button><span class="uw-bartitle">🎬 Music Video</span></div>';
+  h+='<p class="uw-intro">Pick a part, record it with your group, and send it in. Tap a part to see lyrics & claim it.</p>';
   h+='<div class="uw-prog"><i style="width:'+pct+'%"></i></div><div class="uw-proglab"><span>'+done+' of '+claimable.length+' parts claimed</span><span>'+pct+'%</span></div>';
-  const defs=[["available","Available"],["all","All"],["claimed","Claimed"],["family","Full Family"]];
+  const defs=[["available","Open"],["all","All"],["claimed","Claimed"],["family","Full Family"]];
   h+='<div class="uw-tabs">'+defs.map(d=>'<button class="uw-tab '+(UWFILTER===d[0]?"on":"")+'" onclick="UWFILTER=\''+d[0]+'\';vUnwritten()">'+d[1]+'<span class="n">'+(d[0]==="all"?c.all:c[d[0]])+'</span></button>').join("")+'</div>';
-  let list=secs; if(UWFILTER!=="all")list=secs.filter(s=>uwState(s)===UWFILTER);
-  h+=list.length?list.map(uwCard).join(""):'<div class="empty" style="padding:24px">Nothing here yet — try another tab.</div>';
-  if(!CLAIM_ENDPOINT)h+='<p class="uw-hint" style="text-align:center;margin-top:14px">Claims save on this device for now. Add the claim script to share them with everyone.</p>';
-  openSheetFull(h,"Unwritten Music Video");
+  let list=secs;if(UWFILTER!=="all")list=secs.filter(s=>uwState(s)===UWFILTER);
+  h+=list.length?list.map(uwCard).join(""):'<div style="padding:24px;text-align:center;color:#9db5a6">Nothing here — try another tab.</div>';
+  if(!CLAIM_ENDPOINT)h+='<p class="uw-hint" style="text-align:center;margin-top:14px">Claims save on your phone for now.</p>';
+  h+='</div>';
+  openSheet(h);
 }
 function uwClaim(id){
-  const s=uwSecs().find(x=>x.slot_id===id)||{};
-  const mx=uwMax(s);
-  openSheet('<div class="grab"></div><h3 class="serif" style="margin-bottom:4px">Claim “'+esc(s.app_display_title||s.section_name)+'”</h3>'+
-    '<p class="muted" style="margin:0 0 14px;font-size:13px">'+esc(s.start_time)+' – '+esc(s.end_time)+' · record this part and send it in. Up to '+mx+' people can share it.</p>'+
+  const s=uwSecs().find(x=>x.slot_id===id)||{};const mx=uwMax(s);
+  openSheet('<div class="uwwrap"><div class="uw-bar"><button class="uw-back" onclick="vUnwritten()">‹ Back</button><span class="uw-bartitle">Claim a part</span></div>'+
+    '<div style="font-weight:800;font-size:16px;margin:4px 0 2px">'+esc(s.app_display_title||s.section_name)+'</div>'+
+    '<p class="uw-intro" style="margin-bottom:14px">'+esc(s.start_time)+' – '+esc(s.end_time)+' · up to '+mx+' people can share it.</p>'+
     '<div class="uw-fld"><label>Your name</label><input id="uwf_name" placeholder="e.g. Shelo Roman" value="'+esc(ME||"")+'"></div>'+
     '<div class="uw-fld"><label>Others in your group <span>(optional)</span></label><input id="uwf_group" placeholder="e.g. Mia, Solimar"><div class="uw-hint">Separate names with commas.</div></div>'+
     '<div class="uw-fld"><label>Group name <span>(optional)</span></label><input id="uwf_gname" placeholder="e.g. The Cousins"></div>'+
-    '<div class="uw-fld"><label>Contact <span>(optional)</span></label><input id="uwf_contact" placeholder="Phone or email"></div>'+
-    '<div class="uw-row2"><button class="btn ghost full" onclick="vUnwritten()">Back</button><button class="btn full" id="uwf_go" onclick="uwSubmit(\''+id+'\')">Confirm claim</button></div>');
+    '<div class="uw-row2"><button class="uw-claimbtn full" style="margin-top:0" onclick="vUnwritten()">Cancel</button><button class="uw-claimbtn" style="margin-top:0" onclick="uwSubmit(\''+id+'\')">Confirm claim</button></div></div>');
+  setTimeout(function(){var el=$("uwf_name");if(el&&!el.value)el.focus();},120);
 }
 function uwSubmit(id){
   const name=($("uwf_name").value||"").trim();
   if(!name){$("uwf_name").focus();$("uwf_name").style.borderColor="#d98b6a";return;}
-  const rec={slot_id:id,name:name,group_members:($("uwf_group").value||"").trim(),group_name:($("uwf_gname").value||"").trim(),contact:($("uwf_contact").value||"").trim(),ts:new Date().toISOString()};
+  const rec={slot_id:id,name:name,group_members:($("uwf_group").value||"").trim(),group_name:($("uwf_gname").value||"").trim(),contact:"",ts:new Date().toISOString()};
   LS.addUwClaim(rec);
   if(CLAIM_ENDPOINT){try{fetch(CLAIM_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)});}catch(e){}}
-  UWFILTER="claimed";vUnwritten();toast("You’ve got it! 🎉 Record your part & send it in.");
+  UWFILTER="claimed";vUnwritten();toast("You’ve got it! 🎉 Record it & send it in.");
 }
 
 function vMore(){
