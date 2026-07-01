@@ -300,8 +300,8 @@
   .seatrow{display:flex;gap:8px;flex-wrap:wrap}
   .seatbtn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font-size:16px;font-weight:800;cursor:pointer}
   /* TV / cast schedule board */
-  .tvwrap{margin:-8px -16px calc(-28px - env(safe-area-inset-bottom));background:linear-gradient(180deg,#0f241d,#0b1a14);color:#f6efdd;min-height:96vh}
-  .tv-top{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 14px;background:rgba(15,36,29,.97);border-bottom:1px solid rgba(255,255,255,.1);z-index:6}
+  .tvwrap{margin:-8px -16px calc(-28px - env(safe-area-inset-bottom));background:linear-gradient(180deg,#243328,#18211b);color:#f6efdd;min-height:96vh}
+  .tv-top{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 14px;background:rgba(36,51,40,.97);border-bottom:1px solid rgba(255,255,255,.1);z-index:6}
   .tv-ttl{font-size:15px;font-weight:800;line-height:1.1}
   .tv-ttl small{display:block;font-size:9px;font-weight:600;color:#9db5a6;letter-spacing:.05em;margin-top:1px}
   .tv-clock{font-size:12.5px;font-weight:800;color:#e7c987;text-align:right;line-height:1.2}
@@ -329,7 +329,7 @@
   .tv-ev.lake{border-left-color:#7fb0ac}
   .tv-side-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px}
   .tv-side-card h3{margin:0 0 6px;font-size:13px;font-weight:800}
-  .tv-now{background:linear-gradient(135deg,#2f6b53,#3a8f6b)!important;border-left-color:#e7c987!important}
+  .tv-now{background:linear-gradient(135deg,var(--sage-deep),var(--sage))!important;border-left-color:#e7c987!important}
   .tv-now .l,.tv-now .t{color:#f0e2bd}
   .modal.tvfull{align-items:stretch}
   .sheet.tvfull{max-width:100%;width:100%;border-radius:0;height:100vh;max-height:100vh}
@@ -764,6 +764,7 @@ function setDriver(n){const d=hikeData();d.drivers[ME]=n;delete d.riders[ME];LS.
 function hikeClear(){const d=hikeData();delete d.drivers[ME];delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();}
 function rideWith(dn){const d=hikeData();if(hikeSeatsLeft(dn)<=0){toast("That car is full");return;}d.riders[ME]=dn;delete d.drivers[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("Ride booked 🙌");}
 function tvClass(ev){return catClass(ev.Category)||"";}
+function tvEmoji(ev){var c=ev.Category||"",t=(ev.Title||"").toLowerCase();if(c==="Meal"){if(/breakfast/.test(t))return "\ud83c\udf73";if(/brunch/.test(t))return "\ud83e\udd5e";if(/lunch/.test(t))return "\ud83e\udd6a";if(/dessert|s'?mores|sweet/.test(t))return "\ud83c\udf70";if(/dinner|feast|bbq|hibachi|food truck|ziti|ham|cuban|night/.test(t))return "\ud83c\udf7d\ufe0f";return "\ud83c\udf74";}if(c==="Boat")return "\u26f5";if(c==="Kids")return "\ud83c\udfa8";if(c==="Bonfire")return "\ud83d\udd25";if(c==="Photos")return "\ud83d\udcf8";if(c==="Logistics")return "\ud83d\udccd";return "\ud83c\udf89";}
 function tvCrew(ev){if((ev.Category||"")!=="Meal")return "";var m=mealFor(ev);if(!m)return "";var su=mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]);var cu=mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);var p=[];if(su)p.push("\ud83e\uddfa "+su);if(cu)p.push("\ud83e\uddfd "+cu);return p.join(" \u00b7 ");}
 function tvDetail(ev){if((ev.Category||"")==="Meal"){var mm=mealFor(ev);var menu=mm?((mm.Menu||"").split(/\r?\n/)[0]||"").trim():"";if(!menu){var n=((ev.Notes||"").split(/\r?\n/)[0]||"").trim();if(n&&!/see meals tab/i.test(n))menu=n;}return menu||(ev.Location||"");}return ev.Location||"";}
 function vTVSchedule(){
@@ -773,10 +774,10 @@ function vTVSchedule(){
   let cols="";
   DAYS.forEach((d,i)=>{const items=sched.filter(e=>e.Date===d.label).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const tdy=d.label===tl;
     cols+=`<div class="tv-col ${tdy?"today":""}"><div class="tv-colh ${tdy?"tdy":""}">Day ${i+1}${tdy?" · Today":""}<small>${esc(d.dow)} ${d.date.getMonth()+1}/${d.date.getDate()}</small></div>`+
-      (items.length?items.map(e=>`<div class="tv-ev ${tvClass(e)}"><div class="t">${esc(e["Start Time"]||"")}</div><div class="n">${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}</div>`).join(""):`<div class="tv-ev"><div class="l">Free day</div></div>`)+`</div>`;});
+      (items.length?items.map(e=>`<div class="tv-ev ${tvClass(e)}"><div class="t">${esc(e["Start Time"]||"")}</div><div class="n">${tvEmoji(e)} ${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}</div>`).join(""):`<div class="tv-ev"><div class="l">Free day</div></div>`)+`</div>`;});
   let side="";
   if(tl){const items=sched.filter(e=>e.Date===tl).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const up=items.find(e=>toMins(e["Start Time"])>=m);
-    side=`<div class="tv-side-card"><h3>🔴 Today · ${esc(tl)}</h3>`+(items.length?items.map(e=>{const isnow=e===up;const past=toMins(e["Start Time"])<m&&!isnow;return `<div class="tv-ev ${tvClass(e)} ${isnow?"tv-now":""}" style="${past?"opacity:.4":""}"><div class="t">${esc(e["Start Time"]||"")}${isnow?" · UP NEXT":""}</div><div class="n">${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}${(function(){var cr=tvCrew(e);return cr?'<div class="c">'+esc(cr)+'</div>':"";})()}</div>`;}).join(""):`<p style="color:#9db5a6">Nothing scheduled today.</p>`)+`</div>`;
+    side=`<div class="tv-side-card"><h3>🔴 Today · ${esc(tl)}</h3>`+(items.length?items.map(e=>{const isnow=e===up;const past=toMins(e["Start Time"])<m&&!isnow;return `<div class="tv-ev ${tvClass(e)} ${isnow?"tv-now":""}" style="${past?"opacity:.4":""}"><div class="t">${esc(e["Start Time"]||"")}${isnow?" · UP NEXT":""}</div><div class="n">${tvEmoji(e)} ${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}${(function(){var cr=tvCrew(e);return cr?'<div class="c">'+esc(cr)+'</div>':"";})()}</div>`;}).join(""):`<p style="color:#9db5a6">Nothing scheduled today.</p>`)+`</div>`;
   }else{const n=daysUntil();side=`<div class="tv-side-card"><h3>Countdown</h3><p style="font-size:40px;font-weight:800;margin:4px 0 0;color:#e7c987;line-height:1">${n}</p><p style="color:#9db5a6;margin:2px 0 0">day${n!==1?"s":""} until the reunion</p><p style="color:#9db5a6;margin:12px 0 0;font-size:13px">Jul 25 → Aug 1 · Lake Lanier</p></div>`;}
   let h=`<div class="tvwrap"><div class="tv-top"><div class="tv-ttl">Roman Reunion 2026<small>BACK IN HEAVEN · LAKE LANIER</small></div><div style="display:flex;align-items:center;gap:14px"><div class="tv-clock">${esc(clock)}<br><span style="font-size:11px;color:#9db5a6;font-weight:600">${tl?esc(tl):"Jul 25 – Aug 1"}</span></div><button class="tvx" onclick="closeModal()" aria-label="Close">✕</button></div></div>`;
   h+=`<div class="tv-portrait">📱 Turn your phone sideways — or cast this screen to a TV</div>`;
