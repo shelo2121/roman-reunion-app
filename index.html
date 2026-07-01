@@ -301,34 +301,34 @@
   .seatbtn{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);font-size:16px;font-weight:800;cursor:pointer}
   /* TV / cast schedule board */
   .tvwrap{margin:-8px -16px calc(-28px - env(safe-area-inset-bottom));background:linear-gradient(180deg,#0f241d,#0b1a14);color:#f6efdd;min-height:96vh}
-  .tv-top{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;background:rgba(15,36,29,.97);border-bottom:1px solid rgba(255,255,255,.1);z-index:6}
-  .tv-ttl{font-size:19px;font-weight:800;line-height:1.1}
-  .tv-ttl small{display:block;font-size:11px;font-weight:600;color:#9db5a6;letter-spacing:.05em;margin-top:2px}
-  .tv-clock{font-size:15px;font-weight:800;color:#e7c987;text-align:right;line-height:1.2}
+  .tv-top{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 14px;background:rgba(15,36,29,.97);border-bottom:1px solid rgba(255,255,255,.1);z-index:6}
+  .tv-ttl{font-size:15px;font-weight:800;line-height:1.1}
+  .tv-ttl small{display:block;font-size:9px;font-weight:600;color:#9db5a6;letter-spacing:.05em;margin-top:1px}
+  .tv-clock{font-size:12.5px;font-weight:800;color:#e7c987;text-align:right;line-height:1.2}
   .tvx{background:rgba(255,255,255,.14);border:none;color:#f6efdd;width:34px;height:34px;border-radius:50%;font-size:15px;font-weight:800;cursor:pointer;flex:0 0 auto}
   .tv-portrait{display:none}
   @media(orientation:portrait){.tv-portrait{display:block;background:rgba(224,167,62,.16);color:#f0c876;text-align:center;font-size:12.5px;font-weight:600;padding:8px 14px}}
-  .tv-body{display:flex;gap:10px;padding:10px 12px 18px;align-items:flex-start;flex-wrap:wrap}
+  .tv-body{display:flex;gap:8px;padding:8px 10px 12px;align-items:flex-start;flex-wrap:wrap}
   .tv-main{flex:1 1 74%;min-width:280px}
-  .tv-side{flex:1 1 22%;min-width:230px;max-width:360px}
-  .tv-cols{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;padding-bottom:8px}
-  .tv-col{min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:5px 4px}
+  .tv-side{flex:1 1 20%;min-width:180px;max-width:320px}
+  .tv-cols{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;padding-bottom:4px}
+  .tv-col{min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:4px 3px}
   .tv-col.today{border-color:#e0a73e;box-shadow:0 0 0 2px rgba(224,167,62,.35)}
-  .tv-colh{font-size:11px;font-weight:800;text-align:center;padding:2px 0 4px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:5px}
-  .tv-colh small{display:block;font-size:9.5px;color:#9db5a6;font-weight:600;margin-top:1px}
+  .tv-colh{font-size:9.5px;font-weight:800;text-align:center;padding:1px 0 3px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:4px}
+  .tv-colh small{display:block;font-size:8px;color:#9db5a6;font-weight:600;margin-top:0}
   .tv-colh.tdy{color:#e7c987}
-  .tv-ev{padding:3px 5px;border-radius:7px;margin-bottom:3px;background:rgba(255,255,255,.04);border-left:2px solid rgba(255,255,255,.18)}
-  .tv-ev .t{font-size:9px;font-weight:800;color:#e7c987;letter-spacing:.01em}
-  .tv-ev .n{font-size:10.5px;font-weight:700;line-height:1.15;margin-top:0}
-  .tv-ev .l{font-size:9.5px;color:#c9d8ce;margin-top:0;line-height:1.15}
-  .tv-ev .c{font-size:9px;color:#9db5a6;margin-top:1px;line-height:1.15}
+  .tv-ev{padding:2px 4px;border-radius:6px;margin-bottom:2px;background:rgba(255,255,255,.04);border-left:2px solid rgba(255,255,255,.18)}
+  .tv-ev .t{font-size:8px;font-weight:800;color:#e7c987;letter-spacing:.01em}
+  .tv-ev .n{font-size:9px;font-weight:700;line-height:1.12;margin-top:0}
+  .tv-ev .l{font-size:8.5px;color:#c9d8ce;margin-top:0;line-height:1.12}
+  .tv-ev .c{font-size:8px;color:#9db5a6;margin-top:0;line-height:1.12}
   .tv-ev.meal{border-left-color:#7fb0ac}
   .tv-ev.kids{border-left-color:#bcd08a}
   .tv-ev.gold{border-left-color:#e0a73e}
   .tv-ev.boat{border-left-color:#6fb2d6}
   .tv-ev.lake{border-left-color:#7fb0ac}
-  .tv-side-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:13px 14px}
-  .tv-side-card h3{margin:0 0 10px;font-size:17px;font-weight:800}
+  .tv-side-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px}
+  .tv-side-card h3{margin:0 0 6px;font-size:13px;font-weight:800}
   .tv-now{background:linear-gradient(135deg,#2f6b53,#3a8f6b)!important;border-left-color:#e7c987!important}
   .tv-now .l,.tv-now .t{color:#f0e2bd}
   .modal.tvfull{align-items:stretch}
@@ -773,7 +773,7 @@ function vTVSchedule(){
   let cols="";
   DAYS.forEach((d,i)=>{const items=sched.filter(e=>e.Date===d.label).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const tdy=d.label===tl;
     cols+=`<div class="tv-col ${tdy?"today":""}"><div class="tv-colh ${tdy?"tdy":""}">Day ${i+1}${tdy?" · Today":""}<small>${esc(d.dow)} ${d.date.getMonth()+1}/${d.date.getDate()}</small></div>`+
-      (items.length?items.map(e=>`<div class="tv-ev ${tvClass(e)}"><div class="t">${esc(e["Start Time"]||"")}</div><div class="n">${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}${(function(){var cr=tvCrew(e);return cr?'<div class="c">'+esc(cr)+'</div>':"";})()}</div>`).join(""):`<div class="tv-ev"><div class="l">Free day</div></div>`)+`</div>`;});
+      (items.length?items.map(e=>`<div class="tv-ev ${tvClass(e)}"><div class="t">${esc(e["Start Time"]||"")}</div><div class="n">${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}</div>`).join(""):`<div class="tv-ev"><div class="l">Free day</div></div>`)+`</div>`;});
   let side="";
   if(tl){const items=sched.filter(e=>e.Date===tl).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const up=items.find(e=>toMins(e["Start Time"])>=m);
     side=`<div class="tv-side-card"><h3>🔴 Today · ${esc(tl)}</h3>`+(items.length?items.map(e=>{const isnow=e===up;const past=toMins(e["Start Time"])<m&&!isnow;return `<div class="tv-ev ${tvClass(e)} ${isnow?"tv-now":""}" style="${past?"opacity:.4":""}"><div class="t">${esc(e["Start Time"]||"")}${isnow?" · UP NEXT":""}</div><div class="n">${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}${(function(){var cr=tvCrew(e);return cr?'<div class="c">'+esc(cr)+'</div>':"";})()}</div>`;}).join(""):`<p style="color:#9db5a6">Nothing scheduled today.</p>`)+`</div>`;
