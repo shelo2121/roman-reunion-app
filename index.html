@@ -311,24 +311,24 @@
   .tv-body{display:flex;gap:8px;padding:8px 10px 12px;align-items:flex-start;flex-wrap:wrap}
   .tv-main{flex:1 1 74%;min-width:280px}
   .tv-side{flex:1 1 20%;min-width:180px;max-width:320px}
-  .tv-cols{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;padding-bottom:6px}
-  .tv-col{min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:7px 6px}
+  .tv-cols{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;padding-bottom:4px}
+  .tv-col{min-width:0;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:4px 3px}
   .tv-col.today{border-color:#e0a73e;box-shadow:0 0 0 2px rgba(224,167,62,.35)}
-  .tv-colh{font-size:13px;font-weight:800;text-align:center;padding:2px 0 6px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:7px}
-  .tv-colh small{display:block;font-size:10.5px;color:#9db5a6;font-weight:600;margin-top:1px}
+  .tv-colh{font-size:10px;font-weight:800;text-align:center;padding:1px 0 3px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:4px}
+  .tv-colh small{display:block;font-size:8.5px;color:#9db5a6;font-weight:600;margin-top:0}
   .tv-colh.tdy{color:#e7c987}
-  .tv-ev{padding:5px 7px;border-radius:8px;margin-bottom:5px;background:rgba(255,255,255,.04);border-left:3px solid rgba(255,255,255,.18)}
-  .tv-ev .t{font-size:11px;font-weight:800;color:#e7c987;letter-spacing:.01em}
-  .tv-ev .n{font-size:13px;font-weight:700;line-height:1.18;margin-top:1px}
-  .tv-ev .l{font-size:11px;color:#c9d8ce;margin-top:1px;line-height:1.18}
-  .tv-ev .c{font-size:10px;color:#9db5a6;margin-top:1px;line-height:1.18}
+  .tv-ev{padding:3px 5px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,.04);border-left:2px solid rgba(255,255,255,.18)}
+  .tv-ev .t{font-size:8.5px;font-weight:800;color:#e7c987;letter-spacing:.01em}
+  .tv-ev .n{font-size:9.5px;font-weight:700;line-height:1.14;margin-top:0}
+  .tv-ev .l{font-size:8.5px;color:#c9d8ce;margin-top:0;line-height:1.14}
+  .tv-ev .c{font-size:8px;color:#9db5a6;margin-top:0;line-height:1.14}
   .tv-ev.meal{border-left-color:#7fb0ac}
   .tv-ev.kids{border-left-color:#bcd08a}
   .tv-ev.gold{border-left-color:#e0a73e}
   .tv-ev.boat{border-left-color:#6fb2d6}
   .tv-ev.lake{border-left-color:#7fb0ac}
-  .tv-side-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px 14px}
-  .tv-side-card h3{margin:0 0 9px;font-size:16px;font-weight:800}
+  .tv-side-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 11px}
+  .tv-side-card h3{margin:0 0 7px;font-size:13px;font-weight:800}
   .tv-now{background:linear-gradient(135deg,var(--sage-deep),var(--sage))!important;border-left-color:#e7c987!important}
   .tv-now .l,.tv-now .t{color:#f0e2bd}
   .modal.tvfull{align-items:stretch}
@@ -764,7 +764,7 @@ function hikeSeatsLeft(name){const d=hikeData();const seats=parseInt(d.drivers[n
 function setDriver(n){const d=hikeData();d.drivers[ME]=n;delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("You’re driving 🚗");}
 function hikeClear(){const d=hikeData();delete d.drivers[ME];delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();}
 function rideWith(dn){const d=hikeData();if(hikeSeatsLeft(dn)<=0){toast("That car is full");return;}d.riders[ME]=dn;delete d.drivers[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("Ride booked 🙌");}
-function tvFit(){var w=document.getElementById("tvfit");if(!w)return;w.style.transform="none";w.style.width="100%";var top=document.querySelector(".tv-top");var avail=window.innerHeight-((top&&top.offsetHeight)||44)-4;var ch=w.scrollHeight||1;var sc=Math.min(1,avail/ch);w.style.transformOrigin="top left";w.style.width=(100/sc)+"%";w.style.transform="scale("+sc+")";}
+function tvFit(){var w=document.getElementById("tvfit");if(!w)return;w.style.transformOrigin="top left";w.style.transform="none";w.style.width="100%";var top=document.querySelector(".tv-top");var avail=window.innerHeight-((top&&top.offsetHeight)||44)-6;function clamp(x){return x>1.6?1.6:(x<0.3?0.3:x);}var sc=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc)+"%";var sc2=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc2)+"%";w.style.transform="scale("+sc2+")";}
 function tvClass(ev){return catClass(ev.Category)||"";}
 function tvEmoji(ev){var c=ev.Category||"",t=(ev.Title||"").toLowerCase();if(c==="Meal"){if(/breakfast/.test(t))return "\ud83c\udf73";if(/brunch/.test(t))return "\ud83e\udd5e";if(/lunch/.test(t))return "\ud83e\udd6a";if(/dessert|s'?mores|sweet/.test(t))return "\ud83c\udf70";if(/dinner|feast|bbq|hibachi|food truck|ziti|ham|cuban|night/.test(t))return "\ud83c\udf7d\ufe0f";return "\ud83c\udf74";}if(c==="Boat")return "\u26f5";if(c==="Kids")return "\ud83c\udfa8";if(c==="Bonfire")return "\ud83d\udd25";if(c==="Photos")return "\ud83d\udcf8";if(c==="Logistics")return "\ud83d\udccd";return "\ud83c\udf89";}
 function tvCrew(ev){if((ev.Category||"")!=="Meal")return "";var m=mealFor(ev);if(!m)return "";var su=mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]);var cu=mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);var p=[];if(su)p.push("\ud83e\uddfa "+su);if(cu)p.push("\ud83e\uddfd "+cu);return p.join(" \u00b7 ");}
