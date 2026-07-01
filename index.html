@@ -330,6 +330,8 @@
   .tv-side-card h3{margin:0 0 10px;font-size:17px;font-weight:800}
   .tv-now{background:linear-gradient(135deg,#2f6b53,#3a8f6b)!important;border-left-color:#e7c987!important}
   .tv-now .l,.tv-now .t{color:#f0e2bd}
+  .modal.tvfull{align-items:stretch}
+  .sheet.tvfull{max-width:100%;width:100%;border-radius:0;height:100vh;max-height:100vh}
 </style>
 </head>
 <body>
@@ -776,7 +778,7 @@ function vTVSchedule(){
   let h=`<div class="tvwrap"><div class="tv-top"><div class="tv-ttl">Roman Reunion 2026<small>BACK IN HEAVEN · LAKE LANIER</small></div><div style="display:flex;align-items:center;gap:14px"><div class="tv-clock">${esc(clock)}<br><span style="font-size:11px;color:#9db5a6;font-weight:600">${tl?esc(tl):"Jul 25 – Aug 1"}</span></div><button class="tvx" onclick="closeModal()" aria-label="Close">✕</button></div></div>`;
   h+=`<div class="tv-portrait">📱 Turn your phone sideways — or cast this screen to a TV</div>`;
   h+=`<div class="tv-body"><div class="tv-main"><div class="tv-cols">${cols}</div></div><div class="tv-side">${side}</div></div></div>`;
-  openSheet(h,true);
+  openSheet(h,true);$("sheet").classList.add("tvfull");$("modal").classList.add("tvfull");
   if(window._tvTimer)clearInterval(window._tvTimer);
   window._tvTimer=setInterval(function(){if(window._tvOpen&&$("modal").classList.contains("open"))vTVSchedule();else{clearInterval(window._tvTimer);window._tvTimer=null;}},60000);
 }
@@ -825,9 +827,9 @@ function setMe(n){ME=n;LS.setMe(n);updateAvatar();closeModal();toast("Hi "+first
 function refreshDay(){$("demoDayRow").style.display=LS.demo()?"flex":"none";if($("demoDaySel"))$("demoDaySel").value=LS.demoDay();}
 function updateAvatar(){const a=$("avatarBtn");const ph=photoOf(meRec());if(ph){a.style.backgroundImage=`url('${ph}')`;a.textContent="";}else{a.style.backgroundImage="";a.textContent=initials(ME);a.style.background=avColor(ME);}}
 
-function openSheet(html,bare){$("sheet").innerHTML=(bare?"":'<div class="sheettop"><button class="sheetx" onclick="closeModal()" aria-label="Close">\u2715</button></div>')+html;$("modal").classList.add("open");}
+function openSheet(html,bare){$("sheet").classList.remove("tvfull");$("modal").classList.remove("tvfull");$("sheet").innerHTML=(bare?"":'<div class="sheettop"><button class="sheetx" onclick="closeModal()" aria-label="Close">\u2715</button></div>')+html;$("modal").classList.add("open");}
 function openSheetFull(html,title){openSheet(`<div class="grab"></div><h3 class="serif" style="margin:-4px 0 14px">${esc(title)}</h3>${html}`);}
-function closeModal(){$("modal").classList.remove("open");window._reopenSheet=null;window._tvOpen=false;if(window._tvTimer){clearInterval(window._tvTimer);window._tvTimer=null;}}
+function closeModal(){$("modal").classList.remove("open");$("modal").classList.remove("tvfull");$("sheet").classList.remove("tvfull");window._reopenSheet=null;window._tvOpen=false;if(window._tvTimer){clearInterval(window._tvTimer);window._tvTimer=null;}}
 $("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal();});
 function toast(msg){let t=document.createElement("div");t.textContent=msg;t.style.cssText="position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--sage-deep);color:#fff;padding:11px 19px;border-radius:30px;font-size:14px;font-weight:600;z-index:200;box-shadow:var(--shadow)";document.body.appendChild(t);setTimeout(()=>t.remove(),1600);}
 
