@@ -334,6 +334,15 @@
   .modal.tvfull{align-items:stretch}
   .sheet.tvfull{max-width:100%;width:100%;border-radius:0;height:100vh;max-height:100vh;overflow:hidden}
   #tvfit{transform-origin:top center}
+  .wholist{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+  .wlhead{font-size:11.5px;font-weight:700;color:var(--muted);margin-right:2px}
+  .wlpill{font-size:11.5px;font-weight:600;border-radius:99px;padding:2px 9px}
+  .wlpill.in{background:var(--sage-soft);color:var(--sage-deep)}
+  .wlpill.out{background:#f2e3de;color:#a15a46}
+  .wlnone{font-size:12px;color:var(--muted)}
+  .actrsvp{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+  .rpanel{position:relative}
+  .rpx{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:none;background:var(--sage-soft);color:var(--sage-deep);font-size:14px;font-weight:800;cursor:pointer;z-index:2}
 </style>
 </head>
 <body>
@@ -398,6 +407,7 @@ const LS={
   addUwClaim:c=>{const a=LS.uwClaims();a.push(c);localStorage.setItem("rr_uwclaims",JSON.stringify(a));},
   hike:()=>{try{return JSON.parse(localStorage.getItem("rr_hike")||"{}");}catch(e){return {};}},
   setHike:o=>localStorage.setItem("rr_hike",JSON.stringify(o)),
+  log:()=>{try{return JSON.parse(localStorage.getItem("rr_log")||"[]");}catch(e){return [];}},
 };
 let ME=LS.me()||"Shelo", CUR="home";
 
@@ -482,19 +492,7 @@ function evCard(ev,isNext){
   const k=joinKey(ev);let foot="";
   if(poc) foot+=`<div class="poc"><span class="pocav">${initials(poc)}</span>Point of Contact: ${esc(first(poc))}</div>`;
   if(meal){const setup=mealField(meal,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(meal,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;if(crews)foot+=`<div class="crewrow">${crews}</div>`;let dd=meal.Menu?`<b>Menu:</b> ${esc(meal.Menu)}`:"";if(dd)foot+=`<div class="evnote">${dd}</div>`;}
-  if(joinable(ev)){const kk=esc(k).replace(/'/g,"\\'");const cnt=joinCount(k)+goingBase(k,ev);
-    if(ev.Category==="Kids"){const ppl=myPeople(true);
-      foot+=`<div class="ksl">Sign up your family — parents don’t need to attend</div>`;
-      foot+= ppl.length? `<div class="kidsignup">${ppl.map(kd=>`<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`).join("")}</div>` : `<div class="muted" style="font-size:12px">Add your kids &amp; teens to your profile to sign them up here.</div>`;
-      foot+=`<div class="muted" style="font-size:12px;margin-top:6px">${cnt} coming</div>`;
-    } else {const ppl=myPeople();
-      const ins=statusOf(k,ME)==="in",outs=statusOf(k,ME)==="out";
-      foot+=`<div class="rsvp"><button class="rbtn yes ${ins?'on':''}" onclick="setMy(event,'${kk}','in')">✓ I’m Coming</button><button class="rbtn no ${outs?'on':''}" onclick="setMy(event,'${kk}','out')">✗ Can’t Make It</button></div>`;
-      foot+=`<button class="rbtn add" style="margin-top:8px" onclick="event.stopPropagation();addSomeone('${kk}')">＋ Add someone else</button>`;
-      foot+=`<div class="muted" style="font-size:12px;margin-top:5px">${cnt} coming</div>`;
-      if(ppl.length)foot+=`<div class="kidsignup"><span class="ksl">Your family</span>${ppl.map(kd=>`<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`).join("")}</div>`;
-    }
-  }
+  if(joinable(ev))foot+=rsvpBlock(ev);
   if(ev.Notes && !meal) foot+=`<div class="evnote">${esc(ev.Notes)}</div>`;
   if(offSite(ev)){const q=encodeURIComponent((ev.Location||'')+' '+(info().Address||''));foot+=`<a class="maplink" href="https://maps.google.com/?q=${q}" target="_blank">📍 Open in Maps</a>`;}
   return `<div class="ev"><div class="evtop" onclick="(function(el){var ff=el.parentNode.querySelector('.evfoot');ff.style.display=ff.style.display==='flex'?'none':'flex';})(this)"><div class="evthumb">${im?`<img src="${esc(im)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="ph">${catEmoji(ev.Category)}</div>`}</div><div class="evbody"><div class="evtime">${esc(tparts[0]||"")} ${esc(tparts[1]||"")}${isNext?'<span class="nowtag">UP NEXT</span>':''}</div><div class="evttl">${esc(ev.Title)}</div><div class="evmeta"><span class="pill ${catClass(ev.Category)}">${esc(ev.Category||"Event")}</span> &nbsp;${esc(ev.Location||"")}</div></div></div><div class="evfoot" style="display:${isNext?'flex':'none'}">${foot||'<div class="muted">Tap for details.</div>'}</div></div>`;
@@ -507,9 +505,32 @@ function statusOf(k,p){return joinedSet(k)[p]||"";}
 function setStatus(k,p,st){const j=LS.joins();if(!j[k])j[k]={};if(st)j[k][p]=st;else delete j[k][p];if(!Object.keys(j[k]).length)delete j[k];LS.setJoins(j);}
 function joinCount(k){const s=joinedSet(k);return Object.keys(s).filter(p=>s[p]==="in").length;}
 function myKids(){const me=ME.toLowerCase(),meF=first(ME).toLowerCase();return attendees().filter(p=>{const par=(p.Parent||"").toLowerCase();if(!par)return false;const toks=par.split(/\s+and\s+|,|&/).map(x=>x.trim());return (toks.includes(me)||toks.includes(meF))&&["kid","toddler"].includes((p["Age Group"]||"").toLowerCase());});}
-function setMy(e,k,st){e.stopPropagation();setStatus(k,ME,statusOf(k,ME)===st?"":st);toast(st==="in"?"You’re in! 🎉":st==="out"?"Noted — can’t make it":"Cleared");rerender();}
-function toggleKid(e,k,name){e.stopPropagation();const on=statusOf(k,name)!=="in";setStatus(k,name,on?"in":"");toast(on?first(name)+" added ✓":first(name)+" removed");rerender();}
+function setMy(e,k,st){e.stopPropagation();const cur=statusOf(k,ME);const nv=cur===st?"":st;setStatus(k,ME,nv);addLog((nv==="in"?"RSVP’d Coming":nv==="out"?"Can’t make it":"Cleared RSVP")+" · "+kLabel(k));toast(st==="in"?"You’re in! 🎉":st==="out"?"Noted — can’t make it":"Cleared");rerender();}
+function toggleKid(e,k,name){e.stopPropagation();const on=statusOf(k,name)!=="in";setStatus(k,name,on?"in":"");addLog((on?"Added ":"Removed ")+first(name)+" · "+kLabel(k));toast(on?first(name)+" added ✓":first(name)+" removed");rerender();}
 function rerender(){({home:vHome,schedule:vSchedule,notifications:vNotifications,family:vFamily}[CUR]||function(){})();if($("modal").classList.contains("open")&&window._reopenSheet)window._reopenSheet();}
+
+function kidChip(k,kk,kd){return `<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`;}
+function whoIn(k){const st=joinedSet(k);return Object.keys(st).filter(p=>st[p]==="in");}
+function whoOut(k){const st=joinedSet(k);return Object.keys(st).filter(p=>st[p]==="out");}
+function whoList(k){const inN=whoIn(k),outN=whoOut(k);let h=`<div class="wholist"><span class="wlhead">✓ Coming${inN.length?' ('+inN.length+')':''}</span>`+(inN.length?inN.map(n=>`<span class="wlpill in">${esc(first(n))}</span>`).join(""):`<span class="wlnone">No one yet</span>`)+`</div>`;if(outN.length)h+=`<div class="wholist"><span class="wlhead">✗ Can’t make it</span>`+outN.map(n=>`<span class="wlpill out">${esc(first(n))}</span>`).join("")+`</div>`;return h;}
+function rsvpBlock(ev){const k=joinKey(ev),kk=esc(k).replace(/'/g,"\\'");let h="";
+  if(ev.Category==="Kids"){const ppl=myPeople(true);
+    h+=`<div class="ksl">Sign up your family — parents don’t need to attend</div>`;
+    h+= ppl.length? `<div class="kidsignup">${ppl.map(kd=>kidChip(k,kk,kd)).join("")}</div>` : `<div class="muted" style="font-size:12px">Add your kids &amp; teens to your profile to sign them up here.</div>`;
+  }else{const ppl=myPeople();const ins=statusOf(k,ME)==="in",outs=statusOf(k,ME)==="out";
+    h+=`<div class="rsvp"><button class="rbtn yes ${ins?'on':''}" onclick="setMy(event,'${kk}','in')">✓ I’m Coming</button><button class="rbtn no ${outs?'on':''}" onclick="setMy(event,'${kk}','out')">✗ Can’t Make It</button></div>`;
+    h+=`<button class="rbtn add" style="margin-top:8px" onclick="event.stopPropagation();addSomeone('${kk}')">＋ Add someone else</button>`;
+    if(ppl.length)h+=`<div class="kidsignup"><span class="ksl">Your family</span>${ppl.map(kd=>kidChip(k,kk,kd)).join("")}</div>`;
+  }
+  h+=whoList(k);return h;}
+function kLabel(k){const p=(k||"").split("__");return (p[1]||"")+(p[0]?" ("+p[0]+")":"");}
+function addLog(action){try{let a=LS.log();a.unshift({t:Date.now(),who:ME,act:action});a=a.slice(0,150);localStorage.setItem("rr_log",JSON.stringify(a));}catch(e){}}
+function vLog(){const log=LS.log();let h=`<p class="muted" style="margin:0 0 12px;font-size:13px">A record of RSVP and claim changes on this phone, newest first — handy for fixing mistakes.</p>`;h+= log.length? log.map(e=>`<div class="card"><div class="pad" style="padding:10px 12px"><div style="font-weight:600;font-size:14px">${esc(e.who||"?")}</div><div class="muted" style="font-size:12.5px">${esc(e.act||"")}</div><div class="muted" style="font-size:11px;margin-top:2px">${esc(new Date(e.t).toLocaleString())}</div></div></div>`).join("") : `<div class="empty">No changes recorded yet.</div>`;openSheetFull(h,"Recent changes");}
+function eventDT(ev){const d=DAYS.find(x=>x.label===ev.Date);if(!d||!ev["Start Time"])return null;const dt=new Date(d.date);const mins=toMins(ev["Start Time"]);dt.setHours(Math.floor(mins/60),mins%60,0,0);return dt;}
+function remindersOn(){return localStorage.getItem("rr_reminders")==="on"&&("Notification"in window)&&Notification.permission==="granted";}
+function enableReminders(){if(!("Notification"in window)){toast("Reminders aren’t supported on this device");return;}Notification.requestPermission().then(function(p){if(p==="granted"){localStorage.setItem("rr_reminders","on");toast("Reminders on 🔔");notifyCheck();if(CUR==="notifications")vNotifications();}else{toast("Reminders not enabled");}});}
+function notifyCheck(){if(!remindersOn())return;let sent={};try{sent=JSON.parse(localStorage.getItem("rr_notified")||"{}");}catch(e){}const now=Date.now();(DATA["Schedule"]||[]).forEach(function(ev){const dt=eventDT(ev);if(!dt)return;const diff=(dt.getTime()-now)/60000;const key=ev.Date+"__"+ev.Title+"__"+(ev["Start Time"]||"");if(diff<=30&&diff>=18&&!sent[key]){try{new Notification("Coming up: "+ev.Title,{body:(ev["Start Time"]||"")+(ev.Location?" · "+ev.Location:"")});}catch(e){}sent[key]=1;try{localStorage.setItem("rr_notified",JSON.stringify(sent));}catch(e){}}});}
+
 
 function vSchedule(){
   setTitle("Jul 25 – Aug 1","Schedule");const sched=DATA["Schedule"]||[],tl=todayLabel();
@@ -533,6 +554,7 @@ function noteCard(a){const pin=(a.Pinned||"").toLowerCase()==="yes";return `<div
 function vNotifications(){
   setTitle("Today’s updates","Alerts");$("navDot").classList.remove("show");
   const tl=todayLabel(),sched=(DATA["Schedule"]||[]);let h="";
+  h+= remindersOn()? `<div class="note" style="background:var(--sage-soft)"><div class="nic">🔔</div><div><p class="ntt">Reminders are on</p><p class="nmsg">You’ll get a heads-up about 30 minutes before each event (while the app is open).</p></div></div>` : `<button class="btn full" onclick="enableReminders()">🔔 Turn on 30-minute reminders</button><p class="muted" style="font-size:11.5px;text-align:center;margin:6px 0 12px">Get a heads-up ~30 min before each scheduled event.</p>`;
   if(tl){const items=sched.filter(e=>e.Date===tl).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const m=nowMins();
     const soon=items.filter(e=>{const ss=toMins(e["Start Time"]);return ss>=m&&ss<=m+150;});
     if(soon.length)h+=`<div class="sec"><h2>Starting soon</h2></div>`+soon.map(e=>`<div class="note"><div class="nic">🕑</div><div><p class="ntt">${esc(e.Title)}</p><p class="nmsg">${esc(e["Start Time"])} · ${esc(e.Location||"")}</p></div></div>`).join("");
@@ -570,7 +592,7 @@ function panelUp(i){window._rpath=(window._rpath||[]).slice(0,i);vFamily();}
 function closePanel(){window._rpath=[];vFamily();}
 function panelKid(c,tag){const hk=famSize(c)>0;const att=(c.Attending||"").toLowerCase()==="yes";let badge="";if(tag==="step")badge=' <span class="stepbadge">step</span>';else if(tag==="honorary")badge=' <span class="stepbadge" style="background:var(--gold-soft);color:#9c7d3b">honorary</span>';else if(tag==="sibling"){const nn=(c.Notes||"").toLowerCase();const lbl=/brother/.test(nn)?"brother":/sister/.test(nn)?"sister":"sibling";badge=' <span class="stepbadge" style="background:var(--lake-soft);color:#46716d">'+lbl+'</span>';}return `<div class="rpkid" onclick='${hk?`panelDrill(${JSON.stringify(c.Name)})`:`openMember(${JSON.stringify(c.Name)})`}'>${rav(c,"rpkav")}<div class="rpkn">${esc(first(c.Name))}${badge}${att?' <span class="goingdot"></span>':''}</div><span class="rpkc" style="${hk?'':'opacity:.35'}">${hk?'family ›':'profile ›'}</span></div>`;}
 function renderPanel(){const path=window._rpath;const cur=treeMembers().find(m=>m.Name===path[path.length-1]);if(!cur)return"";const sp=spouseOf(cur);const kk=kidsOf(cur);const hon=honoraryFor(cur);
-  let h=`<div class="rpanel"><div class="rcrumb"><span onclick="closePanel()">🌳 Roman</span>`+path.map((n,i)=>` <span class="rsep">›</span> <span onclick="panelUp(${i+1})">${esc(first(n))}</span>`).join("")+`</div>`;
+  let h=`<div class="rpanel"><button class="rpx" onclick="closePanel()" aria-label="Close">✕</button><div class="rcrumb"><span onclick="closePanel()">🌳 Roman</span>`+path.map((n,i)=>` <span class="rsep">›</span> <span onclick="panelUp(${i+1})">${esc(first(n))}</span>`).join("")+`</div>`;
   h+=`<div class="rphead">${rav(cur,"rphav")}<div class="rphm"><div class="rpn">${esc(cur.Name)}</div><div class="rps">${sp?'💍 Married to '+esc(first(sp.Name)):''}${(sp&&kk.kids.length)?' · ':''}${kk.kids.length?kk.kids.length+' children':''}</div></div><button class="btn ghost sm" onclick='openMember(${JSON.stringify(cur.Name)})'>Profile</button></div>`;
   if(sp)h+=`<div class="rpkid" onclick='openMember(${JSON.stringify(sp.Name)})'>${rav(sp,"rpkav")}<div class="rpkn">${esc(first(sp.Name))} <span class="stepbadge" style="background:var(--lake-soft);color:#46716d">spouse</span></div><span class="rpkc" style="opacity:.35">profile ›</span></div>`;
   if(kk.kids.length){h+=`<div class="rplabel">Children</div>`+kk.kids.map(c=>panelKid(c,"")).join("");}
@@ -631,7 +653,7 @@ function vActivities(){
 function actCard(x){
   const sched=(DATA["Schedule"]||[]).filter(e=>{const n=(x.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return n&&(t.includes(n)||n.includes(t));});
   const days=[...new Set(sched.map(e=>e.Date))];const req=(x.Required||"").toLowerCase()==="yes";const desc=actDesc(x);
-  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(x.Lead)}</span>Point of Contact: ${esc(first(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${days.length?`<p class="muted" style="margin-top:8px">📅 ${days.map(esc).join(" · ")} — <a class="link" onclick="closeModal();go('schedule')">RSVP on the day ›</a></p>`:''}</div></div>`;
+  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(x.Lead)}</span>Point of Contact: ${esc(first(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actrsvp"><div class="ksl">${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</div>${rsvpBlock(e)}</div>`).join(""):''}</div></div>`;
 }
 
 function vMyStuff(){
@@ -695,8 +717,8 @@ function uwCounts(){const c={all:0,available:0,claimed:0,family:0};uwSecs().forE
 function uwCard(s){
   const st=uwState(s),id=s.slot_id;
   const hasLyr=!uwPH(s.lyrics_text);
-  const sub=hasLyr?("“"+esc(s.lyrics_text)+"”"):esc(s.lyrics_cue||"");
-  const lyrHtml=hasLyr?('<p class="uw-lyr">“'+esc(s.lyrics_text)+'”</p>'):"";
+  const sub=hasLyr?("“"+esc(s.lyrics_text)+"”"):'<span style="opacity:.45">Tap to view &amp; claim</span>';
+  const lyrHtml=hasLyr?('<p class="uw-lyr">“'+esc(s.lyrics_text)+'”</p>'):'<p class="uw-lyr" style="opacity:.5;font-style:italic">Lyrics coming soon</p>';
   const ideas=s.creative_ideas_hover?('<div class="uw-iinner">'+esc(s.creative_ideas_hover)+'</div>'):"";
   let chip,body="";
   if(st==="family"){
@@ -711,7 +733,7 @@ function uwCard(s){
     chip='<span class="uw-chip av">Open</span>';
     body=lyrHtml+ideas+'<button class="uw-claimbtn" onclick="uwClaim(\''+id+'\')">'+esc(s.claim_button_text||"Claim this part")+'</button>';
   }
-  return '<div class="uw-card '+st+'"><div class="uw-hd" onclick="var c=this.closest(\'.uw-card\');c.classList.toggle(\'open\');c.querySelector(\'.uw-body\').classList.toggle(\'open\')"><span class="uw-time">'+esc(s.start_time)+'</span><div class="uw-hdmid"><div class="uw-ttl">'+esc(s.app_display_title||s.section_name)+'</div><div class="uw-sub">'+sub+'</div></div>'+chip+'<span class="uw-chev">▸</span></div><div class="uw-body">'+body+'</div></div>';
+  return '<div class="uw-card '+st+'"><div class="uw-hd" onclick="var c=this.closest(\'.uw-card\');c.classList.toggle(\'open\');c.querySelector(\'.uw-body\').classList.toggle(\'open\')"><span class="uw-time">'+esc(s.start_time)+' – '+esc(s.end_time)+'</span><div class="uw-hdmid"><div class="uw-sub">'+sub+'</div></div>'+chip+'<span class="uw-chev">▸</span></div><div class="uw-body">'+body+'</div></div>';
 }
 function vUnwritten(){
   window._reopenSheet=vUnwritten;
@@ -733,8 +755,8 @@ function vUnwritten(){
 function uwClaim(id){
   const s=uwSecs().find(x=>x.slot_id===id)||{};const mx=uwMax(s);
   openSheet('<div class="uwwrap"><div class="uw-bar"><button class="uw-back" onclick="vUnwritten()">‹ Back</button><span class="uw-bartitle">Claim a part</span><button class="uw-x" onclick="closeModal()" aria-label="Close">✕</button></div>'+
-    '<div style="font-weight:800;font-size:16px;margin:4px 0 2px">'+esc(s.app_display_title||s.section_name)+'</div>'+
-    '<p class="uw-intro" style="margin-bottom:14px">'+esc(s.start_time)+' – '+esc(s.end_time)+' · up to '+mx+' people can share it.</p>'+
+    '<div style="font-weight:800;font-size:16px;margin:4px 0 2px">'+esc(s.start_time)+' – '+esc(s.end_time)+'</div>'+
+    '<p class="uw-intro" style="margin-bottom:14px">Up to '+mx+' people can share it.'+(uwPH(s.lyrics_text)?'':' “'+esc(s.lyrics_text)+'”')+'</p>'+
     '<div class="uw-fld"><label>Your name</label><input id="uwf_name" placeholder="e.g. Shelo Roman" value="'+esc(ME||"")+'"></div>'+
     '<div class="uw-fld"><label>Others in your group <span>(optional)</span></label><input id="uwf_group" placeholder="e.g. Mia, Solimar"><div class="uw-hint">Separate names with commas.</div></div>'+
     '<div class="uw-fld"><label>Group name <span>(optional)</span></label><input id="uwf_gname" placeholder="e.g. The Cousins"></div>'+
@@ -747,7 +769,7 @@ function uwSubmit(id){
   const rec={slot_id:id,name:name,group_members:($("uwf_group").value||"").trim(),group_name:($("uwf_gname").value||"").trim(),contact:"",ts:new Date().toISOString()};
   LS.addUwClaim(rec);
   if(CLAIM_ENDPOINT){try{fetch(CLAIM_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)});}catch(e){}}
-  UWFILTER="claimed";vUnwritten();toast("You’ve got it! 🎉 Record it & send it in.");
+  addLog("Claimed a music-video part");UWFILTER="claimed";vUnwritten();toast("You’ve got it! 🎉 Record it & send it in.");
 }
 
 function spouseRec(){const me=meRec();if(me&&me.Spouse){const sp=attendees().find(x=>x.Name===me.Spouse)||attendees().find(x=>first(x.Name)===first(me.Spouse));if(sp)return sp;}return attendees().find(x=>x.Spouse&&(x.Spouse===ME||first(x.Spouse)===first(ME)))||null;}
@@ -758,7 +780,7 @@ function addSomeone(k){const inSet=joinedSet(k);const avail=attendees().filter(p
   h+=`<button class="btn full" style="margin-top:16px" onclick="addSomeoneSave('${esc(k).replace(/'/g,"\\'")}')">Add selected</button>`;
   openSheet(h);
 }
-function addSomeoneSave(k){const chips=[...document.querySelectorAll('.addchip.on')];if(!chips.length){toast("Tap a name first");return;}chips.forEach(c=>setStatus(k,c.getAttribute('data-n'),"in"));closeModal();rerender();toast(chips.length+(chips.length===1?" person":" people")+" added ✓");}
+function addSomeoneSave(k){const chips=[...document.querySelectorAll('.addchip.on')];if(!chips.length){toast("Tap a name first");return;}chips.forEach(c=>setStatus(k,c.getAttribute('data-n'),"in"));addLog("Added "+chips.map(c=>first(c.getAttribute('data-n'))).join(", ")+" · "+kLabel(k));closeModal();rerender();toast(chips.length+(chips.length===1?" person":" people")+" added ✓");}
 function hikeData(){const d=LS.hike();d.drivers=d.drivers||{};d.riders=d.riders||{};return d;}
 function hikeSeatsLeft(name){const d=hikeData();const seats=parseInt(d.drivers[name],10)||0;const taken=Object.keys(d.riders).filter(n=>d.riders[n]===name).length;return seats-taken;}
 function setDriver(n){const d=hikeData();d.drivers[ME]=n;delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("You’re driving 🚗");}
@@ -812,7 +834,7 @@ function vHike(){window._reopenSheet=vHike;const d=hikeData();const drivers=Obje
   else h+=drivers.map(dn=>{const left=hikeSeatsLeft(dn);const riders=Object.keys(d.riders).filter(n=>d.riders[n]===dn);const canRide=(window._hikeMode==="ride")&&dn!==ME&&d.drivers[ME]===undefined&&d.riders[ME]!==dn&&left>0;
     return `<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">🚗 ${esc(first(dn))}</p><p class="muted">${left} of ${d.drivers[dn]} seats open${riders.length?` · ${riders.map(r=>esc(first(r))).join(", ")}`:""}</p>${canRide?`<button class="btn sm full" style="margin-top:10px" onclick="rideWith('${esc(dn).replace(/'/g,"\\'")}')">Ride with ${esc(first(dn))}</button>`:(left<=0?`<p class="muted" style="font-size:12px;margin-top:6px">Full</p>`:"")}</div></div>`;}).join("");
   openSheetFull(h,"Hiking Carpool");}
-function vPacking(){const p=DATA["Packing List"]||[];const byCat={};p.forEach(x=>{(byCat[x.Category||"General"]=byCat[x.Category||"General"]||[]).push(x);});let h="";Object.keys(byCat).forEach(c=>{h+=`<div class="sec"><h2>${esc(c)}</h2></div>`+byCat[c].map(x=>`<div class="card"><div class="pad" style="display:flex;gap:8px;align-items:baseline"><span style="color:var(--sage)">●</span><div><b style="font-weight:600">${esc(x.Item)}</b>${x.Notes?`<div class="muted">${esc(x.Notes)}</div>`:''}</div></div></div>`).join("");});openSheetFull(h||'<div class="empty">No items yet.</div>',"Packing List");}
+function vPacking(){const p=(DATA["Packing List"]||[]).filter(x=>!/bring\s*cash/i.test((x.Item||"")+" "+(x.Notes||"")));const byCat={};p.forEach(x=>{(byCat[x.Category||"General"]=byCat[x.Category||"General"]||[]).push(x);});let h="";Object.keys(byCat).forEach(c=>{h+=`<div class="sec"><h2>${esc(c)}</h2></div>`+byCat[c].map(x=>`<div class="card"><div class="pad" style="display:flex;gap:8px;align-items:baseline"><span style="color:var(--sage)">●</span><div><b style="font-weight:600">${esc(x.Item)}</b>${x.Notes?`<div class="muted">${esc(x.Notes)}</div>`:''}</div></div></div>`).join("");});openSheetFull(h||'<div class="empty">No items yet.</div>',"Packing List");}
 function vFAQ(){const f=DATA["FAQ"]||[];openSheetFull(f.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0 0 4px">${esc(x.Question)}</p><p class="muted" style="color:#56564c">${esc(x.Answer)}</p></div></div>`).join("")||'<div class="empty">No FAQs.</div>',"FAQ");}
 function vRules(){const r=DATA["House Rules"]||[];openSheetFull(r.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(x.Rule)}</p><p class="muted">${esc(x.Description||"")}</p></div></div>`).join("")||'<div class="empty">No rules.</div>',"House Rules");}
 
@@ -821,6 +843,7 @@ function openProfile(){
   let h=`<div class="grab"></div><h3 class="serif">Your Profile</h3><p class="muted" style="margin:0 0 12px">Signed in as yourself for this reunion.</p>
     <div class="prow" onclick='openMember(${JSON.stringify(ME)})'>${avHTML(x,'av')}<div><div class="nm">${esc(ME)}</div><div class="meta">View & edit my profile</div></div><span class="chev">›</span></div>
     <button class="btn ghost full" style="margin-top:6px" onclick="openSwitch()">🔄 Not ${esc(first(ME))}? Switch person</button>
+    <button class="btn ghost full" style="margin-top:6px" onclick="vLog()">📝 Recent changes</button>
     <span class="label">Demo mode</span>
     <div class="setrow"><div><div class="sl">Always show “Today”</div><div class="ss">Preview the app as if the reunion is happening now</div></div><label class="toggle"><input type="checkbox" id="demoTog" ${LS.demo()?"checked":""} onchange="LS.setDemo(this.checked);refreshDay()"><span class="tr"></span></label></div>
     <div class="setrow" id="demoDayRow" style="${LS.demo()?'':'display:none'}"><div><div class="sl">Demo day</div><div class="ss">Which reunion day to show</div></div><select class="field" style="width:auto;margin:0" id="demoDaySel" onchange="LS.setDemoDay(this.value);refreshDay()">${DAYS.map(d=>`<option ${d.label===LS.demoDay()?"selected":""}>${d.label}</option>`).join("")}</select></div>
@@ -829,7 +852,7 @@ function openProfile(){
 }
 function openSwitch(){openSheet(`<div class="grab"></div><h3 class="serif">Who are you?</h3><p class="muted" style="margin:0 0 4px">Pick your name (family members attending).</p><input class="field" id="nameSearch" placeholder="Search your name…" oninput="renderNames(this.value)"><div class="name-grid" id="nameGrid"></div>`);renderNames("");}
 function renderNames(q){const list=attendees().filter(x=>x.Name.toLowerCase().includes((q||"").toLowerCase()));$("nameGrid").innerHTML=list.length?list.map(x=>`<button onclick='setMe(${JSON.stringify(x.Name)})'>${avHTML(x,'mini')}${esc(x.Name)}</button>`).join(""):`<p class="muted" style="grid-column:1/-1;text-align:center;padding:14px">No attending members found yet.</p>`;}
-function setMe(n){ME=n;LS.setMe(n);updateAvatar();closeModal();toast("Hi "+first(n)+"! 👋");go("home");}
+function setMe(n){if(ME&&n!==ME&&typeof confirm==="function"&&!confirm("Switch to "+first(n)+"?\n\nYou’ll be marking RSVPs and claims as "+first(n)+", not yourself.")){return;}ME=n;LS.setMe(n);addLog("Now using the app as "+first(n));updateAvatar();closeModal();toast("Hi "+first(n)+"! 👋");go("home");}
 function refreshDay(){$("demoDayRow").style.display=LS.demo()?"flex":"none";if($("demoDaySel"))$("demoDaySel").value=LS.demoDay();}
 function updateAvatar(){const a=$("avatarBtn");const ph=photoOf(meRec());if(ph){a.style.backgroundImage=`url('${ph}')`;a.textContent="";}else{a.style.backgroundImage="";a.textContent=initials(ME);a.style.background=avColor(ME);}}
 
@@ -852,6 +875,7 @@ async function liveRefresh(){try{
 
 window._baseMembers=(DATA["Members"]||[]).slice();normalizeDates();updateAvatar();go("home");$("navDot").classList.toggle("show",activeAnn().length>0);
 if(navigator.onLine)setTimeout(liveRefresh,350);
+setInterval(notifyCheck,60000);setTimeout(notifyCheck,1500);
 </script>
 </body>
 </html>
