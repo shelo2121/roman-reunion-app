@@ -343,6 +343,56 @@
   .actrsvp{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
   .rpanel{position:relative}
   .rpx{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:none;background:var(--sage-soft);color:var(--sage-deep);font-size:14px;font-weight:800;cursor:pointer;z-index:2}
+  /* TV dashboard */
+  .dash{color:#f3ede0;padding:0 22px 16px}
+  .dash-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 2px 8px}
+  .dash-brand{font-size:30px;font-weight:800;letter-spacing:-.5px;line-height:1}
+  .dash-brand small{display:block;font-size:11px;letter-spacing:3px;color:#c9b98a;font-weight:700;margin-top:5px;text-transform:uppercase}
+  .dash-date{font-size:16px;color:#a9c0b0;font-weight:600;margin-top:9px}
+  .dash-right{display:flex;align-items:center;gap:18px}
+  .dash-clock{font-size:40px;font-weight:800;line-height:1;color:#fff;font-variant-numeric:tabular-nums;text-align:right}
+  .dash-wx{text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:8px 15px;min-width:92px}
+  .dash-wx .ic{font-size:26px;line-height:1}
+  .dash-wx .tp{font-size:23px;font-weight:800;margin-top:1px}
+  .dash-wx .hl{font-size:11px;color:#a9c0b0;margin-top:2px}
+  .dash-x{background:rgba(255,255,255,.12);border:none;color:#f3ede0;width:34px;height:34px;border-radius:50%;font-size:15px;font-weight:800;cursor:pointer;flex:0 0 auto}
+  .dsun{display:flex;justify-content:flex-end;gap:12px;font-size:12px;color:#c9d4c8;margin-top:5px}
+  .dayprog{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:2px 2px 13px}
+  .dayprog>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sage),#e0c07a);transition:width .6s}
+  .dash-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+  .dcol{display:flex;flex-direction:column;gap:14px}
+  .dcard{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:14px 16px}
+  .dcard h4{margin:0 0 8px;font-size:12.5px;letter-spacing:1.5px;text-transform:uppercase;color:#c9b98a;font-weight:800}
+  .devt{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+  .devt:last-child{border-bottom:none}
+  .devt .tm{flex:0 0 70px;font-size:15px;font-weight:800;color:#e7c987;font-variant-numeric:tabular-nums}
+  .devt .bd{flex:1;min-width:0}
+  .devt .ti{font-size:17px;font-weight:700;line-height:1.15}
+  .devt .me{font-size:12.5px;color:#a9c0b0;margin-top:2px}
+  .devt .ds{font-size:12.5px;color:#cdd8cc;margin-top:5px;line-height:1.4}
+  .devt.now{background:linear-gradient(135deg,rgba(224,167,62,.22),rgba(90,160,166,.14));border:1px solid rgba(224,167,62,.42);border-radius:14px;padding:12px 14px;margin:4px 0}
+  .devt.past{opacity:.38}
+  .badge-now{display:inline-block;background:#e0a73e;color:#3a2a08;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:7px;vertical-align:middle;letter-spacing:.5px}
+  .badge-next{display:inline-block;background:rgba(90,160,166,.32);color:#c6eae7;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:7px;vertical-align:middle}
+  .dcount{background:linear-gradient(135deg,var(--sage-deep),var(--sage));border:none}
+  .dcount h4{color:#e7f0e9}
+  .dcount .lbl{font-size:14px;color:#eaf4ee;font-weight:600}
+  .dcount .big{font-size:30px;font-weight:800;color:#fff;line-height:1.1;margin-top:3px}
+  .dresp-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.09)}
+  .dresp-row:last-child{border-bottom:none}
+  .dresp-role{font-size:13px;color:#a9c0b0;font-weight:600}
+  .dresp-ppl{font-size:14px;font-weight:700;text-align:right}
+  .dmeal{display:flex;gap:11px;align-items:center;padding:6px 0}
+  .dmeal img{width:50px;height:50px;border-radius:12px;object-fit:cover;flex:0 0 auto}
+  .dmeal .mt{font-size:12px;color:#e7c987;font-weight:800}
+  .dmeal .mn{font-size:15px;font-weight:700;line-height:1.15}
+  .dmeal .mc{font-size:12px;color:#a9c0b0}
+  .dtom{background:linear-gradient(135deg,rgba(90,160,166,.2),rgba(224,167,62,.13))}
+  .dtom .tt{font-size:19px;font-weight:800;margin-top:2px}
+  .dtom .tz{font-size:13.5px;color:#dbe8e1;line-height:1.45;margin-top:6px}
+  .dphoto{border-radius:16px;overflow:hidden;height:128px;position:relative}
+  .dphoto img{width:100%;height:100%;object-fit:cover;display:block}
+  .dphoto .cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:12px;padding:16px 11px 7px}
 </style>
 </head>
 <body>
@@ -786,33 +836,53 @@ function hikeSeatsLeft(name){const d=hikeData();const seats=parseInt(d.drivers[n
 function setDriver(n){const d=hikeData();d.drivers[ME]=n;delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("You’re driving 🚗");}
 function hikeClear(){const d=hikeData();delete d.drivers[ME];delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();}
 function rideWith(dn){const d=hikeData();if(hikeSeatsLeft(dn)<=0){toast("That car is full");return;}d.riders[ME]=dn;delete d.drivers[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("Ride booked 🙌");}
-function tvFit(){var w=document.getElementById("tvfit");if(!w)return;w.style.transformOrigin="top left";w.style.transform="none";w.style.width="100%";var top=document.querySelector(".tv-top");var avail=window.innerHeight-((top&&top.offsetHeight)||44)-6;function clamp(x){return x>1.6?1.6:(x<0.3?0.3:x);}var sc=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc)+"%";var sc2=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc2)+"%";w.style.transform="scale("+sc2+")";}
-function tvClass(ev){return catClass(ev.Category)||"";}
-function tvEmoji(ev){var c=ev.Category||"",t=(ev.Title||"").toLowerCase();if(c==="Meal"){if(/breakfast/.test(t))return "\ud83c\udf73";if(/brunch/.test(t))return "\ud83e\udd5e";if(/lunch/.test(t))return "\ud83e\udd6a";if(/dessert|s'?mores|sweet/.test(t))return "\ud83c\udf70";if(/dinner|feast|bbq|hibachi|food truck|ziti|ham|cuban|night/.test(t))return "\ud83c\udf7d\ufe0f";return "\ud83c\udf74";}if(c==="Boat")return "\u26f5";if(c==="Kids")return "\ud83c\udfa8";if(c==="Bonfire")return "\ud83d\udd25";if(c==="Photos")return "\ud83d\udcf8";if(c==="Logistics")return "\ud83d\udccd";return "\ud83c\udf89";}
-function tvCrew(ev){if((ev.Category||"")!=="Meal")return "";var m=mealFor(ev);if(!m)return "";var su=mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]);var cu=mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);var p=[];if(su)p.push("\ud83e\uddfa "+su);if(cu)p.push("\ud83e\uddfd "+cu);return p.join(" \u00b7 ");}
-function tvDetail(ev){if((ev.Category||"")==="Meal"){var mm=mealFor(ev);var menu=mm?((mm.Menu||"").split(/\r?\n/)[0]||"").trim():"";if(!menu){var n=((ev.Notes||"").split(/\r?\n/)[0]||"").trim();if(n&&!/see meals tab/i.test(n))menu=n;}return menu||(ev.Location||"");}return ev.Location||"";}
+function tvFit(){var w=document.getElementById("tvfit");if(!w)return;w.style.transformOrigin="top left";w.style.transform="none";w.style.width="100%";var avail=window.innerHeight-8;function clamp(x){return x>1.7?1.7:(x<0.3?0.3:x);}var sc=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc)+"%";var sc2=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc2)+"%";w.style.transform="scale("+sc2+")";}
+function tvEmoji(ev){var c=ev.Category||"",t=(ev.Title||"").toLowerCase();if(c==="Meal"){if(/breakfast/.test(t))return "🍳";if(/brunch/.test(t))return "🥞";if(/lunch/.test(t))return "🥪";if(/dessert|s'?mores|sweet/.test(t))return "🍰";if(/dinner|feast|bbq|hibachi|food truck|ziti|ham|cuban|night/.test(t))return "🍽️";return "🍴";}if(c==="Boat")return "⛵";if(c==="Kids")return "🎨";if(c==="Bonfire")return "🔥";if(c==="Photos")return "📸";if(c==="Logistics")return "📍";return "🎉";}
+function wxIcon(c){c=+c;if(c===0)return["☀️","Clear"];if(c<=2)return["🌤️","Partly cloudy"];if(c===3)return["☁️","Cloudy"];if(c<=48)return["🌫️","Fog"];if(c<=57)return["🌦️","Drizzle"];if(c<=67)return["🌧️","Rain"];if(c<=77)return["🌨️","Snow"];if(c<=82)return["🌦️","Showers"];if(c<=86)return["🌨️","Snow"];return["⛈️","Storms"];}
+function tvWeather(){if(window._tvWxFetching)return;window._tvWxFetching=true;fetch("https://api.open-meteo.com/v1/forecast?latitude=34.22&longitude=-83.95&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&temperature_unit=fahrenheit&timezone=America%2FNew_York&forecast_days=1").then(function(r){return r.json();}).then(function(d){window._tvWx={temp:Math.round(d.current.temperature_2m),code:d.current.weather_code,hi:Math.round(d.daily.temperature_2m_max[0]),lo:Math.round(d.daily.temperature_2m_min[0]),rain:d.daily.precipitation_probability_max[0],sunrise:d.daily.sunrise[0],sunset:d.daily.sunset[0]};window._tvWxAt=Date.now();window._tvWxFetching=false;if(window._tvOpen)vTVSchedule();}).catch(function(){window._tvWxFetching=false;});}
+function tvClean(t){return (t||"").replace(/\s+/g," ").trim();}
+function tvSentences(t,n){t=tvClean(t);var out="",cnt=0;for(var i=0;i<t.length;i++){out+=t[i];if(/[.!?]/.test(t[i])){cnt++;if(cnt>=n)break;}}return out.trim();}
+function tvDesc(ev){var notes=tvClean(ev.Notes||ev.Description||"");if(notes&&!/see meals tab/i.test(notes))return tvSentences(notes,2);if((ev.Category||"")==="Meal"){var m=mealFor(ev);if(m&&m.Menu)return tvClean(m.Menu);}var cat=(ev.Category||"activity").toLowerCase();return "A "+cat+(ev.Location?" at "+ev.Location:"")+".";}
+function tvExcite(ev){var n=tvSentences(ev.Notes||"",2);if(n)return n;return tvClean(ev.Title)+" is coming up"+(ev["Start Time"]?" at "+ev["Start Time"]:"")+" — you won’t want to miss it.";}
+function tvScore(ev){var t=((ev.Title||"")+" "+(ev.Notes||"")).toLowerCase();var s=({Bonfire:6,Photos:6,Boat:5,Activity:5,Kids:3,Meal:2,Logistics:0}[ev.Category]||3);if(/tournament|final|olympic|water\s*gun|dance|karaoke|bonfire|slumber|glow|music video|volleyball|relay|competition|party|feast|rave|hike/.test(t))s+=4;return s;}
+function tvPickTomorrow(items){if(!items.length)return null;return items.slice().sort(function(a,b){return tvScore(b)-tvScore(a)||toMins(a["Start Time"])-toMins(b["Start Time"]);})[0];}
+function tvResp(label){var meals=(DATA["Meals"]||[]).filter(function(m){return m.Date===label;});var rows=[];meals.forEach(function(m){var nm=m.Meal||"Meal";var ch=mealField(m,["Chef","Cook"]);var su=mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]);var cu=mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);if(ch)rows.push([nm+" Chef",ch]);if(su)rows.push([nm+" Setup",su]);if(cu)rows.push([nm+" Cleanup",cu]);});(DATA["Schedule"]||[]).filter(function(e){return e.Date===label&&e.Category==="Kids";}).forEach(function(e){var a=activityFor(e);var lead=(a&&a.Lead&&a.Lead!=="TBD")?a.Lead:"";if(lead)rows.push([tvClean(e.Title),lead]);});return rows;}
+function tvMealsToday(label){return (DATA["Meals"]||[]).filter(function(m){return m.Date===label;}).sort(function(a,b){return toMins(a.Time)-toMins(b.Time);});}
+function tvClockTick(){var el=document.getElementById("dashClock");if(!el){if(window._tvClockT){clearInterval(window._tvClockT);window._tvClockT=null;}return;}el.textContent=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}
 function vTVSchedule(){
   window._reopenSheet=vTVSchedule;window._tvOpen=true;
-  const sched=(DATA["Schedule"]||[]);const tl=todayLabel();const m=nowMins();
-  const now=new Date();const clock=now.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
-  let cols="";
-  DAYS.forEach((d,i)=>{const items=sched.filter(e=>e.Date===d.label).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const tdy=d.label===tl;
-    cols+=`<div class="tv-col ${tdy?"today":""}"><div class="tv-colh ${tdy?"tdy":""}">Day ${i+1}${tdy?" · Today":""}<small>${esc(d.dow)} ${d.date.getMonth()+1}/${d.date.getDate()}</small></div>`+
-      (items.length?items.map(e=>`<div class="tv-ev ${tvClass(e)}"><div class="t">${esc(e["Start Time"]||"")}</div><div class="n">${tvEmoji(e)} ${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}</div>`).join(""):`<div class="tv-ev"><div class="l">Free day</div></div>`)+`</div>`;});
-  let side="";
-  if(tl){const items=sched.filter(e=>e.Date===tl).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));const up=items.find(e=>toMins(e["Start Time"])>=m);
-    side=`<div class="tv-side-card"><h3>🔴 Today · ${esc(tl)}</h3>`+(items.length?items.map(e=>{const isnow=e===up;const past=toMins(e["Start Time"])<m&&!isnow;return `<div class="tv-ev ${tvClass(e)} ${isnow?"tv-now":""}" style="${past?"opacity:.4":""}"><div class="t">${esc(e["Start Time"]||"")}${isnow?" · UP NEXT":""}</div><div class="n">${tvEmoji(e)} ${esc(e.Title)}</div>${(function(){var dd=tvDetail(e);return dd?'<div class="l">'+esc(dd)+'</div>':"";})()}${(function(){var cr=tvCrew(e);return cr?'<div class="c">'+esc(cr)+'</div>':"";})()}</div>`;}).join(""):`<p style="color:#9db5a6">Nothing scheduled today.</p>`)+`</div>`;
-  }else{const n=daysUntil();side=`<div class="tv-side-card"><h3>Countdown</h3><p style="font-size:40px;font-weight:800;margin:4px 0 0;color:#e7c987;line-height:1">${n}</p><p style="color:#9db5a6;margin:2px 0 0">day${n!==1?"s":""} until the reunion</p><p style="color:#9db5a6;margin:12px 0 0;font-size:13px">Jul 25 → Aug 1 · Lake Lanier</p></div>`;}
-  let h=`<div class="tvwrap"><div class="tv-top"><div class="tv-ttl">Roman Reunion 2026<small>BACK IN HEAVEN · LAKE LANIER</small></div><div style="display:flex;align-items:center;gap:14px"><div class="tv-clock">${esc(clock)}<br><span style="font-size:11px;color:#9db5a6;font-weight:600">${tl?esc(tl):"Jul 25 – Aug 1"}</span></div><button class="tvx" onclick="closeModal()" aria-label="Close">✕</button></div></div>`;
-  h+=`<div class="tv-portrait">📱 Turn your phone sideways — or cast this screen to a TV</div>`;
-  h+=`<div id="tvfit"><div class="tv-body"><div class="tv-main"><div class="tv-cols">${cols}</div></div><div class="tv-side">${side}</div></div></div></div>`;
-  openSheet(h,true);$("sheet").classList.add("tvfull");$("modal").classList.add("tvfull");setTimeout(tvFit,60);if(!window._tvResize){window._tvResize=true;window.addEventListener("resize",function(){if(window._tvOpen)setTimeout(tvFit,80);});}
+  if(!window._tvWx||Date.now()-(window._tvWxAt||0)>900000)tvWeather();
+  const sched=(DATA["Schedule"]||[]);const tl=todayLabel()||DAYS[0].label;const idx=DAYS.findIndex(d=>d.label===tl);
+  const dObj=DAYS[idx]?DAYS[idx].date:new Date();const friendly=dObj.toLocaleDateString([], {weekday:"long",month:"long",day:"numeric"});
+  const clock=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});const m=nowMins();
+  const items=sched.filter(e=>e.Date===tl).sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));
+  const upIdx=items.findIndex(e=>toMins(e["Start Time"])>=m);const nextEv=upIdx>=0?items[upIdx]:null;
+  let curEv=null;for(let i=items.length-1;i>=0;i--){if(toMins(items[i]["Start Time"])<=m){curEv=items[i];break;}}
+  const wx=window._tvWx;let wxHtml,sunHtml="";
+  if(wx){const ic=wxIcon(wx.code);wxHtml=`<div class="dash-wx"><div class="ic">${ic[0]}</div><div class="tp">${wx.temp}°</div><div class="hl">H ${wx.hi}° · L ${wx.lo}°${wx.rain!=null?` · ☔ ${wx.rain}%`:""}</div></div>`;const sr=new Date(wx.sunrise),ss=new Date(wx.sunset);sunHtml=`<div class="dsun"><span>🌅 ${sr.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span><span>🌇 ${ss.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span></div>`;}
+  else wxHtml=`<div class="dash-wx"><div class="ic">⛅</div><div class="hl">Loading…</div></div>`;
+  let prog;if(wx&&wx.sunrise){const sr=new Date(wx.sunrise),ss=new Date(wx.sunset);const srm=sr.getHours()*60+sr.getMinutes(),ssm=ss.getHours()*60+ss.getMinutes();prog=(m-srm)/((ssm-srm)||1);}else prog=(m-420)/960;prog=Math.max(0,Math.min(1,prog));
+  let schedHtml=items.length?items.map(e=>{const st=toMins(e["Start Time"]);const isNow=e===curEv&&(m-st)<180&&(!nextEv||st<m);const isNext=e===nextEv;const past=st<m&&!isNow;const act=activityFor(e);const poc=(act&&act.Lead&&act.Lead!=="TBD")?act.Lead:"";const cnt=joinable(e)?whoIn(joinKey(e)).length:0;return `<div class="devt ${isNow?"now":""} ${past?"past":""}"><div class="tm">${esc(e["Start Time"]||"")}</div><div class="bd"><div class="ti">${tvEmoji(e)} ${esc(e.Title)}${isNow?'<span class="badge-now">NOW</span>':isNext?'<span class="badge-next">NEXT</span>':""}</div><div class="me">${esc(e.Location||"")}${poc?" · 👤 "+esc(first(poc)):""}${cnt?" · ✓ "+cnt+" going":""}</div>${(isNow||isNext)?`<div class="ds">${esc(tvDesc(e))}</div>`:""}</div></div>`;}).join(""):`<div class="me" style="padding:18px 0">No events today — enjoy a free day! 🌞</div>`;
+  let cdHtml;if(nextEv){const diff=toMins(nextEv["Start Time"])-m;const hh=Math.floor(diff/60),mm=diff%60;cdHtml=`<div class="dcard dcount"><h4>Up Next</h4><div class="lbl">${tvEmoji(nextEv)} ${esc(nextEv.Title)} · ${esc(nextEv["Start Time"]||"")}</div><div class="big">in ${hh?hh+"h ":""}${mm}m</div></div>`;}else cdHtml=`<div class="dcard dcount"><h4>Today</h4><div class="big" style="font-size:22px">That’s a wrap for today 🌙</div></div>`;
+  const resp=tvResp(tl);const respHtml=resp.length?resp.map(r=>`<div class="dresp-row"><span class="dresp-role">${esc(r[0])}</span><span class="dresp-ppl">${esc(r[1])}</span></div>`).join(""):`<div class="me">No assignments today.</div>`;
+  const meals=tvMealsToday(tl);const mealHtml=meals.length?meals.map(mm=>`<div class="dmeal">${mm["Image URL"]?`<img src="${esc(mm["Image URL"])}" onerror="this.style.display='none'">`:""}<div class="mm"><div class="mt">${esc(mm.Time||"")} · ${esc(mm.Meal||"")}</div><div class="mn">${esc(tvClean((mm.Menu||"").split(/\n/)[0]))}</div>${mealField(mm,["Chef","Cook"])?`<div class="mc">👨‍🍳 ${esc(mealField(mm,["Chef","Cook"]))}</div>`:""}</div></div>`).join(""):`<div class="me">Meals TBA.</div>`;
+  const tItems=DAYS[idx+1]?sched.filter(e=>e.Date===DAYS[idx+1].label&&e.Category!=="Logistics").sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"])):[];
+  const tomPick=tvPickTomorrow(tItems);const tomHtml=tomPick?`<div class="dcard dtom"><h4>Looking forward to tomorrow</h4><div class="tt">${tvEmoji(tomPick)} ${esc(tomPick.Title)}</div><div class="me">${esc(DAYS[idx+1].label)} · ${esc(tomPick["Start Time"]||"")}</div><div class="tz">${esc(tvExcite(tomPick))}</div></div>`:"";
+  const photos=(DATA["Photos"]||[]).filter(p=>p["Image URL"]);let photoHtml="";if(photos.length){const p=photos[(window._tvPhoto||0)%photos.length];photoHtml=`<div class="dcard" style="padding:0;overflow:hidden"><div class="dphoto"><img src="${esc(p["Image URL"])}" onerror="this.closest('.dcard').style.display='none'">${p.Title?`<div class="cap">${esc(p.Title)}</div>`:""}</div></div>`;window._tvPhoto=(window._tvPhoto||0)+1;}
+  let h=`<div class="tvwrap"><div id="tvfit"><div class="dash">`;
+  h+=`<div class="dash-head"><div><div class="dash-brand">Roman Family Reunion<small>Back in Heaven · Lake Lanier</small></div><div class="dash-date">${esc(friendly)}${idx>=0?` · Day ${idx+1}`:""}</div></div><div class="dash-right">${wxHtml}<div><div class="dash-clock" id="dashClock">${esc(clock)}</div>${sunHtml}</div><button class="dash-x" onclick="closeModal()" aria-label="Close">✕</button></div></div>`;
+  h+=`<div class="dayprog"><i style="width:${Math.round(prog*100)}%"></i></div>`;
+  h+=`<div class="dash-grid"><div class="dcard"><h4>Today’s Schedule</h4>${schedHtml}</div><div class="dcol">${cdHtml}<div class="dcard"><h4>🍽️ Today’s Meals</h4>${mealHtml}</div><div class="dcard"><h4>🧹 Today’s Responsibilities</h4>${respHtml}</div>${tomHtml}${photoHtml}</div></div>`;
+  h+=`</div></div></div>`;
+  openSheet(h,true);$("sheet").classList.add("tvfull");$("modal").classList.add("tvfull");setTimeout(tvFit,60);
+  if(!window._tvResize){window._tvResize=true;window.addEventListener("resize",function(){if(window._tvOpen)setTimeout(tvFit,80);});}
+  if(window._tvClockT)clearInterval(window._tvClockT);window._tvClockT=setInterval(tvClockTick,1000);
   if(window._tvTimer)clearInterval(window._tvTimer);
   window._tvTimer=setInterval(function(){if(window._tvOpen&&$("modal").classList.contains("open"))vTVSchedule();else{clearInterval(window._tvTimer);window._tvTimer=null;}},60000);
 }
 function vMore(){
   setTitle("Everything else","More");const i=info();
-  const links=[{ic:"🎉",t:"Activities",s:"Browse & sign up",fn:"vActivities()"},{ic:"✅",t:"My Stuff",s:"Your plans & duties",fn:"vMyStuff()"},{ic:"🍽️",t:"Meal Plan",s:"Menus & crews",fn:"vMeals()"},{ic:"🏓",t:"Pickleball",s:"Teams & bracket",fn:"vPickle()"},{ic:"🥾",t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()"},{ic:"🏡",t:"The Ark",s:"House, photos & maps",fn:"vPlaces()"},{ic:"📸",t:"Photos",s:"Share & view",fn:"vPhotos()"},{ic:"🎬",t:"Music Video",s:"Claim a part of “Unwritten”",fn:"vUnwritten()"},{ic:"📺",t:"TV Schedule",s:"Cast the full week to a TV",fn:"vTVSchedule()"},{ic:"🧳",t:"Packing List",s:"What to bring",fn:"vPacking()"},{ic:"❓",t:"FAQ",s:"Common questions",fn:"vFAQ()"},{ic:"🏠",t:"House Rules",s:"At The Ark",fn:"vRules()"},{ic:"⚙️",t:"Settings & Profile",s:"Your profile, demo mode",fn:"openProfile()"}];
+  const links=[{ic:"🎉",t:"Activities",s:"Browse & sign up",fn:"vActivities()"},{ic:"✅",t:"My Stuff",s:"Your plans & duties",fn:"vMyStuff()"},{ic:"🍽️",t:"Meal Plan",s:"Menus & crews",fn:"vMeals()"},{ic:"🏓",t:"Pickleball",s:"Teams & bracket",fn:"vPickle()"},{ic:"🥾",t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()"},{ic:"🏡",t:"The Ark",s:"House, photos & maps",fn:"vPlaces()"},{ic:"📸",t:"Photos",s:"Share & view",fn:"vPhotos()"},{ic:"🎬",t:"Music Video",s:"Claim a part of “Unwritten”",fn:"vUnwritten()"},{ic:"📺",t:"TV Dashboard",s:"Today at a glance — cast to a TV",fn:"vTVSchedule()"},{ic:"🧳",t:"Packing List",s:"What to bring",fn:"vPacking()"},{ic:"❓",t:"FAQ",s:"Common questions",fn:"vFAQ()"},{ic:"🏠",t:"House Rules",s:"At The Ark",fn:"vRules()"},{ic:"⚙️",t:"Settings & Profile",s:"Your profile, demo mode",fn:"openProfile()"}];
   V().innerHTML=`<div class="card"><div class="pad"><p class="evttl serif" style="font-size:19px;margin:0">${esc(i["Location Name"]||"The Ark on Lake Lanier")}</p><p class="muted">${esc(i.Theme||"")} · ${esc(attendeeCount())} attending · Jul 25 – Aug 1</p></div></div>`+links.map(l=>`<div class="mlink" onclick="${l.fn}"><div class="ic">${l.ic}</div><div><div>${l.t}</div><div class="muted">${l.s}</div></div><span class="chev">›</span></div>`).join("");
 }
 function vPickle(){const p=(DATA["Pickleball"]||[]).filter(t=>t["Team Name"]||t["Player 1"]);let h=p.length?p.map(t=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(t["Team Name"]||"Team")}</p><p class="muted">${esc(t["Player 1"]||"")}${t["Player 2"]?" & "+esc(t["Player 2"]):""}</p>${t.Result?`<p class="muted">🏆 ${esc(t.Result)}</p>`:''}</div></div>`).join(""):`<div class="empty"><span class="em">🏓</span>No teams yet.</div>`;openSheetFull(h,"Pickleball");}
@@ -858,7 +928,7 @@ function updateAvatar(){const a=$("avatarBtn");const ph=photoOf(meRec());if(ph){
 
 function openSheet(html,bare){$("sheet").classList.remove("tvfull");$("modal").classList.remove("tvfull");$("sheet").innerHTML=(bare?"":'<div class="sheettop"><button class="sheetx" onclick="closeModal()" aria-label="Close">\u2715</button></div>')+html;$("modal").classList.add("open");}
 function openSheetFull(html,title){openSheet(`<div class="grab"></div><h3 class="serif" style="margin:-4px 0 14px">${esc(title)}</h3>${html}`);}
-function closeModal(){$("modal").classList.remove("open");$("modal").classList.remove("tvfull");$("sheet").classList.remove("tvfull");window._reopenSheet=null;window._tvOpen=false;if(window._tvTimer){clearInterval(window._tvTimer);window._tvTimer=null;}}
+function closeModal(){$("modal").classList.remove("open");$("modal").classList.remove("tvfull");$("sheet").classList.remove("tvfull");window._reopenSheet=null;window._tvOpen=false;if(window._tvTimer){clearInterval(window._tvTimer);window._tvTimer=null;}if(window._tvClockT){clearInterval(window._tvClockT);window._tvClockT=null;}}
 $("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal();});
 function toast(msg){let t=document.createElement("div");t.textContent=msg;t.style.cssText="position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--sage-deep);color:#fff;padding:11px 19px;border-radius:30px;font-size:14px;font-weight:600;z-index:200;box-shadow:var(--shadow)";document.body.appendChild(t);setTimeout(()=>t.remove(),1600);}
 
