@@ -351,12 +351,12 @@
   .dash-date{font-size:16px;color:#a9c0b0;font-weight:600;margin-top:9px}
   .dash-right{display:flex;align-items:center;gap:18px}
   .dash-clock{font-size:40px;font-weight:800;line-height:1;color:#fff;font-variant-numeric:tabular-nums;text-align:right}
-  .dash-wx{text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:8px 15px;min-width:92px}
-  .dash-wx .ic{font-size:26px;line-height:1}
-  .dash-wx .tp{font-size:23px;font-weight:800;margin-top:1px}
-  .dash-wx .hl{font-size:11px;color:#a9c0b0;margin-top:2px}
+  .dash-wx{text-align:center;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);border-radius:18px;padding:11px 20px;min-width:132px}
+  .dash-wx .ic{font-size:40px;line-height:1}
+  .dash-wx .tp{font-size:34px;font-weight:800;margin-top:2px}
+  .dash-wx .hl{font-size:14px;color:#c3d4c8;margin-top:3px;font-weight:600}
   .dash-x{background:rgba(255,255,255,.12);border:none;color:#f3ede0;width:34px;height:34px;border-radius:50%;font-size:15px;font-weight:800;cursor:pointer;flex:0 0 auto}
-  .dsun{display:flex;justify-content:flex-end;gap:12px;font-size:12px;color:#c9d4c8;margin-top:5px}
+  .dsun{display:flex;justify-content:flex-end;gap:20px;font-size:16px;color:#e7d9b8;margin-top:8px;font-weight:700}
   .dayprog{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:2px 2px 13px}
   .dayprog>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--sage),#e0c07a);transition:width .6s}
   .dash-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
@@ -393,6 +393,21 @@
   .dphoto{border-radius:16px;overflow:hidden;height:128px;position:relative}
   .dphoto img{width:100%;height:100%;object-fit:cover;display:block}
   .dphoto .cap{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:12px;padding:16px 11px 7px}
+  .actday{border:1px solid var(--line);border-radius:12px;margin-top:8px;overflow:hidden}
+  .actday-hd{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 13px;cursor:pointer;font-weight:700;font-size:14px;background:var(--sage-soft);color:var(--ink)}
+  .actchev{transition:transform .2s;color:var(--muted);font-size:13px}
+  .actday.open .actchev{transform:rotate(90deg)}
+  .actday-bd{max-height:0;overflow:hidden;transition:max-height .35s;padding:0 13px}
+  .actday.open .actday-bd{max-height:900px;padding:11px 13px 13px}
+  .wtoggle{background:none;border:none;color:var(--sage-deep);font-weight:700;font-size:12.5px;cursor:pointer;padding:8px 0 2px;display:inline-flex;align-items:center;gap:5px}
+  .wchev{transition:transform .2s;font-size:11px}
+  .wtoggle.open .wchev{transform:rotate(90deg)}
+  .wbody{max-height:0;overflow:hidden;transition:max-height .3s}
+  .wbody.open{max-height:320px}
+  .mealday{font-size:20px;font-weight:800;color:var(--ink);background:var(--sage-soft);border-radius:12px;padding:9px 15px;margin:18px 0 10px;letter-spacing:-.01em}
+  .alertbox{background:#fff3e0;border:1.5px solid #f0c07a;border-radius:14px;padding:13px 15px;margin:2px 0 14px;color:#7a4a12;line-height:1.45}
+  .alertbox b{color:#8a3b12}
+  .alertbox .ah{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#b9741e;margin-bottom:5px}
 </style>
 </head>
 <body>
@@ -470,7 +485,12 @@ function avColor(n){return `hsl(${hue(n)},26%,52%)`;}
 function info(){return Object.fromEntries((DATA["Reunion Info"]||[]).map(r=>[r.Field,r.Value]));}
 function serialToLabel(n){const ms=Date.UTC(1899,11,30)+Math.round(n)*86400000;const d=new Date(ms);const M=d.getUTCMonth(),D=d.getUTCDate();const hit=DAYS.find(x=>x.date.getMonth()===M&&x.date.getDate()===D);return hit?hit.label:null;}
 function normDate(v){if(v==null)return v;const s=(''+v).trim();if(/^(Sat|Sun|Mon|Tue|Wed|Thu|Fri)\b/i.test(s))return s;if(/^\d{4,6}(\.0+)?$/.test(s)){const lbl=serialToLabel(parseFloat(s));if(lbl)return lbl;}let mo,da;let m=s.match(/^(\d{4})-(\d{2})-(\d{2})/);if(m){mo=+m[2];da=+m[3];}else{m=s.match(/^(\d{1,2})[\/-](\d{1,2})/);if(m){mo=+m[1];da=+m[2];}}if(mo){const hit=DAYS.find(x=>x.date.getMonth()+1===mo&&x.date.getDate()===da);if(hit)return hit.label;}return s;}
-function normalizeDates(){["Schedule","Meals"].forEach(t=>{(DATA[t]||[]).forEach(r=>{if(r.Date)r.Date=normDate(r.Date);});});}
+function mealTimeStr(t){t=((t||"")+"").trim();if(/\d/.test(t))return t;if(/morning/i.test(t))return "8:00 AM";if(/noon|midday/i.test(t))return "12:00 PM";if(/afternoon/i.test(t))return "3:00 PM";if(/night/i.test(t))return "8:00 PM";if(/evening/i.test(t))return "8:30 PM";return "8:30 PM";}
+function mealMins(t){return toMins(mealTimeStr(t));}
+function syncMeals(){const base=(DATA["Schedule"]||[]).filter(e=>!e._syn);const add=[];(DATA["Meals"]||[]).forEach(function(mm){const covered=base.some(function(e){if(e.Category!=="Meal"||e.Date!==mm.Date)return false;const mf=mealFor(e);return mf&&mf.Date===mm.Date&&(mf.Meal||"")===(mm.Meal||"");});const dup=base.some(e=>e.Date===mm.Date&&(e.Title||"").toLowerCase()===((mm.Meal||"").toLowerCase()));if(covered||dup)return;add.push({Date:mm.Date,Title:mm.Meal||"Meal",Category:"Meal","Start Time":mealTimeStr(mm.Time),Location:"Dining Area",Notes:"",_syn:true});});DATA["Schedule"]=base.concat(add);}
+function wToggle(btn){btn.classList.toggle("open");btn.nextElementSibling.classList.toggle("open");}
+function actToggle(el){el.parentNode.classList.toggle("open");}
+function normalizeDates(){["Schedule","Meals"].forEach(t=>{(DATA[t]||[]).forEach(r=>{if(r.Date)r.Date=normDate(r.Date);});});syncMeals();}
 function members(){return (DATA["Members"]||[]).filter(m=>m.Name);}
 function living(){return members().filter(m=>(m["Living Status"]||"Living").toLowerCase()!=="deceased");}
 function attendees(){return members().filter(m=>(m.Attending||"").toLowerCase()==="yes");}
@@ -572,7 +592,7 @@ function rsvpBlock(ev){const k=joinKey(ev),kk=esc(k).replace(/'/g,"\\'");let h="
     h+=`<button class="rbtn add" style="margin-top:8px" onclick="event.stopPropagation();addSomeone('${kk}')">＋ Add someone else</button>`;
     if(ppl.length)h+=`<div class="kidsignup"><span class="ksl">Your family</span>${ppl.map(kd=>kidChip(k,kk,kd)).join("")}</div>`;
   }
-  h+=whoList(k);return h;}
+  h+='<div class="whowrap"><button class="wtoggle" onclick="event.stopPropagation();wToggle(this)">See who\u2019s coming <span class="wchev">\u25b8</span></button><div class="wbody">'+whoList(k)+'</div></div>';return h;}
 function kLabel(k){const p=(k||"").split("__");return (p[1]||"")+(p[0]?" ("+p[0]+")":"");}
 function addLog(action){try{let a=LS.log();a.unshift({t:Date.now(),who:ME,act:action});a=a.slice(0,150);localStorage.setItem("rr_log",JSON.stringify(a));}catch(e){}}
 function vLog(){const log=LS.log();let h=`<p class="muted" style="margin:0 0 12px;font-size:13px">A record of RSVP and claim changes on this phone, newest first — handy for fixing mistakes.</p>`;h+= log.length? log.map(e=>`<div class="card"><div class="pad" style="padding:10px 12px"><div style="font-weight:600;font-size:14px">${esc(e.who||"?")}</div><div class="muted" style="font-size:12.5px">${esc(e.act||"")}</div><div class="muted" style="font-size:11px;margin-top:2px">${esc(new Date(e.t).toLocaleString())}</div></div></div>`).join("") : `<div class="empty">No changes recorded yet.</div>`;openSheetFull(h,"Recent changes");}
@@ -703,7 +723,7 @@ function vActivities(){
 function actCard(x){
   const sched=(DATA["Schedule"]||[]).filter(e=>{const n=(x.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return n&&(t.includes(n)||n.includes(t));});
   const days=[...new Set(sched.map(e=>e.Date))];const req=(x.Required||"").toLowerCase()==="yes";const desc=actDesc(x);
-  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(x.Lead)}</span>Point of Contact: ${esc(first(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actrsvp"><div class="ksl">${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</div>${rsvpBlock(e)}</div>`).join(""):''}</div></div>`;
+  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(x.Lead)}</span>Point of Contact: ${esc(first(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actday"><div class="actday-hd" onclick="actToggle(this)"><span>${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</span><span class="actchev">\u25b8</span></div><div class="actday-bd">${rsvpBlock(e)}</div></div>`).join(""):''}</div></div>`;
 }
 
 function vMyStuff(){
@@ -723,9 +743,10 @@ function vMyStuff(){
 }
 
 function vMeals(){
-  const m=DATA["Meals"]||[];const byDay={};m.forEach(x=>{(byDay[x.Date]=byDay[x.Date]||[]).push(x);});let h="";
-  for(const d of DAYS){if(!byDay[d.label])continue;h+=`<div class="sec"><h2>${esc(d.label)}</h2></div>`;
-    h+=byDay[d.label].map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}</div></div>`;}).join("");}
+  const m=DATA["Meals"]||[];const byDay={};m.forEach(x=>{(byDay[x.Date]=byDay[x.Date]||[]).push(x);});
+  let h=`<div class="alertbox"><div class="ah">\u26a0\ufe0f Important to know</div><b>Jonah has a nut allergy.</b> Please keep nuts out of shared dishes, and clearly label anything that contains nuts.</div>`;
+  for(const d of DAYS){if(!byDay[d.label])continue;h+=`<div class="mealday">${esc(d.label)}</div>`;
+    h+=byDay[d.label].slice().sort((a,b)=>mealMins(a.Time)-mealMins(b.Time)).map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}</div></div>`;}).join("");}
   openSheetFull(h||'<div class="empty">No meals yet.</div>',"Meal Plan");
 }
 
@@ -846,7 +867,7 @@ function tvDesc(ev){var notes=tvClean(ev.Notes||ev.Description||"");if(notes&&!/
 function tvExcite(ev){var n=tvSentences(ev.Notes||"",2);if(n)return n;return tvClean(ev.Title)+" is coming up"+(ev["Start Time"]?" at "+ev["Start Time"]:"")+" — you won’t want to miss it.";}
 function tvScore(ev){var t=((ev.Title||"")+" "+(ev.Notes||"")).toLowerCase();var s=({Bonfire:6,Photos:6,Boat:5,Activity:5,Kids:3,Meal:2,Logistics:0}[ev.Category]||3);if(/tournament|final|olympic|water\s*gun|dance|karaoke|bonfire|slumber|glow|music video|volleyball|relay|competition|party|feast|rave|hike/.test(t))s+=4;return s;}
 function tvPickTomorrow(items){if(!items.length)return null;return items.slice().sort(function(a,b){return tvScore(b)-tvScore(a)||toMins(a["Start Time"])-toMins(b["Start Time"]);})[0];}
-function tvResp(label){var meals=(DATA["Meals"]||[]).filter(function(m){return m.Date===label;});var rows=[];meals.forEach(function(m){var nm=m.Meal||"Meal";var ch=mealField(m,["Chef","Cook"]);var su=mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]);var cu=mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);if(ch)rows.push([nm+" Chef",ch]);if(su)rows.push([nm+" Setup",su]);if(cu)rows.push([nm+" Cleanup",cu]);});(DATA["Schedule"]||[]).filter(function(e){return e.Date===label&&e.Category==="Kids";}).forEach(function(e){var a=activityFor(e);var lead=(a&&a.Lead&&a.Lead!=="TBD")?a.Lead:"";if(lead)rows.push([tvClean(e.Title),lead]);});return rows;}
+function tvResp(label){var meals=(DATA["Meals"]||[]).filter(function(m){return m.Date===label;}).sort(function(a,b){return mealMins(a.Time)-mealMins(b.Time);});var rows=[];meals.forEach(function(m){var nm=m.Meal||"Meal";var ch=mealField(m,["Chef","Cook"]);var su=mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]);var cu=mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);if(ch)rows.push([nm+" Chef",ch]);if(su)rows.push([nm+" Setup",su]);if(cu)rows.push([nm+" Cleanup",cu]);});(DATA["Schedule"]||[]).filter(function(e){return e.Date===label&&e.Category==="Kids";}).forEach(function(e){var a=activityFor(e);var lead=(a&&a.Lead&&a.Lead!=="TBD")?a.Lead:"";if(lead)rows.push([tvClean(e.Title),lead]);});return rows;}
 function tvMealsToday(label){return (DATA["Meals"]||[]).filter(function(m){return m.Date===label;}).sort(function(a,b){return toMins(a.Time)-toMins(b.Time);});}
 function tvClockTick(){var el=document.getElementById("dashClock");if(!el){if(window._tvClockT){clearInterval(window._tvClockT);window._tvClockT=null;}return;}el.textContent=new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});}
 function vTVSchedule(){
@@ -859,7 +880,7 @@ function vTVSchedule(){
   const upIdx=items.findIndex(e=>toMins(e["Start Time"])>=m);const nextEv=upIdx>=0?items[upIdx]:null;
   let curEv=null;for(let i=items.length-1;i>=0;i--){if(toMins(items[i]["Start Time"])<=m){curEv=items[i];break;}}
   const wx=window._tvWx;let wxHtml,sunHtml="";
-  if(wx){const ic=wxIcon(wx.code);wxHtml=`<div class="dash-wx"><div class="ic">${ic[0]}</div><div class="tp">${wx.temp}°</div><div class="hl">H ${wx.hi}° · L ${wx.lo}°${wx.rain!=null?` · ☔ ${wx.rain}%`:""}</div></div>`;const sr=new Date(wx.sunrise),ss=new Date(wx.sunset);sunHtml=`<div class="dsun"><span>🌅 ${sr.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span><span>🌇 ${ss.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span></div>`;}
+  if(wx){const ic=wxIcon(wx.code);wxHtml=`<div class="dash-wx"><div class="ic">${ic[0]}</div><div class="tp">${wx.temp}°</div><div class="hl">H ${wx.hi}° · L ${wx.lo}°${wx.rain!=null?` · ☔ ${wx.rain}%`:""}</div></div>`;const sr=new Date(wx.sunrise),ss=new Date(wx.sunset);sunHtml=`<div class="dsun"><span>🌅 Sunrise ${sr.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span><span>🌇 Sunset ${ss.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span></div>`;}
   else wxHtml=`<div class="dash-wx"><div class="ic">⛅</div><div class="hl">Loading…</div></div>`;
   let prog;if(wx&&wx.sunrise){const sr=new Date(wx.sunrise),ss=new Date(wx.sunset);const srm=sr.getHours()*60+sr.getMinutes(),ssm=ss.getHours()*60+ss.getMinutes();prog=(m-srm)/((ssm-srm)||1);}else prog=(m-420)/960;prog=Math.max(0,Math.min(1,prog));
   let schedHtml=items.length?items.map(e=>{const st=toMins(e["Start Time"]);const isNow=e===curEv&&(m-st)<180&&(!nextEv||st<m);const isNext=e===nextEv;const past=st<m&&!isNow;const act=activityFor(e);const poc=(act&&act.Lead&&act.Lead!=="TBD")?act.Lead:"";const cnt=joinable(e)?whoIn(joinKey(e)).length:0;return `<div class="devt ${isNow?"now":""} ${past?"past":""}"><div class="tm">${esc(e["Start Time"]||"")}</div><div class="bd"><div class="ti">${tvEmoji(e)} ${esc(e.Title)}${isNow?'<span class="badge-now">NOW</span>':isNext?'<span class="badge-next">NEXT</span>':""}</div><div class="me">${esc(e.Location||"")}${poc?" · 👤 "+esc(first(poc)):""}${cnt?" · ✓ "+cnt+" going":""}</div>${(isNow||isNext)?`<div class="ds">${esc(tvDesc(e))}</div>`:""}</div></div>`;}).join(""):`<div class="me" style="padding:18px 0">No events today — enjoy a free day! 🌞</div>`;
