@@ -424,6 +424,7 @@
 .radial .rcenter .rcav{border:3px solid #fbf7ee;box-shadow:0 6px 20px rgba(60,45,20,.30)}
 .radial .rcenter{background:radial-gradient(circle at 50% 38%,rgba(251,247,238,.92),rgba(244,236,222,.75));border-radius:22px;padding:10px 12px;box-shadow:0 8px 26px rgba(50,40,20,.16)}
 .radial .rnn{color:#33402c;font-weight:700;text-shadow:none;background:rgba(249,244,232,.95);border:1px solid rgba(120,105,70,.18)}
+.rr-about{text-align:center;font-family:'Playfair Display','Georgia',serif;font-style:italic;font-size:15.5px;line-height:1.64;color:#3b4238;margin:6px auto 4px;max-width:330px}
 </style>
 </head>
 <body>
@@ -731,7 +732,7 @@ function openMember(name){
   const leads=(DATA["Activities"]||[]).filter(a=>(a.Lead||"").includes(first(name)));
   let h=`<div class="grab"></div><div style="text-align:center">${av}<h3 style="margin:12px 0 2px">${esc(name)}</h3><p class="muted">${esc(x["Family Branch"]||"")} branch · ${esc(x["Age Group"]||"")}</p>${attB?`<div style="margin-top:8px">${attB}</div>`:""}</div>`;
   if(me){h+=`<span class="label">Profile photo</span><div class="photoedit"><div class="pe-prev" id="pePrev" style="${photo?`background-image:url('${esc(photo)}')`:`background:${avColor(name)}`}">${photo?'':initials(name)}</div><div><button class="btn sm" type="button" onclick="document.getElementById('pePick').click()">📷 Upload photo</button>${photo?`<button class="btn ghost sm" type="button" style="margin-left:6px" onclick="clearPhoto()">Remove</button>`:''}<div class="muted" style="margin-top:7px;font-size:11.5px">Saved to your profile · syncs to your devices</div></div></div><input type="file" id="pePick" accept="image/*" style="display:none" onchange="handlePhoto(this,'${esc(name).replace(/'/g,"\\'")}')"><span class="label">Birthday</span><input class="field" type="date" id="bd" value="${esc(bdayISO(bday))}"><span class="label">About me</span><textarea class="field" id="ab" placeholder="Add a short note about yourself…">${esc(about)}</textarea><button class="btn full" onclick="saveProfile('${esc(name).replace(/'/g,"\\'")}')">Save my profile</button>`;}
-  else {if(about)h+=`<span class="label">About</span><p>${esc(about)}</p>`;if(bday)h+=`<span class="label">Birthday</span><p>🎂 ${esc(fmtBday(bday))}</p>`;}
+  else {if(about)h+=`<span class="label" style="display:block;text-align:center">About</span><p class="rr-about">${esc(about)}</p>`;if(bday)h+=`<span class="label">Birthday</span><p>🎂 ${esc(fmtBday(bday))}</p>`;}
   if(x.Phone||x.Email){h+=`<span class="label">Contact</span>`;if(x.Phone)h+=`<p><a class="link" href="tel:${esc(x.Phone)}">📞 ${esc(x.Phone)}</a></p>`;if(x.Email)h+=`<p><a class="link" href="mailto:${esc(x.Email)}">✉️ ${esc(x.Email)}</a></p>`;}
   if(rel.length){h+=`<span class="label">Family</span>`;rel.forEach(r=>h+=`<div class="muted">${r[0]}: ${esc(r[1])}</div>`);}
   if(meals.length||leads.length){h+=`<span class="label">Helping with</span>`;meals.forEach(m=>h+=`<div class="muted">🍽️ ${esc(m.Meal)} (${esc(m.Date)})</div>`);leads.forEach(a=>h+=`<div class="muted">⭐ Point of contact: ${esc(a.Name)}</div>`);}
