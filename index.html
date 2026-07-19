@@ -943,7 +943,7 @@ function vTVSchedule(){
 }
 function vMore(){
   setTitle("Everything else","More");const i=info();
-  const links=[{ic:"💬",t:"Family Board",s:"Announcements & messages",fn:"go('notifications')"},{ic:"⚙️",t:"Settings & Profile",s:"Your profile & sign out",fn:"openProfile()"},{ic:"🏠",t:"House Rules",s:"At The Ark",fn:"vRules()"},{ic:"❓",t:"FAQ",s:"Common questions",fn:"vFAQ()"},{ic:"🧳",t:"Packing List",s:"What to bring",fn:"vPacking()"},{ic:"🏡",t:"The Ark",s:"House, photos & maps",fn:"vPlaces()"},{ic:"📸",t:"Photos",s:"Share & view",fn:"vPhotos()"},{ic:"🎉",t:"Activities",s:"Browse & sign up",fn:"vActivities()"},{ic:"✅",t:"My Stuff",s:"Your plans & duties",fn:"vMyStuff()"},{ic:"🍽️",t:"Meal Plan",s:"Menus & crews",fn:"vMeals()"},{ic:"🏓",t:"Pickleball",s:"Teams & bracket",fn:"vPickle()"},{ic:"🥾",t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()"},{ic:"🎬",t:"Music Video",s:"Claim a part of “Unwritten”",fn:"vUnwritten()"},{ic:"🌮",t:"Taco Truck Menu",s:"Friday food-truck menu",fn:"vTacoMenu()"},{ic:"🍤",t:"Hibachi Preorders",s:"Your family’s Monday order",fn:"vHibachi()"},{ic:"📺",t:"TV Dashboard",s:"Today at a glance — cast to a TV",fn:"vTVSchedule()"}];
+  const links=[{ic:"💬",t:"Messages & Announcements",s:"Announcements & messages",fn:"go('notifications')"},{ic:"⚙️",t:"Settings & Profile",s:"Your profile & sign out",fn:"openProfile()"},{ic:"🏠",t:"House Rules",s:"At The Ark",fn:"vRules()"},{ic:"❓",t:"FAQ",s:"Common questions",fn:"vFAQ()"},{ic:"🧳",t:"Packing List",s:"What to bring",fn:"vPacking()"},{ic:"🏡",t:"The Ark",s:"House, photos & maps",fn:"vPlaces()"},{ic:"📸",t:"Photos",s:"Share & view",fn:"vPhotos()"},{ic:"🎉",t:"Activities",s:"Browse & sign up",fn:"vActivities()"},{ic:"✅",t:"My Stuff",s:"Your plans & duties",fn:"vMyStuff()"},{ic:"🍽️",t:"Meal Plan",s:"Menus & crews",fn:"vMeals()"},{ic:"🏓",t:"Pickleball",s:"Teams & bracket",fn:"vPickle()"},{ic:"🥾",t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()"},{ic:"🎬",t:"Music Video",s:"Claim a part of “Unwritten”",fn:"vUnwritten()"},{ic:"🌮",t:"Taco Truck Menu",s:"Friday food-truck menu",fn:"vTacoMenu()"},{ic:"🍤",t:"Hibachi Preorders",s:"Your family’s Monday order",fn:"vHibachi()"},{ic:"📺",t:"TV Dashboard",s:"Today at a glance — cast to a TV",fn:"vTVSchedule()"}];
   V().innerHTML=`<div class="card"><div class="pad"><p class="evttl serif" style="font-size:19px;margin:0">${esc(i["Location Name"]||"The Ark on Lake Lanier")}</p><p class="muted">${esc(i.Theme||"")} · ${esc(attendeeCount())} attending · Jul 25 – Aug 1</p></div></div>`+links.map(l=>`<div class="mlink" onclick="${l.fn}"><div class="ic">${l.ic}</div><div><div>${l.t}</div><div class="muted">${l.s}</div></div><span class="chev">›</span></div>`).join("");
 }
 function vPickle(){const p=(DATA["Pickleball"]||[]).filter(t=>t["Team Name"]||t["Player 1"]);let h=p.length?p.map(t=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(t["Team Name"]||"Team")}</p><p class="muted">${esc(t["Player 1"]||"")}${t["Player 2"]?" & "+esc(t["Player 2"]):""}</p>${t.Result?`<p class="muted">🏆 ${esc(t.Result)}</p>`:''}</div></div>`).join(""):`<div class="empty"><span class="em">🏓</span>No teams yet.</div>`;openSheetFull(h,"Pickleball");}
@@ -1287,7 +1287,7 @@ async function vBoard(){
   V().innerHTML='<div class="empty" style="padding:26px">Loading…</div>';
   var res=await Promise.all([rpc("rr_ann_list",{p_token:TOKEN}),rpc("rr_messages_list",{p_token:TOKEN})]);
   var ann=res[0]||{},msgs=res[1]||{};
-  if(ann.ok===false&&ann.error){ V().innerHTML='<div class="empty" style="padding:26px">Please sign in to see the family board.</div>'; return; }
+  if(ann.ok===false&&ann.error){ V().innerHTML='<div class="empty" style="padding:26px">Please sign in to see messages.</div>'; return; }
   var h='<div style="display:flex;gap:8px;margin:2px 0 8px"><button class="btn full" style="flex:1;min-width:0" onclick="composeAnn()">📣 Announce</button><button class="btn ghost full" style="flex:1;min-width:0" onclick="composeMsg()">💬 Ask / post</button></div>';
   h+='<button class="btn ghost full sm" style="margin:0 0 6px" onclick="vNotifications()">🔔 Event reminders &amp; today</button>';
   h+='<div class="sec"><h2>Announcements</h2></div>';
@@ -1305,7 +1305,7 @@ async function vBoard(){
     if(a.mine||ann.editor)h+='<button class="rr-link" style="text-align:left;padding:6px 0 0;width:auto" onclick=\'delAnn('+JSON.stringify(a.id)+')\'>Dismiss</button>';
     h+='</div></div>';
   });
-  h+='<div class="sec"><h2>Family Board</h2></div>';
+  h+='<div class="sec"><h2>Messages</h2></div>';
   var M=msgs.messages||[];
   if(!M.length)h+='<div class="empty" style="padding:18px">No messages yet — say hi 👋</div>';
   M.forEach(function(m){
@@ -1313,7 +1313,7 @@ async function vBoard(){
   });
   V().innerHTML=h;
 }
-function composeMsg(){openSheet('<div class="grab"></div><h3 class="serif">Post to the family board</h3><p class="muted" style="margin:0 0 8px">Ask a question or share something — everyone can see it.</p><textarea class="field" id="cmsg" rows="4" placeholder="Type your message…"></textarea><button class="rr-primary" style="margin-top:10px" onclick="sendMsg()">Post</button><button class="rr-link" onclick="closeModal()">Cancel</button>');setTimeout(function(){var i=$("cmsg");if(i)i.focus();},60);}
+function composeMsg(){openSheet('<div class="grab"></div><h3 class="serif">Post a message</h3><p class="muted" style="margin:0 0 8px">Ask a question or share something — everyone can see it.</p><textarea class="field" id="cmsg" rows="4" placeholder="Type your message…"></textarea><button class="rr-primary" style="margin-top:10px" onclick="sendMsg()">Post</button><button class="rr-link" onclick="closeModal()">Cancel</button>');setTimeout(function(){var i=$("cmsg");if(i)i.focus();},60);}
 async function sendMsg(){var b=($("cmsg").value||"").trim();if(!b){toast("Write a message first");return;}var r=await rpc("rr_message_post",{p_token:TOKEN,p_body:b});if(r&&r.ok){closeModal();toast("Posted 👍");vBoard();}else toast((r&&r.error)||"Couldn’t post");}
 function composeAnn(){openSheet('<div class="grab"></div><h3 class="serif">Post an announcement</h3><p class="muted" style="margin:0 0 8px">Everyone will see it, and they can tap “I saw this.”</p><input class="field" id="cantitle" placeholder="Title (optional)"><textarea class="field" id="canbody" rows="4" placeholder="What should everyone know?"></textarea><button class="rr-primary" style="margin-top:10px" onclick="sendAnn()">Post announcement</button><button class="rr-link" onclick="closeModal()">Cancel</button>');setTimeout(function(){var i=$("cantitle");if(i)i.focus();},60);}
 async function sendAnn(){var t=($("cantitle").value||"").trim();var b=($("canbody").value||"").trim();if(!b){toast("Write the announcement");return;}var r=await rpc("rr_ann_post",{p_token:TOKEN,p_title:t,p_body:b});if(r&&r.ok){closeModal();toast("Announcement posted 📣");vBoard();}else toast((r&&r.error)||"Couldn’t post");}
