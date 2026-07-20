@@ -510,6 +510,7 @@ const $=id=>document.getElementById(id), V=()=>$("view");
 const esc=s=>(s==null?"":(""+s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const first=n=>(n||"").split(/[ &,]/)[0].trim();
 function initials(n){const p=(n||"?").trim().split(/\s+/);return ((p[0]||"")[0]||"?").toUpperCase()+((p[1]||"")[0]||"").toUpperCase();}
+function pocLabel(v){return String(v||"").split(/\s*(?:&|,| and )\s*/).map(function(x){return first(x);}).filter(Boolean).join(" & ");}
 function hue(n){let h=0;for(const c of(n||""))h=(h*31+c.charCodeAt(0))%360;return h;}
 function avColor(n){return `hsl(${hue(n)},26%,52%)`;}
 function info(){return Object.fromEntries((DATA["Reunion Info"]||[]).map(r=>[r.Field,r.Value]));}
@@ -591,7 +592,7 @@ function evCard(ev,isNext){
   const act=activityFor(ev), meal=ev.Category==="Meal"?mealFor(ev):null;
   const poc=(act&&act.Lead&&act.Lead!=="TBD")?act.Lead:"";
   const k=joinKey(ev);let foot="";
-  if(poc) foot+=`<div class="poc"><span class="pocav">${initials(poc)}</span>Point of Contact: ${esc(first(poc))}</div>`;
+  if(poc) foot+=`<div class="poc"><span class="pocav">${initials(first(poc))}</span>Point of Contact: ${esc(pocLabel(poc))}</div>`;
   if(meal){const setup=mealField(meal,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(meal,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;if(crews)foot+=`<div class="crewrow">${crews}</div>`;let dd=meal.Menu?`<b>Menu:</b> ${esc(meal.Menu)}`:"";if(dd)foot+=`<div class="evnote">${dd}</div>`;}
   if(/food truck|taco/i.test(ev.Title||""))foot+=`<button class="btn sm full" style="margin-top:8px" onclick="event.stopPropagation();vTacoMenu()">🌮 See Taco Truck Menu</button>`;
   if(/hibachi/i.test(ev.Title||""))foot+=`<button class="btn sm full" style="margin-top:8px" onclick="event.stopPropagation();vHibachi()">🍤 See my order</button>`;
@@ -765,7 +766,7 @@ function vActivities(){
 function actCard(x){
   const sched=(DATA["Schedule"]||[]).filter(e=>{const n=(x.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return n&&(t.includes(n)||n.includes(t));});
   const days=[...new Set(sched.map(e=>e.Date))];const req=(x.Required||"").toLowerCase()==="yes";const desc=actDesc(x);
-  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(x.Lead)}</span>Point of Contact: ${esc(first(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actday"><div class="actday-hd" onclick="actToggle(this)"><span>${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</span><span class="actchev">\u25b8</span></div><div class="actday-bd">${rsvpBlock(e)}</div></div>`).join(""):''}</div></div>`;
+  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(first(x.Lead))}</span>Point of Contact: ${esc(pocLabel(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actday"><div class="actday-hd" onclick="actToggle(this)"><span>${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</span><span class="actchev">\u25b8</span></div><div class="actday-bd">${rsvpBlock(e)}</div></div>`).join(""):''}</div></div>`;
 }
 
 function vMyStuff(){
@@ -1131,6 +1132,8 @@ function rrArmAutoRefresh(){
   var busy=false,last=0;
   async function refr(){
     if(!TOKEN||busy||document.hidden)return;
+    var _md=document.getElementById("modal");if(_md&&_md.classList.contains("open"))return;
+    var _ae=document.activeElement;if(_ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(_ae.tagName||""))return;
     var now=Date.now();if(now-last<7000)return;last=now;busy=true;
     try{await loadSupabase();try{go(CUR);}catch(e){}}catch(e){}
     busy=false;
@@ -1274,7 +1277,7 @@ function showConflict(conf,onForce,onReplace,onRetry){
   openSheet(h);
 }
 /* kids swap (Taylor + editors) */
-function rrFilterRows(inp,listId){var q=((inp&&inp.value)||"").toLowerCase();var c=document.getElementById(listId);if(!c)return;c.querySelectorAll(".rr-row").forEach(function(r){r.style.display=(r.textContent||"").toLowerCase().indexOf(q)>=0?"":"none";});}
+function rrFilterRows(inp,listId){var q=((inp&&inp.value)||"").toLowerCase();var c=document.getElementById(listId);if(!c)return;c.querySelectorAll(".rr-row").forEach(function(r){r.style.display=(r.textContent||"").toLowerCase().indexOf(q)>=0?"":"none";});var sh=document.getElementById("sheet");if(sh)sh.scrollTop=0;}
 function openKidsSwap(){
   window._reopenSheet=openKidsSwap;
   var kids=(DATA["Schedule"]||[]).filter(function(e){return e._sid&&e._kids;}).slice().sort(rrSortSched);
