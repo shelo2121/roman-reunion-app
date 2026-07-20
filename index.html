@@ -819,7 +819,8 @@ function vPlaces(){
 function vPhotos(){
   const p=DATA["Photos"]||[];
   let h=`<div class="card"><div class="pad" style="text-align:center"><div style="font-size:36px">📸</div><p class="evttl serif" style="font-size:19px;margin:6px 0 2px">Family Photo Album</p><p class="muted">Everyone shares to one Google Photos album. Tap to add your photos or browse everyone else\u2019s.</p><a class="btn full" style="margin-top:12px" href="${esc(SYNOLOGY_ALBUM_URL)}" target="_blank">＋ Add / View all photos</a><p class="muted" style="margin-top:8px;font-size:11.5px">Opens the shared Google Photos album</p></div></div>`;
-  if(p.length){h+=`<div class="sec"><h2>Highlights</h2></div><div class="photos">`+p.map(x=>x["Image URL"]?`<div class="photo"><img loading="lazy" src="${esc(x["Image URL"])}"><div class="cap">${esc(x.Title)}</div></div>`:`<div class="photo placeholder"><div class="cap">${esc(x.Title)}<br><span class="muted" style="font-weight:400">${esc(x.Notes||"")}</span></div></div>`).join("")+`</div>`;}
+  const pimg=p.filter(x=>x["Image URL"]);
+  if(pimg.length){h+=`<div class="sec"><h2>Highlights</h2></div><div class="photos">`+pimg.map(x=>`<div class="photo"><img loading="lazy" src="${esc(x["Image URL"])}"><div class="cap">${esc(x.Title)}</div></div>`).join("")+`</div>`;}
   openSheetFull(h,"Photos");
 }
 
