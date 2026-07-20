@@ -598,6 +598,7 @@ function evCard(ev,isNext){
   if(joinable(ev))foot+=rsvpBlock(ev);
   if(ev.Notes && !meal) foot+=`<div class="evnote">${esc(ev.Notes)}</div>`;
   if(offSite(ev)){const q=encodeURIComponent((ev.Location||'')+' '+(info().Address||''));foot+=`<a class="maplink" href="https://maps.google.com/?q=${q}" target="_blank">📍 Open in Maps</a>`;}
+  if(typeof ROLE!=='undefined'&&ROLE==='editor'&&ev._sid){foot+=`<div class="mgrrow"><span class="mgrlbl">Manager:</span><button class="rr-mini" onclick='event.stopPropagation();mMove(${JSON.stringify(ev._sid)})'>Move</button><button class="rr-mini" onclick='event.stopPropagation();openSwapAny(${JSON.stringify(ev._sid)})'>Swap</button><button class="rr-mini danger" onclick='event.stopPropagation();mRemove(${JSON.stringify(ev._sid)},${JSON.stringify(ev.Title)})'>Remove</button></div>`;}
   return `<div class="ev"><div class="evtop" onclick="(function(el){var ff=el.parentNode.querySelector('.evfoot');ff.style.display=ff.style.display==='flex'?'none':'flex';})(this)"><div class="evthumb">${im?`<img src="${esc(im)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="ph">${catEmoji(ev.Category)}</div>`}</div><div class="evbody"><div class="evtime">${esc(tparts[0]||"")} ${esc(tparts[1]||"")}${isNext?'<span class="nowtag">UP NEXT</span>':''}</div><div class="evttl">${esc(ev.Title)}</div><div class="evmeta"><span class="pill ${catClass(ev.Category)}">${esc(ev.Category||"Event")}</span> &nbsp;${esc(ev.Location||"")}</div></div></div><div class="evfoot" style="display:${isNext?'flex':'none'}">${foot||'<div class="muted">Tap for details.</div>'}</div></div>`;
 }
 
@@ -758,6 +759,7 @@ function vActivities(){
   const a=DATA["Activities"]||[];const cats=["All",...Array.from(new Set(a.map(x=>x.Category||"Other")))];const cur=window._actCat||"All";
   let h=`<div class="chiprow">`+cats.map(c=>`<span class="filterchip ${c===cur?'active':''}" onclick="window._actCat='${c}';vActivities()">${esc(c)}</span>`).join("")+`</div>`;
   h+=a.filter(x=>cur==="All"||(x.Category||"Other")===cur).map(actCard).join("");
+  if(ROLE==='editor'&&window._CATALOG){var _un=(window._CATALOG.activities||[]).filter(function(z){return !z.scheduled;});h+=`<div class="sec" style="margin-top:16px"><h2 style="font-size:14px">Not on the schedule yet (${_un.length})</h2></div>`;h+= _un.length? _un.map(function(z){return `<div class="card"><div class="pad" style="display:flex;align-items:center;gap:10px"><div style="flex:1"><p class="evttl" style="font-size:15px;margin:0">${esc(z.name)}${z.is_kids?' <span class="pill kids">Kids</span>':''}</p><p class="muted" style="margin:2px 0 0;font-size:12.5px">${esc(z.category||'')}</p></div><button class="rr-mini" onclick='mAdd("activity",${JSON.stringify(z.id)},${JSON.stringify(z.name)})'>+ Add</button></div></div>`;}).join('') : `<p class="muted" style="padding:2px 4px">Everything is on the schedule.</p>`;}
   openSheetFull(h,"Activities");
 }
 function actCard(x){
@@ -786,7 +788,7 @@ function vMeals(){
   const m=DATA["Meals"]||[];const byDay={};m.forEach(x=>{(byDay[x.Date]=byDay[x.Date]||[]).push(x);});
   let h=`<div class="alertbox"><div class="ah">\u26a0\ufe0f Important to know</div><b>Jonah has a nut allergy.</b> Please keep nuts out of shared dishes, and clearly label anything that contains nuts.</div>`;
   for(const d of DAYS){if(!byDay[d.label])continue;h+=`<div class="mealday">${esc(d.label)}</div>`;
-    h+=byDay[d.label].slice().sort((a,b)=>mealMins(a.Time)-mealMins(b.Time)).map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}${(ROLE==='editor'&&x._id)?`<button class="btn ghost sm" style="margin-top:10px" onclick="openCrewEdit('${x._id}')">✎ Edit crews</button>`:''}</div></div>`;}).join("");}
+    h+=byDay[d.label].slice().sort((a,b)=>mealMins(a.Time)-mealMins(b.Time)).map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}${(ROLE==='editor'&&x._id)?`<button class="btn ghost sm" style="margin-top:10px" onclick="openCrewEdit('${x._id}')">✎ Edit crews</button>`:''}${(ROLE==='editor'&&x._id&&x._scheduled===false)?`<button class="rr-mini" style="margin-top:10px;margin-left:6px" onclick="mAddMeal('${x._id}')">+ Add to a day</button>`:''}</div></div>`;}).join("");}
   openSheetFull(h||'<div class="empty">No meals yet.</div>',"Meal Plan");
 }
 
@@ -1038,6 +1040,8 @@ function rrStyle(){
   ".rr-row .t span{font-size:12px;color:#7a857d}",
   ".rr-mini{border:1px solid #cfe0d8;background:#eef6f1;color:#2c6250;border-radius:9px;padding:6px 9px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}",
   ".rr-mini.danger{border-color:#e6cccc;background:#fbeeee;color:#a24a4a}",
+  ".mgrrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:9px;border-top:1px dashed rgba(120,120,110,.25)}",
+  ".mgrlbl{font-size:11px;font-weight:800;letter-spacing:.03em;color:#8a8a7e;text-transform:uppercase}",
   ".rr-sec{font-family:Georgia,serif;color:#33564a;margin:16px 0 2px;font-size:16px}",
   ".rr-badge{display:inline-block;background:#eaf3ee;color:#2c6250;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700;margin-left:6px;vertical-align:middle}",
   ".rr-topbtn{background:rgba(255,255,255,.16);color:#f4ecdb;border:1px solid rgba(255,255,255,.26);border-radius:18px;padding:7px 12px;font-size:12.5px;font-weight:700;margin-right:9px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent}"
@@ -1103,7 +1107,7 @@ function applySchedule(sched){
   DATA["Meals"]=Object.keys(mm).map(function(k){return mm[k];});
 }
 function applyMeals(list){
-  DATA["Meals"]=(list||[]).map(function(m){return {Date:m.meal_date,Meal:m.meal_type,Time:m.time||"",Menu:m.menu||"","Set Up":m.setup_crew||"",Cleanup:m.cleanup||"","Dietary Notes":m.dietary_notes||"","Image URL":m.image||"",Notes:m.notes||"",_id:m.id};});
+  DATA["Meals"]=(list||[]).map(function(m){return {Date:m.meal_date,Meal:m.meal_type,Time:m.time||"",Menu:m.menu||"","Set Up":m.setup_crew||"",Cleanup:m.cleanup||"","Dietary Notes":m.dietary_notes||"","Image URL":m.image||"",Notes:m.notes||"",_id:m.id,_scheduled:!!m.scheduled};});
 }
 function applyMembers(list){
   (list||[]).forEach(function(row){
@@ -1118,6 +1122,7 @@ function applyMembers(list){
     });
   });
 }
+function mAddMeal(id){var m=(DATA["Meals"]||[]).find(function(x){return x._id===id;});if(m)mAdd("meal",id,m.Meal||"Meal");}
 function rrArmAutoRefresh(){
   if(window._rrARM)return;window._rrARM=1;
   var busy=false,last=0;
