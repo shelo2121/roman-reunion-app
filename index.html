@@ -16,7 +16,7 @@
   :root{
     --sage:#7e9a82; --sage-deep:#5c7460; --sage-soft:#e7ede6;
     --sand:#efe7d7; --cream:#f8f5ef; --paper:#ebe1cd;
-    --ink:#2f342c; --muted:#8a8c81; --line:#e7dfce;
+    --ink:#2f342c; --muted:#5c6151; --line:#e7dfce;
     --gold:#c7a96b; --gold-soft:#f3e9d2; --branch:#c3a983; --lake:#7fa7a3; --lake-soft:#dde9e7;
     --kids:#9a86b0; --kids-soft:#ece4f3; --boat:#6d96a3; --boat-soft:#dceaed;
     --card:#e3d5bb; --bg:#33443a; --bg2:#27352d; --on-bg:#f2ead9; --muted-bg:#b3bda8; --radius:20px;
@@ -632,7 +632,8 @@ function rsvpBlock(ev){const k=joinKey(ev),kk=esc(k).replace(/'/g,"\\'");let h="
   h+='<div class="whowrap"><button class="wtoggle" onclick="event.stopPropagation();wToggle(this)">See who\u2019s coming <span class="wchev">\u25b8</span></button><div class="wbody">'+whoList(k)+'</div></div>';return h;}
 function kLabel(k){const p=(k||"").split("__");return (p[1]||"")+(p[0]?" ("+p[0]+")":"");}
 function addLog(action){try{let a=LS.log();a.unshift({t:Date.now(),who:ME,act:action});a=a.slice(0,150);localStorage.setItem("rr_log",JSON.stringify(a));}catch(e){}}
-function vLog(){const log=LS.log();let h=`<p class="muted" style="margin:0 0 12px;font-size:13px">A record of RSVP and claim changes on this phone, newest first - handy for fixing mistakes.</p>`;h+= log.length? log.map(e=>`<div class="card"><div class="pad" style="padding:10px 12px"><div style="font-weight:600;font-size:14px">${esc(e.who||"?")}</div><div class="muted" style="font-size:12.5px">${esc(e.act||"")}</div><div class="muted" style="font-size:11px;margin-top:2px">${esc(new Date(e.t).toLocaleString())}</div></div></div>`).join("") : `<div class="empty">No changes recorded yet.</div>`;openSheetFull(h,"Recent changes");}
+function vLog(){var log=LS.log();var h=`<p class="muted" style="margin:0 0 12px;font-size:13px">A record of RSVP and claim changes on this phone, newest first.</p>`;if(log.length)h+=`<button class="btn ghost full sm" style="margin:0 0 12px" onclick="clearLog()">🗑️ Clear all</button>`;h+= log.length? log.map(function(e){return `<div class="card"><div class="pad" style="padding:10px 12px"><div style="font-weight:600;font-size:14px;color:#33332b">${esc(e.who||"?")}</div><div style="font-size:12.5px;color:#4a4f40">${esc(e.act||"")}</div><div style="font-size:11px;margin-top:2px;color:#7a7f6f">${esc(new Date(e.t).toLocaleString())}</div></div></div>`;}).join("") : `<div class="empty">No changes recorded yet.</div>`;openSheetFull(h,"Recent changes");}
+function clearLog(){try{localStorage.setItem("rr_log","[]");}catch(e){}toast("Recent changes cleared");vLog();}
 function eventDT(ev){const d=DAYS.find(x=>x.label===ev.Date);if(!d||!ev["Start Time"])return null;const dt=new Date(d.date);const mins=toMins(ev["Start Time"]);dt.setHours(Math.floor(mins/60),mins%60,0,0);return dt;}
 function remindersOn(){return localStorage.getItem("rr_reminders")==="on"&&("Notification"in window)&&Notification.permission==="granted";}
 function enableReminders(){if(!("Notification"in window)){toast("Reminders aren’t supported on this device");return;}Notification.requestPermission().then(function(p){if(p==="granted"){localStorage.setItem("rr_reminders","on");toast("Reminders on 🔔");notifyCheck();if(CUR==="notifications")vNotifications();}else{toast("Reminders not enabled");}});}
@@ -813,22 +814,46 @@ function actCard(x){
   return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${actExtra(x)?`<div class="alertbox" style="margin:8px 0 0;background:#eef6ee;border-color:#bcd9bc;color:#2f5233"><div class="ah" style="color:#3c7a3c">Good to know</div>${actExtra(x)}</div>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(first(x.Lead))}</span>Point of Contact: ${esc(pocLabel(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actday"><div class="actday-hd" onclick="actToggle(this)"><span>${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</span><span class="actchev">\u25b8</span></div><div class="actday-bd">${rsvpBlock(e)}</div></div>`).join(""):''}</div></div>`;
 }
 
+function actMatch(a,e){var n=(a.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return !!(n&&t&&(t.indexOf(n)>=0||n.indexOf(t)>=0));}
 function vMyStuff(){
-  const x=meRec();const att=(x.Attending||"").toLowerCase();const attB=att==="yes"?"Attending ✓":att==="no"?"Not this year":att==="maybe"?"Maybe":"Tap to set";
-  window._reopenSheet=vMyStuff;const fnames=[ME,...myKids().map(k=>k.Name)];
-  let h=`<div class="prow" onclick=\'openMember(${JSON.stringify(ME)})\' style="padding:14px">${avHTML(x,"av")}<div><div class="nm">${esc(ME)}</div><div class="meta">${esc(x["Family Branch"]||"")} branch</div></div><span class="badge ${att==="no"?"no":att==="maybe"?"maybe":""}" style="margin-left:auto">${attB}</span></div>`;
-  const myEvents=(DATA["Schedule"]||[]).filter(e=>{const set=joinedSet(joinKey(e));return fnames.some(n=>set[n]==="in");}).sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"]));
-  h+=`<div class="sec"><h2>Activities I’m In</h2></div>`;h+= myEvents.length? myEvents.map(e=>evCard(e)).join("") : `<div class="empty" style="padding:20px">Nothing yet - RSVP from the Schedule. 🛶</div>`;
-  const meals=(DATA["Meals"]||[]).filter(m=>(mealField(m,["Chef","Cook"])+" "+mealField(m,["Set Up Crew","Set Up","Setup"])+" "+mealField(m,["Clean Up Crew","Clean Up","Cleanup"])).includes(first(ME)));
-  if(meals.length){h+=`<div class="sec"><h2>My Kitchen Duties</h2></div>`+meals.map(m=>`<div class="card"><div class="pad"><span class="muted">${esc(m.Date)} · ${esc(m.Meal)}</span><p class="evttl" style="font-size:15px;margin:6px 0 0">${esc(m.Menu)}</p></div></div>`).join("");}
-  const leads=(DATA["Activities"]||[]).filter(a=>(a.Lead||"").includes(first(ME)));
-  if(leads.length){h+=`<div class="sec"><h2>I’m Point of Contact for</h2></div>`+leads.map(a=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(a.Name)}</p><p class="muted">${esc(a.Location)}</p></div></div>`).join("");}
-  const bring=(DATA["Bringing From Home"]||[]).filter(b=>hasMe(b.Person));
-  if(bring.length){h+=`<div class="sec"><h2>I’m Bringing From Home</h2></div>`+bring.map(b=>`<div class="card"><div class="pad muted" style="color:#56564c">📦 ${esc(b.Item)}</div></div>`).join("");}
-  h+=`<div style="height:8px"></div><button class="btn ghost full" onclick="openProfile()">Switch person / Settings</button>`;
+  window._reopenSheet=vMyStuff;
+  var x=meRec();var att=(x.Attending||"").toLowerCase();var attB=att==="yes"?"Attending":att==="no"?"Not this year":att==="maybe"?"Maybe":"Tap to set";
+  var fnames=[ME].concat(myKids().map(function(k){return k.Name;}));
+  var view=window._msView||'help';
+  var h=`<div class="prow" onclick='openMember(${JSON.stringify(ME)})' style="padding:12px"><div><div class="nm">${esc(ME)}</div><div style="font-size:12.5px;color:#5c6151">Tap to view your profile</div></div><span class="badge ${att==="no"?"no":att==="maybe"?"maybe":""}" style="margin-left:auto">${attB}</span></div>`;
+  h+=`<div style="display:flex;gap:6px;background:#eee7d8;border-radius:30px;padding:4px;margin:10px 0 4px"><button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:${view==='help'?'#33564a':'transparent'};color:${view==='help'?'#fff':'#4a4f40'}" onclick="window._msView='help';vMyStuff()">What I'm helping with</button><button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:${view==='rsvp'?'#33564a':'transparent'};color:${view==='rsvp'?'#fff':'#4a4f40'}" onclick="window._msView='rsvp';vMyStuff()">What I RSVP'd to</button></div>`;
+  function row(icon,label,time){return `<div style="display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line)"><span style="font-size:15px">${icon}</span><span style="flex:1;font-weight:600;color:#33332b;font-size:14px">${esc(label)}</span><span style="color:#5c6151;font-size:12.5px;white-space:nowrap;font-weight:600">${esc(time||"")}</span></div>`;}
+  var any=false;
+  DAYS.forEach(function(d){
+    var rows=[];
+    if(view==='help'){
+      (DATA["Meals"]||[]).filter(function(m){return m.Date===d.label;}).sort(function(a,b){return mealMins(a.Time)-mealMins(b.Time);}).forEach(function(m){
+        var roles=[];var f=first(ME);
+        if(mealField(m,["Chef","Cook"]).indexOf(f)>=0)roles.push("Chef");
+        if(mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]).indexOf(f)>=0)roles.push("Set Up");
+        if(mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]).indexOf(f)>=0)roles.push("Clean Up");
+        if(roles.length)rows.push({t:mealMins(m.Time),h:row("🍽️",m.Meal+" · "+roles.join(" & "),m.Time)});
+      });
+      (DATA["Activities"]||[]).filter(function(a){return (a.Lead||"").indexOf(first(ME))>=0;}).forEach(function(a){
+        (DATA["Schedule"]||[]).filter(function(e){return e.Date===d.label&&actMatch(a,e);}).forEach(function(e){
+          rows.push({t:toMins(e["Start Time"]),h:row("⭐",a.Name+" · Point of contact",e["Start Time"])});
+        });
+      });
+    } else {
+      (DATA["Schedule"]||[]).filter(function(e){return e.Date===d.label;}).forEach(function(e){
+        var set=joinedSet(joinKey(e));var who=fnames.filter(function(n){return set[n]==="in";});
+        if(who.length){var lbl=e.Title;if(!(who.length===1&&who[0]===ME))lbl+=" ("+who.map(first).join(", ")+")";rows.push({t:toMins(e["Start Time"]),h:row("✓",lbl,e["Start Time"])});}
+      });
+    }
+    if(rows.length){any=true;rows.sort(function(a,b){return a.t-b.t;});h+=`<div class="mealday" style="margin:14px 0 6px">${esc(d.label)}</div><div class="card"><div class="pad" style="padding:0">`+rows.map(function(r){return r.h;}).join("")+`</div></div>`;}
+  });
+  if(view==='help'){
+    var bring=(DATA["Bringing From Home"]||[]).filter(function(b){return hasMe(b.Person);});
+    if(bring.length){any=true;h+=`<div class="mealday" style="margin:14px 0 6px">To bring from home</div><div class="card"><div class="pad" style="padding:0">`+bring.map(function(b){return row("📦",b.Item,"");}).join("")+`</div></div>`;}
+  }
+  if(!any)h+=`<div class="empty" style="padding:26px">${view==='help'?"You are not assigned to help with anything yet.":"You have not RSVP'd to anything yet. Open the Schedule to join activities."}</div>`;
   openSheetFull(h,"My Stuff");
 }
-
 function jonahAlertHTML(){return `<div class="alertbox" style="padding:0;overflow:hidden"><button type="button" onclick="rrToggleAllergy(this)" style="width:100%;background:none;border:none;text-align:left;padding:13px 15px;cursor:pointer;font:inherit;color:inherit"><div class="ah" style="margin:0">⚠️ Important Food Allergy Alert</div><div style="text-transform:uppercase;font-weight:800;font-size:12.5px;letter-spacing:.3px;margin-top:4px;line-height:1.4">Jonah has a nut and seed allergy that requires extra care</div><div class="rr-allergy-more" style="color:#b9741e;font-size:12.5px;font-weight:700;margin-top:8px">View food safety details ▼</div></button><div class="rr-allergy-body" style="display:none;padding:0 15px 14px;line-height:1.55"><p style="margin:0 0 9px">Please carefully check all ingredients before preparing or serving food. Jonah will have a separate designated food section, and the exact location will be announced at the house.</p><p style="margin:0 0 9px">Please do not place other food, serving utensils, plates, or personal items in this section. Do not mix Jonah's food with the general food supply.</p><p style="margin:0">Anyone preparing Jonah's food should thoroughly clean their hands, surfaces, cookware, and utensils beforehand to help prevent cross-contact.</p></div></div>`;}
 function rrToggleAllergy(btn){var w=btn.parentNode.querySelector('.rr-allergy-body');var m=btn.querySelector('.rr-allergy-more');if(!w)return;var open=w.style.display!=='none';w.style.display=open?'none':'block';if(m)m.innerHTML=open?'View food safety details ▼':'Hide details ▲';}
 function vMeals(){
@@ -846,10 +871,21 @@ function vPlaces(){
   const gal=[[IMG.dock,"Lake & Dock"],[IMG.pool,"Pool & Hot Tub"],[IMG.firepit,"Fire Pit"],[IMG.pickleball,"Pickleball"],[IMG.theater,"Movie Theater"],[IMG.house,"The Grounds"]];
   h+=`<div class="sec"><h2>Around The Ark</h2></div><div class="photos">`+gal.map(g=>`<div class="photo"><img loading="lazy" src="${esc(g[0])}"><div class="cap">${g[1]}</div></div>`).join("")+`</div>`;
   const l=(DATA["Locations"]||[]).filter(x=>x.Address&&!/old dawsonville/i.test(x.Address));
-  if(l.length){h+=`<div class="sec"><h2>Nearby</h2></div>`+l.map(x=>`<div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(x.Address)}','_blank')"><div class="ic">📍</div><div><div>${esc(x.Name)}</div><div class="muted">${esc(x.Address)}</div></div><span class="chev">›</span></div>`).join("");}
+
   openSheetFull(h,"The Ark");
 }
 
+function vDirections(){
+  var i=info();
+  var hosp="Northeast Georgia Medical Center Gainesville";
+  var hospAddr="743 Spring Street NE, Gainesville, GA 30501";
+  var h=`<p class="muted" style="margin:0 0 12px">Addresses and one-tap directions to the places you may need.</p>`;
+  h+=`<div class="sec"><h2>The Ark (Reunion)</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(i.Address||i["Location Name"]||"")}','_blank')"><div class="ic">🏡</div><div><div>${esc(i["Location Name"]||"The Ark on Lake Lanier")}</div><div class="muted">${esc(i.Address||"")}</div></div><span class="chev">›</span></div>`;
+  h+=`<div class="sec"><h2>Nearest Hospital</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(hosp+", "+hospAddr)}','_blank')"><div class="ic">🏥</div><div><div>${hosp}</div><div class="muted">${hospAddr} · 770-219-9000</div></div><span class="chev">›</span></div>`;
+  var l=(DATA["Locations"]||[]).filter(function(x){return x.Address&&!/old dawsonville/i.test(x.Address);});
+  if(l.length){h+=`<div class="sec"><h2>Nearby Places</h2></div>`+l.map(function(x){return `<div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(x.Address)}','_blank')"><div class="ic">📍</div><div><div>${esc(x.Name)}</div><div class="muted">${esc(x.Address)}</div></div><span class="chev">›</span></div>`;}).join("");}
+  openSheetFull(h,"Need Directions?");
+}
 function vPhotos(){
   const p=DATA["Photos"]||[];
   let h=`<div class="card"><div class="pad" style="text-align:center"><div style="font-size:36px">📸</div><p class="evttl serif" style="font-size:19px;margin:6px 0 2px">Family Photo Album</p><p class="muted">Everyone shares to one Google Photos album. Tap to add your photos or browse everyone else\u2019s.</p><a class="btn full" style="margin-top:12px" href="${esc(SYNOLOGY_ALBUM_URL)}" target="_blank">＋ Add / View all photos</a><p class="muted" style="margin-top:8px;font-size:11.5px">Opens the shared Google Photos album</p></div></div>`;
@@ -1006,6 +1042,7 @@ function vMore(){
     {t:"My Stuff",s:"Plans & duties",fn:"vMyStuff()",ic:'<path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
     {t:"Photos",s:"Share & view",fn:"vPhotos()",ic:'<rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="8.5" cy="10.5" r="1.8"/><path d="M21 17l-5-5-7 7"/>'},
     {t:"The Ark",s:"House & maps",fn:"vPlaces()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"Need Directions?",s:"Places & hospital",fn:"vDirections()",ic:'<path d="M12 21s-7-6.5-7-11a7 7 0 0114 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/>'},
     {t:"Activities",s:"Browse & sign up",fn:"vActivities()",ic:'<path d="M12 2l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
     {t:"Pickleball",s:"Teams & bracket",fn:"vPickle()",ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>'},
     {t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()",ic:'<path d="M5 16l2-5h10l2 5M6 16h12M8 16v2M16 16v2"/>'},
@@ -1127,15 +1164,22 @@ async function vMyRoom(){
   openSheetFull(h,"My Room");
 }
 function openProfile(){
-  const x=meRec();
-  let h=`<div class="grab"></div><h3 class="serif">Your Profile</h3><p class="muted" style="margin:0 0 12px">You\u2019re signed in as ${esc(first(ME))}. Update your details or sign out below.</p>
-    <div class="prow" onclick='openMember(${JSON.stringify(ME)})'>${avHTML(x,'av')}<div><div class="nm">${esc(ME)}</div><div class="meta">View & edit my profile</div></div><span class="chev">›</span></div>
-    <button class="btn ghost full" style="margin-top:6px" onclick="openSwitch()">🔄 Not ${esc(first(ME))}? Switch person</button>
-    <button class="btn ghost full" style="margin-top:6px" onclick="vLog()">📝 Recent changes</button>
-    <span class="label">Demo mode</span>
-    <div class="setrow"><div><div class="sl">Always show “Today”</div><div class="ss">Preview the app as if the reunion is happening now</div></div><label class="toggle"><input type="checkbox" id="demoTog" ${LS.demo()?"checked":""} onchange="LS.setDemo(this.checked);refreshDay()"><span class="tr"></span></label></div>
-    <div class="setrow" id="demoDayRow" style="${LS.demo()?'':'display:none'}"><div><div class="sl">Demo day</div><div class="ss">Which reunion day to show</div></div><select class="field" style="width:auto;margin:0" id="demoDaySel" onchange="LS.setDemoDay(this.value);refreshDay()">${DAYS.map(d=>`<option ${d.label===LS.demoDay()?"selected":""}>${d.label}</option>`).join("")}</select></div>
-    <button class="btn ghost full" style="margin-top:14px" onclick="closeModal()">Done</button>`;
+  var x=meRec();var ov=LS.prof()[ME]||{};
+  var photo=ov.photo||x["Photo URL"];var about=ov.about||x["About Me"]||x.About||"";
+  var av=photo?`<div style="width:78px;height:78px;border-radius:50%;background:url('${esc(photo)}') center/cover;border:3px solid #fff;box-shadow:var(--shadow-sm);margin:0 auto"></div>`:`<div style="width:78px;height:78px;border-radius:50%;background:${avColor(ME)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto">${initials(ME)}</div>`;
+  var att=(x.Attending||"").toLowerCase();var attB=att==="yes"?'<span class="badge">Attending ✓</span>':att==="no"?'<span class="badge no">Not this year</span>':att==="maybe"?'<span class="badge maybe">Maybe</span>':'';
+  var meals=(DATA["Meals"]||[]).filter(function(m){return (mealField(m,["Chef","Cook"])+" "+mealField(m,["Set Up Crew","Set Up","Setup"])+" "+mealField(m,["Clean Up Crew","Clean Up","Cleanup"])).indexOf(first(ME))>=0;});
+  var leads=(DATA["Activities"]||[]).filter(function(a){return (a.Lead||"").indexOf(first(ME))>=0;});
+  var h=`<div class="grab"></div><div style="text-align:center">${av}<h3 class="serif" style="margin:10px 0 2px">${esc(ME)}</h3>${attB?`<div style="margin-top:4px">${attB}</div>`:''}</div>`;
+  if(about)h+=`<span class="label" style="display:block;text-align:center;margin-top:12px">About</span><p class="rr-about" style="color:#3a3a30">${esc(about)}</p>`;
+  if(meals.length||leads.length){h+=`<span class="label">Helping with</span>`;meals.forEach(function(m){h+=`<div style="color:#3a3a30;font-size:13.5px;padding:3px 0">🍽️ ${esc(m.Meal)} <span style="color:#5c6151">(${esc(m.Date)})</span></div>`;});leads.forEach(function(a){h+=`<div style="color:#3a3a30;font-size:13.5px;padding:3px 0">⭐ Point of contact: ${esc(a.Name)}</div>`;});}
+  h+=`<button class="btn full" style="margin-top:14px" onclick="rrEditProfile('${esc(ME).replace(/'/g,"\\'")}')">✎ Edit my profile</button>`;
+  h+=`<button class="btn ghost full" style="margin-top:8px" onclick="openSwitch()">🔄 Not ${esc(first(ME))}? Switch person</button>`;
+  h+=`<button class="btn ghost full" style="margin-top:8px" onclick="vLog()">📝 Recent changes</button>`;
+  h+=`<span class="label">Demo mode</span>`;
+  h+=`<div class="setrow"><div><div class="sl">Always show "Today"</div><div class="ss">Preview the app as if the reunion is happening now</div></div><label class="toggle"><input type="checkbox" id="demoTog" ${LS.demo()?"checked":""} onchange="LS.setDemo(this.checked);refreshDay()"><span class="tr"></span></label></div>`;
+  h+=`<div class="setrow" id="demoDayRow" style="${LS.demo()?'':'display:none'}"><div><div class="sl">Demo day</div><div class="ss">Which reunion day to show</div></div><select class="field" style="width:auto;margin:0" id="demoDaySel" onchange="LS.setDemoDay(this.value);refreshDay()">${DAYS.map(function(d){return `<option ${d.label===LS.demoDay()?"selected":""}>${d.label}</option>`;}).join("")}</select></div>`;
+  h+=`<button class="btn ghost full" style="margin-top:14px" onclick="closeModal()">Done</button>`;
   openSheet(h);
 }
 function openSwitch(){openSheet(`<div class="grab"></div><h3 class="serif">Who are you?</h3><p class="muted" style="margin:0 0 4px">Pick your name (family members attending).</p><input class="field" id="nameSearch" placeholder="Search your name…" oninput="renderNames(this.value)"><div class="name-grid" id="nameGrid"></div>`);renderNames("");}
