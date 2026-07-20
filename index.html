@@ -786,7 +786,7 @@ function vMeals(){
   const m=DATA["Meals"]||[];const byDay={};m.forEach(x=>{(byDay[x.Date]=byDay[x.Date]||[]).push(x);});
   let h=`<div class="alertbox"><div class="ah">\u26a0\ufe0f Important to know</div><b>Jonah has a nut allergy.</b> Please keep nuts out of shared dishes, and clearly label anything that contains nuts.</div>`;
   for(const d of DAYS){if(!byDay[d.label])continue;h+=`<div class="mealday">${esc(d.label)}</div>`;
-    h+=byDay[d.label].slice().sort((a,b)=>mealMins(a.Time)-mealMins(b.Time)).map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}</div></div>`;}).join("");}
+    h+=byDay[d.label].slice().sort((a,b)=>mealMins(a.Time)-mealMins(b.Time)).map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}${(ROLE==='editor'&&x._id)?`<button class="btn ghost sm" style="margin-top:10px" onclick="openCrewEdit('${x._id}')">✎ Edit crews</button>`:''}</div></div>`;}).join("");}
   openSheetFull(h||'<div class="empty">No meals yet.</div>',"Meal Plan");
 }
 
@@ -1372,6 +1372,31 @@ function rrLoadMe(){
   if(m.about)patch.about=m.about;
   if(m.birthday)patch.bday=m.birthday;
   if(Object.keys(patch).length){try{LS.setProf(ME,patch);}catch(e){}}
+}
+
+
+/* ===== round-7: edit meal crews (editors) ===== */
+function crewNone(id){var e=$(id);if(e)e.value="";}
+function openCrewEdit(mid){
+  var m=(DATA["Meals"]||[]).find(function(x){return x._id===mid;});
+  if(!m){toast("Open the Meal Plan and try again");return;}
+  window._crewMid=mid;
+  var h='<div class="grab"></div><h3 class="serif">Meal Crews</h3>'
+    +'<p class="muted" style="margin:0 0 10px">'+esc(m.Meal||"Meal")+(m.Date?" · "+esc(m.Date):"")+'. Leave a field blank if this meal doesn’t need a crew.</p>'
+    +'<span class="label">Set Up Crew</span><input class="field" id="crewSetup" placeholder="Names — or leave blank for none" value="'+esc(m["Set Up"]||"")+'">'
+    +'<button class="rr-link" style="text-align:left;padding:2px 0 8px;width:auto" onclick="crewNone(&#39;crewSetup&#39;)">✕ No set up crew needed</button>'
+    +'<span class="label">Clean Up Crew</span><input class="field" id="crewClean" placeholder="Names — or leave blank for none" value="'+esc(m.Cleanup||"")+'">'
+    +'<button class="rr-link" style="text-align:left;padding:2px 0 10px;width:auto" onclick="crewNone(&#39;crewClean&#39;)">✕ No clean up crew needed</button>'
+    +'<button class="rr-primary" onclick="saveCrew()">Save crews</button>'
+    +'<button class="rr-link" onclick="vMeals()">Cancel</button>';
+  openSheet(h);
+}
+async function saveCrew(){
+  var mid=window._crewMid;
+  var setup=($("crewSetup").value||"").trim(), clean=($("crewClean").value||"").trim();
+  var r=await rpc("rr_meal_crew",{p_token:TOKEN,p_meal_id:mid,p_setup:setup,p_cleanup:clean});
+  if(r&&r.ok){toast("Crews updated ✓");await loadSupabase();vMeals();}
+  else toast((r&&r.error)||"Couldn’t save");
 }
 
 </script>
