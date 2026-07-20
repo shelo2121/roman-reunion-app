@@ -1078,6 +1078,8 @@ async function loadSupabase(){
     var c=await rpc("rr_get_catalog",{p_token:TOKEN});
     if(c&&c.ok) window._CATALOG=c;
   }
+  try{var ml=await rpc("rr_get_meals");if(Array.isArray(ml))applyMeals(ml);}catch(e){}
+  try{if(TOKEN){var mb=await rpc("rr_get_members",{p_token:TOKEN});if(mb&&mb.ok)applyMembers(mb.members);}}catch(e){}
   try{normalizeDates();}catch(e){}
 }
 function applySchedule(sched){
@@ -1098,6 +1100,22 @@ function applySchedule(sched){
   });
   DATA["Activities"]=Object.keys(am).map(function(k){return am[k];});
   DATA["Meals"]=Object.keys(mm).map(function(k){return mm[k];});
+}
+function applyMeals(list){
+  DATA["Meals"]=(list||[]).map(function(m){return {Date:m.meal_date,Meal:m.meal_type,Time:m.time||"",Menu:m.menu||"","Set Up":m.setup_crew||"",Cleanup:m.cleanup||"","Dietary Notes":m.dietary_notes||"","Image URL":m.image||"",Notes:m.notes||"",_id:m.id};});
+}
+function applyMembers(list){
+  (list||[]).forEach(function(row){
+    var md=row.member||{};
+    [DATA["Members"]||[],window._baseMembers||[]].forEach(function(arr){
+      var m=arr.find(function(x){return (x.Name||"")===row.name;});
+      if(!m){if(arr===DATA["Members"]){m={Name:row.name};arr.push(m);}else{return;}}
+      if(md.photo)m["Photo URL"]=md.photo;
+      if(md.about!==undefined&&md.about!=="")m["About Me"]=md.about;
+      if(md.birthday)m["Birthday"]=md.birthday;
+      if(row.family_branch&&!m["Family Branch"])m["Family Branch"]=row.family_branch;
+    });
+  });
 }
 
 /* ---------- login UI ---------- */
@@ -1243,7 +1261,7 @@ function openKidsSwap(){
   openSheet(h);
 }
 function openSwapPicker(sid){
-  var cat=window._CATALOG;var opts=cat?(cat.activities||[]).filter(function(a){return a.is_kids;}):[];
+  var cat=window._CATALOG;var opts=cat?(cat.activities||[]).filter(function(a){return a.is_kids&&!a.scheduled;}):[];
   var e=(DATA["Schedule"]||[]).find(function(x){return x._sid===sid;})||{};
   var h='<div class="grab"></div><h3 class="serif">Swap “'+esc(e.Title||"")+'”</h3><p class="muted" style="margin:0 0 6px">Choose the kids activity for this slot ('+esc(e.Date||"")+' '+esc(e["Start Time"]||"")+').</p>';
   if(!opts.length)h+='<p class="muted">No kids activities available.</p>';
@@ -1328,8 +1346,8 @@ function openSwapAny(sid){
   var cat=window._CATALOG; if(!cat){toast("Catalog still loading — try again");return;}
   var type=(e._type==='meal')?'meal':'activity';
   var opts;
-  if(type==='meal') opts=(cat.meals||[]).map(function(m){return {id:m.id,label:m.meal_type+(m.meal_date?' \u00b7 '+m.meal_date:''),scheduled:m.scheduled};});
-  else opts=(cat.activities||[]).map(function(a){return {id:a.id,label:a.name+(a.is_kids?' (kids)':''),scheduled:a.scheduled};});
+  if(type==='meal') opts=(cat.meals||[]).filter(function(m){return !m.scheduled;}).map(function(m){return {id:m.id,label:m.meal_type+(m.meal_date?' \u00b7 '+m.meal_date:''),scheduled:m.scheduled};});
+  else opts=(cat.activities||[]).filter(function(a){return !a.scheduled;}).map(function(a){return {id:a.id,label:a.name+(a.is_kids?' (kids)':''),scheduled:a.scheduled};});
   var h='<div class="grab"></div><h3 class="serif">Swap \u201c'+esc(e.Title||"")+'\u201d</h3><p class="muted" style="margin:0 0 6px">Pick what goes in this slot ('+esc(e.Date||"")+' '+esc(e["Start Time"]||"")+'). The day and time stay the same.</p>';
   if(!opts.length)h+='<p class="muted">Nothing available to swap in.</p>';
   opts.forEach(function(o){h+='<div class="rr-row"><div class="t"><b>'+esc(o.label)+'</b><span>'+(o.scheduled?"on the schedule":"unscheduled")+'</span></div><button class="rr-mini" onclick=\'doSwapAny('+JSON.stringify(sid)+','+JSON.stringify(type)+','+JSON.stringify(o.id)+')\'>Use this</button></div>';});
