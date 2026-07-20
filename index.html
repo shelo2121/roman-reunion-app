@@ -60,7 +60,7 @@
   .sec h2{font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--on-bg);font-weight:700;margin:0;font-family:'Inter',sans-serif}
   .sec a{font-size:13px;color:#a9c6ac;font-weight:600;text-decoration:none;cursor:pointer}
 
-  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--line);overflow:hidden;margin:12px 0}
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-sm);border:1px solid var(--line);overflow:hidden;margin:12px 0;content-visibility:auto;contain-intrinsic-size:auto 320px}
   .pad{padding:15px 16px}
   img.cover{width:100%;height:160px;object-fit:cover;display:block;background:var(--sage-soft)}
   .pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:30px;background:var(--sage-soft);color:var(--sage-deep);letter-spacing:.3px;vertical-align:middle}
@@ -69,7 +69,7 @@
   .pill.req{background:#f6dada;color:#a85656}.pill.lake{background:var(--lake-soft);color:#4f7a76}
   .muted{color:var(--muted);font-size:13px}
 
-  .ev{background:var(--card);border:1px solid var(--line);border-radius:18px;margin:11px 0;box-shadow:var(--shadow-sm);overflow:hidden}
+  .ev{background:var(--card);border:1px solid var(--line);border-radius:18px;margin:11px 0;box-shadow:var(--shadow-sm);overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 120px}
   .ev .evtop{display:flex;cursor:pointer}
   .ev .evthumb{width:104px;flex:none;background:var(--sage-soft);position:relative;overflow:hidden}
   .ev .evthumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
@@ -1135,12 +1135,11 @@ function rrArmAutoRefresh(){
     if(!TOKEN||busy||document.hidden)return;
     var _md=document.getElementById("modal");if(_md&&_md.classList.contains("open"))return;
     var _ae=document.activeElement;if(_ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(_ae.tagName||""))return;
-    var now=Date.now();if(now-last<7000)return;last=now;busy=true;
+    var now=Date.now();if(now-last<15000)return;last=now;busy=true;
     try{await loadSupabase();try{go(CUR);}catch(e){}}catch(e){}
     busy=false;
   }
   document.addEventListener("visibilitychange",function(){if(!document.hidden)refr();});
-  window.addEventListener("focus",refr);
   window._rrRefr=refr;
 }
 
