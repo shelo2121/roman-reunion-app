@@ -98,13 +98,13 @@
   .day-btn.active{background:var(--sage);border-color:var(--sage);color:#fff;box-shadow:var(--shadow-sm)}
   .day-btn.active span{color:rgba(255,255,255,.85)}
 
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 13px;box-shadow:var(--shadow-sm);cursor:pointer;display:flex;flex-direction:column;gap:7px;transition:transform .12s,box-shadow .12s;min-height:80px;justify-content:space-between}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 11px;box-shadow:var(--shadow-sm);cursor:pointer;display:flex;flex-direction:column;gap:5px;transition:transform .12s,box-shadow .12s;min-height:60px;justify-content:space-between}
   .tile:active{transform:scale(.97)}
-  .tile .ic{width:34px;height:34px;border-radius:11px;background:var(--sage-soft);display:flex;align-items:center;justify-content:center}
-  .tile .ic svg{width:19px;height:19px;stroke:var(--sage-deep);fill:none;stroke-width:1.8}
-  .tile .lab{font-weight:600;font-size:14px;font-family:'Fraunces',serif}
-  .tile .sub{font-size:11.5px;color:var(--muted);margin-top:-5px}
+  .tile .ic{width:29px;height:29px;border-radius:9px;background:var(--sage-soft);display:flex;align-items:center;justify-content:center}
+  .tile .ic svg{width:16px;height:16px;stroke:var(--sage-deep);fill:none;stroke-width:1.8}
+  .tile .lab{font-weight:600;font-size:13px;font-family:'Fraunces',serif}
+  .tile .sub{font-size:10.5px;color:var(--muted);margin-top:-3px}
 
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 16px;border-radius:14px;background:var(--sage);color:#fff;box-shadow:var(--shadow-sm);transition:transform .1s,background .15s;font-family:'Inter',sans-serif}
   .btn:active{transform:scale(.97)}
@@ -1016,14 +1016,17 @@ function vRules(){const r=DATA["House Rules"]||[];let h=`<div class="card" style
 
 function vBring(){
   const HD="font-weight:800;font-size:14.5px;color:#33332b;margin:18px 3px 8px;letter-spacing:.2px";
-  let h=`<p class="muted" style="margin:0 0 12px">A quick guide to what to pack and wear for the week. General reminders plus a few activity notes.</p>`;
-  h+=`<div style="${HD}">General Reminders</div><div class="card"><div class="pad muted" style="color:#56564c">Sunscreen, a reusable water bottle, comfortable walking shoes, a light layer for cooler evenings, any personal medications, and toiletries. Label your own items where you can.</div></div>`;
-  h+=`<div style="${HD}">🏊 For the Pool</div><div class="card"><div class="pad"><b style="font-weight:700">Water shoes are strongly recommended.</b><div class="muted" style="color:#56564c;margin-top:3px">The bottom of the pool is rough, so water shoes help protect everyone's feet. Also bring a swimsuit, towel, and sunscreen.</div></div></div>`;
-  h+=`<div style="${HD}">🥾 For the Hike</div><div class="card"><div class="pad muted" style="color:#56564c">Long pants, high socks or hiking socks, bug repellent, comfortable closed-toe shoes, and a water bottle. Check yourself and your children for ticks after the hike.</div></div>`;
-  h+=`<div style="${HD}">📸 For the Family Photo</div><div class="card"><div class="pad"><div style="display:flex;gap:8px;align-items:baseline"><span style="color:var(--sage)">●</span><b style="font-weight:700">Jeans</b></div><div style="display:flex;gap:8px;align-items:baseline;margin-top:7px"><span style="color:var(--sage)">●</span><div><b style="font-weight:700">Shirt</b><div class="muted" style="color:#56564c">Red, white, or blue</div></div></div></div></div>`;
-  h+=`<div style="${HD}">🕺 For Michael Jackson Night</div><div class="card"><div class="pad muted" style="color:#56564c">Wear or bring something Michael Jackson-inspired. A full Michael Jackson outfit or a signature sparkly glove would be perfect, or any MJ-themed clothing or accessory. Sparkles, hats, and Michael Jackson-style accessories are all encouraged.</div></div>`;
-  h+=`<div style="${HD}">🕵️ For the Mystery Game</div><div class="card"><div class="pad muted" style="color:#56564c">Bring a black outfit. More details on the game to come.</div></div>`;
-  const pk=(DATA["Packing List"]||[]).filter(x=>!/bring\s*cash/i.test((x.Item||"")+" "+(x.Notes||"")));
+  const card=(inner)=>`<div class="card"><div class="pad muted" style="color:#56564c">${inner}</div></div>`;
+  let h=`<p class="muted" style="margin:0 0 12px">A quick guide to what to pack and wear. Each item is listed once, grouped by when you will use it.</p>`;
+  h+=`<div style="${HD}">The Essentials</div>`+card(`A reusable water bottle or labeled cup, comfortable walking shoes, a light layer for cooler evenings, personal medications and toiletries, sunscreen, sunglasses, and a hat. Bring your streaming logins if you want to use the house TVs.`);
+  h+=`<div style="${HD}">🏊 For the Pool & Lake</div><div class="card"><div class="pad"><b style="font-weight:700">Water shoes are strongly recommended.</b><div class="muted" style="color:#56564c;margin-top:3px">The bottom of the pool is rough, so water shoes protect everyone's feet. Also bring a swimsuit (an extra is handy) and a beach towel.</div></div></div>`;
+  h+=`<div style="${HD}">🥾 For the Hike</div>`+card(`Long pants, high socks or hiking socks, bug repellent, and comfortable closed-toe shoes. Bring your water bottle, and check yourself and your children for ticks after the hike.`);
+  h+=`<div style="${HD}">📸 For the Family Photo</div>`+card(`Jeans or a blue denim bottom, plus a solid red, white, or blue top. It is our Independence Day theme.`);
+  h+=`<div style="${HD}">🕺 For Michael Jackson Night</div>`+card(`Wear or bring something Michael Jackson-inspired. A full Michael Jackson outfit or a signature sparkly glove would be perfect, or any MJ-themed clothing or accessory. Sparkles and hats are encouraged.`);
+  h+=`<div style="${HD}">🕵️ For the Mystery Game</div>`+card(`Bring a black outfit. More details on the game to come.`);
+  h+=`<div style="${HD}">🎬 For Movie Night</div>`+card(`A wholesome, funny family movie for our outdoor movie night.`);
+  const covered=new Set(["essentials","water","sun","hike","photos","movie night","house"]);
+  const pk=(DATA["Packing List"]||[]).filter(function(x){var c=(x.Category||"").toLowerCase();var blob=((x.Item||"")+" "+(x.Notes||"")).toLowerCase();if(/water gun|bring\s*cash/.test(blob))return false;return !covered.has(c);});
   if(pk.length){const byCat={};pk.forEach(x=>{(byCat[x.Category||"More to Pack"]=byCat[x.Category||"More to Pack"]||[]).push(x);});Object.keys(byCat).forEach(c=>{h+=`<div style="${HD}">${esc(c)}</div>`+byCat[c].map(x=>`<div class="card"><div class="pad" style="display:flex;gap:8px;align-items:baseline"><span style="color:var(--sage)">●</span><div><b style="font-weight:700">${esc(x.Item)}</b>${x.Notes?`<div class="muted">${esc(x.Notes)}</div>`:''}</div></div></div>`).join("");});}
   openSheetFull(h,"What to Bring");
 }
