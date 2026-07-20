@@ -463,7 +463,7 @@ let TOKEN=localStorage.getItem("rr_token")||"";
 let ROLE=localStorage.getItem("rr_role")||"viewer";
 async function rpc(fn,args){try{const r=await fetch(SUPA_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:SUPA_KEY,Authorization:"Bearer "+SUPA_KEY,"Content-Type":"application/json"},body:JSON.stringify(args||{})});if(!r.ok)return null;const t=await r.text();return t?JSON.parse(t):null;}catch(e){return null;}}
 const HIBACHI_BREAKDOWN={"Shara Broughton":[["Shara","Chicken, Shrimp"],["Travis","Filet Mignon, Shrimp"],["Xander","Filet Mignon"],["Elijah","Chicken"]],"Sonja Roman":[["Sonja","Scallops, Chicken"],["Orlando","Filet Mignon, Chicken"],["Aliyah","Shrimp, Chicken"],["Alexia","Salmon, Chicken"]],"Jackie Roman":[["Jackie","Salmon, Shrimp"],["Washington","Lobster Tail, Filet Mignon"]],"Taylor Roman":[["Taylor","Chicken, Filet Mignon"],["Alex","Filet Mignon, Scallops"],["Harper","Steak"],["Isabelle","Filet Mignon"],["Charolette","Chicken"]],"Zindy Roman":[["Jose","Chicken, Steak"],["Zindy","Chicken, Steak"],["Lily","Steak"],["Lorenzo","Chicken"]],"Alex Roman Sr.":[["Alex Sr.","Steak, Steak"],["Margaret","Steak, Salmon"]]};
-const SYNOLOGY_ALBUM_URL = "https://YOUR-SYNOLOGY-ALBUM-LINK";
+const SYNOLOGY_ALBUM_URL = "https://photos.app.goo.gl/zHeFsvZGNc92mw7c6";
 const CDN = "https://cdn.prod.website-files.com/6887cf7b734e2462170ae5d9/";
 const IMG = {
   hero: HERO_IMG,
@@ -806,7 +806,7 @@ function vPlaces(){
 
 function vPhotos(){
   const p=DATA["Photos"]||[];
-  let h=`<div class="card"><div class="pad" style="text-align:center"><div style="font-size:36px">📸</div><p class="evttl serif" style="font-size:19px;margin:6px 0 2px">Family Photo Album</p><p class="muted">Everyone shares to one album. Tap to add yours or browse.</p><a class="btn full" style="margin-top:12px" href="${esc(SYNOLOGY_ALBUM_URL)}" target="_blank">＋ Add / View all photos</a><p class="muted" style="margin-top:8px;font-size:11.5px">Opens the shared Synology album</p></div></div>`;
+  let h=`<div class="card"><div class="pad" style="text-align:center"><div style="font-size:36px">📸</div><p class="evttl serif" style="font-size:19px;margin:6px 0 2px">Family Photo Album</p><p class="muted">Everyone shares to one Google Photos album. Tap to add your photos or browse everyone else\u2019s.</p><a class="btn full" style="margin-top:12px" href="${esc(SYNOLOGY_ALBUM_URL)}" target="_blank">＋ Add / View all photos</a><p class="muted" style="margin-top:8px;font-size:11.5px">Opens the shared Google Photos album</p></div></div>`;
   if(p.length){h+=`<div class="sec"><h2>Highlights</h2></div><div class="photos">`+p.map(x=>x["Image URL"]?`<div class="photo"><img loading="lazy" src="${esc(x["Image URL"])}"><div class="cap">${esc(x.Title)}</div></div>`:`<div class="photo placeholder"><div class="cap">${esc(x.Title)}<br><span class="muted" style="font-weight:400">${esc(x.Notes||"")}</span></div></div>`).join("")+`</div>`;}
   openSheetFull(h,"Photos");
 }
