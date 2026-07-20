@@ -1192,6 +1192,7 @@ async function rrAfterLogin(){
   setTimeout(function(){try{notifyCheck();}catch(e){}},1500);
   try{rrArmAutoRefresh();}catch(e){}
   try{rrArmUpdateCheck();}catch(e){}
+  try{rrArmPush();}catch(e){}
 }
 async function loadSupabase(){
   var sched=await rpc("rr_get_schedule");
@@ -1449,6 +1450,45 @@ async function adminReset(name){
 
 /* ===== family board ===== */
 
+var VAPID_PUB="BAKA3iUayiHcnsD0RtohEVBkzMOE2tVbYfjMSo02Uhci_7MIYQhLaGFm0zP1jLuEG75QRJkNAKrhZ1YLovKKX2w";
+var PUSH_FN=SUPA_URL+"/functions/v1/send-push";
+function rrPushSupported(){return ('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);}
+function rrIsIOS(){return /iP(hone|ad|od)/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+function rrStandalone(){try{return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}catch(e){return false;}}
+function rrB64ToU8(x){var pad='='.repeat((4-x.length%4)%4);var b=(x+pad).replace(/-/g,'+').replace(/_/g,'/');var raw=atob(b);var a=new Uint8Array(raw.length);for(var i=0;i<raw.length;i++)a[i]=raw.charCodeAt(i);return a;}
+async function rrPushStatus(){if(!rrPushSupported())return 'unsupported';if(Notification.permission==='denied')return 'denied';try{var reg=await navigator.serviceWorker.getRegistration();if(reg){var sub=await reg.pushManager.getSubscription();if(sub)return 'on';}}catch(e){}return 'off';}
+async function rrArmPush(){if(!rrPushSupported())return;if(localStorage.getItem('rr_push')==='on'){try{await navigator.serviceWorker.register('/sw.js');}catch(e){}}}
+async function enablePush(){
+  if(rrIsIOS()&&!rrStandalone()){showIOSInstall();return;}
+  if(!rrPushSupported()){toast('Notifications are not supported on this device');return;}
+  try{
+    var perm=await Notification.requestPermission();
+    if(perm!=='granted'){toast('Notifications not enabled');return;}
+    var reg=await navigator.serviceWorker.register('/sw.js');
+    await navigator.serviceWorker.ready;
+    var sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:rrB64ToU8(VAPID_PUB)});
+    var j=sub.toJSON();
+    await rpc('rr_push_subscribe',{p_name:ME,p_endpoint:sub.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth});
+    localStorage.setItem('rr_push','on');
+    toast('Announcement alerts on 🔔');
+    if(CUR==='notifications')vBoard();
+  }catch(e){toast('Could not turn on notifications');}
+}
+async function disablePush(){
+  try{var reg=await navigator.serviceWorker.getRegistration();if(reg){var sub=await reg.pushManager.getSubscription();if(sub){try{await rpc('rr_push_unsubscribe',{p_endpoint:sub.endpoint});}catch(e){}try{await sub.unsubscribe();}catch(e){}}}}catch(e){}
+  localStorage.setItem('rr_push','off');toast('Alerts turned off');if(CUR==='notifications')vBoard();
+}
+async function sendAnnPush(title,body){try{await fetch(PUSH_FN,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({token:TOKEN,title:(title||'New announcement'),body:(body||'')})});}catch(e){}}
+function showIOSInstall(){openSheet('<div class="grab"></div><h3 class="serif">Get alerts on your iPhone</h3><p class="muted" style="margin:0 0 10px">Apple only allows notifications once the app is saved to your Home Screen. It takes a few seconds:</p><ol style="color:#3a3a30;line-height:1.8;padding-left:20px;margin:0"><li>Tap the <b>Share</b> icon in Safari (the square with an arrow pointing up).</li><li>Scroll down and choose <b>Add to Home Screen</b>, then <b>Add</b>.</li><li>Open Roman Reunion from your Home Screen, come back to Alerts, and tap <b>Turn on announcement alerts</b>.</li></ol><button class="btn full" style="margin-top:14px" onclick="closeModal()">Got it</button>');}
+async function updatePushBar(){var el=document.getElementById('pushBar');if(!el)return;var st=await rrPushStatus();var html='';
+  if(st==='unsupported'){el.innerHTML='';return;}
+  if(st==='on'){html='<div style="display:flex;align-items:center;gap:9px;background:var(--sage-soft);border-radius:12px;padding:10px 13px;font-size:13px;color:#33564a"><span>🔔</span><span style="flex:1">Announcement alerts are on for this phone</span><a onclick="disablePush()" style="color:#8a6d3b;cursor:pointer;font-size:12px;white-space:nowrap">Turn off</a></div>';}
+  else if(st==='denied'){html='<div style="background:#fdecec;border:1px solid #e6c3c3;border-radius:12px;padding:10px 13px;font-size:12.5px;color:#8a2b2b">Notifications are blocked in your browser settings. Turn them on for this site to get announcement alerts.</div>';}
+  else if(rrIsIOS()&&!rrStandalone()){html='<button class="btn full sm" onclick="showIOSInstall()">🔔 Get announcement alerts on your phone</button>';}
+  else{html='<button class="btn full sm" onclick="enablePush()">🔔 Turn on announcement alerts on this phone</button>';}
+  el.innerHTML=html;
+}
 /* ==================== FAMILY BOARD: announcements + messages ==================== */
 function rrTimeAgo(ts){try{var d=new Date(ts);var s=(Date.now()-d.getTime())/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+"m ago";if(s<86400)return Math.floor(s/3600)+"h ago";if(s<604800)return Math.floor(s/86400)+"d ago";return d.toLocaleDateString();}catch(e){return"";}}
 async function vBoard(){
@@ -1459,6 +1499,7 @@ async function vBoard(){
   if(ann.ok===false&&ann.error){ V().innerHTML='<div class="empty" style="padding:26px">Please sign in to see messages.</div>'; return; }
   var h='<div style="display:flex;gap:8px;margin:2px 0 8px"><button class="btn full" style="flex:1;min-width:0" onclick="composeAnn()">📣 Announce</button><button class="btn ghost full" style="flex:1;min-width:0" onclick="composeMsg()">💬 Ask / post</button></div>';
   h+='<button class="btn ghost full sm" style="margin:0 0 6px" onclick="vNotifications()">🔔 Event reminders &amp; today</button>';
+  h+='<div id="pushBar" style="margin:0 0 8px"></div>';
   h+='<div class="sec"><h2>Announcements</h2></div>';
   var items=ann.items||[];
   if(!items.length)h+='<div class="empty" style="padding:18px">No announcements yet.</div>';
@@ -1480,12 +1521,12 @@ async function vBoard(){
   M.forEach(function(m){
     h+='<div class="card"><div class="pad" style="padding:11px 13px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b style="font-weight:700;color:var(--sage-deep)">'+esc(m.author||"")+'</b><span class="muted" style="font-size:11px">'+rrTimeAgo(m.ts)+'</span></div><p style="margin:4px 0 0;white-space:pre-wrap">'+esc(m.body)+'</p>'+((m.mine||ROLE==='editor')?'<button class="rr-link" style="text-align:left;padding:4px 0 0;font-size:12px;width:auto" onclick=\'delMsg('+JSON.stringify(m.id)+')\'>Delete</button>':'')+'</div></div>';
   });
-  V().innerHTML=h;
+  V().innerHTML=h;try{updatePushBar();}catch(e){}
 }
 function composeMsg(){openSheet('<div class="grab"></div><h3 class="serif">Post a message</h3><p class="muted" style="margin:0 0 8px">Ask a question or share something - everyone can see it.</p><textarea class="field" id="cmsg" rows="4" placeholder="Type your message…"></textarea><button class="rr-primary" style="margin-top:10px" onclick="sendMsg()">Post</button><button class="rr-link" onclick="closeModal()">Cancel</button>');setTimeout(function(){var i=$("cmsg");if(i)i.focus();},60);}
 async function sendMsg(){var b=($("cmsg").value||"").trim();if(!b){toast("Write a message first");return;}var r=await rpc("rr_message_post",{p_token:TOKEN,p_body:b});if(r&&r.ok){closeModal();toast("Posted 👍");vBoard();}else toast((r&&r.error)||"Couldn’t post");}
 function composeAnn(){openSheet('<div class="grab"></div><h3 class="serif">Post an announcement</h3><p class="muted" style="margin:0 0 8px">Everyone will see it, and they can tap “I saw this.”</p><input class="field" id="cantitle" placeholder="Title (optional)"><textarea class="field" id="canbody" rows="4" placeholder="What should everyone know?"></textarea><button class="rr-primary" style="margin-top:10px" onclick="sendAnn()">Post announcement</button><button class="rr-link" onclick="closeModal()">Cancel</button>');setTimeout(function(){var i=$("cantitle");if(i)i.focus();},60);}
-async function sendAnn(){var t=($("cantitle").value||"").trim();var b=($("canbody").value||"").trim();if(!b){toast("Write the announcement");return;}var r=await rpc("rr_ann_post",{p_token:TOKEN,p_title:t,p_body:b});if(r&&r.ok){closeModal();toast("Announcement posted 📣");vBoard();}else toast((r&&r.error)||"Couldn’t post");}
+async function sendAnn(){var t=($("cantitle").value||"").trim();var b=($("canbody").value||"").trim();if(!b){toast("Write the announcement");return;}var r=await rpc("rr_ann_post",{p_token:TOKEN,p_title:t,p_body:b});if(r&&r.ok){closeModal();toast("Announcement posted 📣");try{sendAnnPush(t,b);}catch(e){}vBoard();}else toast((r&&r.error)||"Couldn’t post");}
 async function ackAnn(id){var r=await rpc("rr_ann_ack",{p_token:TOKEN,p_id:id});if(r&&r.ok)vBoard();}
 async function delAnn(id){if(typeof confirm==="function"&&!confirm("Dismiss this announcement for everyone?"))return;var r=await rpc("rr_ann_delete",{p_token:TOKEN,p_id:id});if(r&&r.ok)vBoard();}
 async function delMsg(id){if(typeof confirm==="function"&&!confirm("Delete this message?"))return;var r=await rpc("rr_message_delete",{p_token:TOKEN,p_id:id});if(r&&r.ok)vBoard();}
