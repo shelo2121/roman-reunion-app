@@ -1064,7 +1064,8 @@ function vAbout(){
 }
 function vContact(){
   let h=`<p class="muted" style="margin:0 0 12px">Got an idea for an activity, or something to add to the reunion? We would love to hear it.</p>`;
-  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">Share your idea</p><p class="muted" style="color:#56564c">Reach out to Shelo, or post it for everyone in the family messages and announcements.</p><button class="btn sm full" style="margin-top:10px" onclick="go('notifications')">Go to Messages & Announcements ›</button></div></div>`;
+  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">Text Shelo</p><p class="muted" style="color:#56564c">Have an idea? Text me directly and I will get right back to you.</p><a class="btn sm full" style="margin-top:10px" href="sms:5708076299">💬 Text 570-807-6299</a><a class="btn ghost sm full" style="margin-top:8px" href="tel:5708076299">📞 Call 570-807-6299</a></div></div>`;
+  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">Or post for everyone</p><p class="muted" style="color:#56564c">Share it in the family messages and announcements.</p><button class="btn sm full" style="margin-top:10px" onclick="go('notifications')">Go to Messages & Announcements ›</button></div></div>`;
   openSheetFull(h,"Got an activities idea?");
 }
 
