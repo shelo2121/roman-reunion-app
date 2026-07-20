@@ -1203,10 +1203,12 @@ function schedFormHTML(day,start,end){
   var days=DAYS.map(function(d){return '<option '+(d.label===day?"selected":"")+'>'+d.label+'</option>';}).join("");
   return '<span class="label">Day</span><select class="field" id="fDay">'+days+'</select><span class="label">Start time</span><input class="field" id="fStart" placeholder="e.g. 3:00 PM" value="'+esc(start||"")+'"><span class="label">End time (optional)</span><input class="field" id="fEnd" placeholder="e.g. 4:30 PM" value="'+esc(end||"")+'">';
 }
+async function rrUndo(){var r=await rpc("rr_undo",{p_token:TOKEN});if(r&&r.ok){toast("Undone ✓");await loadSupabase();go(CUR);openManage();}else toast((r&&r.error)||"Nothing to undo");}
+async function rrRedo(){var r=await rpc("rr_redo",{p_token:TOKEN});if(r&&r.ok){toast("Redone ✓");await loadSupabase();go(CUR);openManage();}else toast((r&&r.error)||"Nothing to redo");}
 function openManage(){
   window._reopenSheet=openManage;
   var sched=(DATA["Schedule"]||[]).filter(function(e){return e._sid;}).slice().sort(rrSortSched);
-  var h='<div class="grab"></div><h3 class="serif">Manage Schedule</h3><p class="muted" style="margin:0 0 6px">Add, move, remove, or swap items. Removing puts an item back on the unscheduled list - it is never deleted.</p>';
+  var h='<div class="grab"></div><h3 class="serif">Manage Schedule</h3><p class="muted" style="margin:0 0 6px">Add, move, remove, or swap items. Removing puts an item back on the unscheduled list - it is never deleted.</p><div style="display:flex;gap:8px;margin:4px 0 10px"><button class="rr-mini" onclick="rrUndo()">&#8630; Undo</button><button class="rr-mini" onclick="rrRedo()">Redo &#8631;</button></div>';
   var curDay="";
   sched.forEach(function(e){
     if(e.Date!==curDay){curDay=e.Date;h+='<div class="rr-sec">'+esc(curDay)+'</div>';}
