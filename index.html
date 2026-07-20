@@ -599,7 +599,7 @@ function evCard(ev,isNext){
   if(joinable(ev))foot+=rsvpBlock(ev);
   if(ev.Notes && !meal) foot+=`<div class="evnote">${esc(ev.Notes)}</div>`;
   if(offSite(ev)){const q=encodeURIComponent((ev.Location||'')+' '+(info().Address||''));foot+=`<a class="maplink" href="https://maps.google.com/?q=${q}" target="_blank">📍 Open in Maps</a>`;}
-  if(typeof ROLE!=='undefined'&&ROLE==='editor'&&ev._sid){foot+=`<div class="mgrrow"><span class="mgrlbl">Manager:</span><button class="rr-mini" onclick='event.stopPropagation();mMove(${JSON.stringify(ev._sid)})'>Move</button><button class="rr-mini" onclick='event.stopPropagation();openSwapAny(${JSON.stringify(ev._sid)})'>Swap</button><button class="rr-mini danger" onclick='event.stopPropagation();mRemove(${JSON.stringify(ev._sid)},${JSON.stringify(ev.Title)})'>Remove</button></div>`;}
+  if(typeof ROLE!=='undefined'&&ROLE==='editor'&&ev._sid){foot+=`<div class="mgrrow"><span class="mgrlbl">Manager:</span><button class="rr-mini" onclick='event.stopPropagation();mMove(${JSON.stringify(ev._sid)})'>Move</button><button class="rr-mini" onclick='event.stopPropagation();openSwapAny(${JSON.stringify(ev._sid)})'>Swap</button>${(meal&&meal._id)?`<button class="rr-mini" onclick='event.stopPropagation();openCrewEdit(${JSON.stringify(meal._id)},"sched")'>Edit crew</button>`:``}<button class="rr-mini danger" onclick='event.stopPropagation();mRemove(${JSON.stringify(ev._sid)},${JSON.stringify(ev.Title)})'>Remove</button><button class="rr-mini" onclick='event.stopPropagation();rrUndo()'>&#8630; Undo</button></div>`;}
   return `<div class="ev"><div class="evtop" onclick="(function(el){var ff=el.parentNode.querySelector('.evfoot');ff.style.display=ff.style.display==='flex'?'none':'flex';})(this)"><div class="evthumb">${im?`<img src="${esc(im)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="ph">${catEmoji(ev.Category)}</div>`}</div><div class="evbody"><div class="evtime">${esc(tparts[0]||"")} ${esc(tparts[1]||"")}${isNext?'<span class="nowtag">UP NEXT</span>':''}</div><div class="evttl">${esc(ev.Title)}</div><div class="evmeta"><span class="pill ${catClass(ev.Category)}">${esc(ev.Category||"Event")}</span> &nbsp;${esc(ev.Location||"")}</div></div></div><div class="evfoot" style="display:${isNext?'flex':'none'}">${foot||'<div class="muted">Tap for details.</div>'}</div></div>`;
 }
 
@@ -648,7 +648,7 @@ function vSchedule(){
   if(cat==="Meals")items=items.filter(e=>e.Category==="Meal");else if(cat==="Activities")items=items.filter(e=>e.Category!=="Meal");
   items=items.sort((a,b)=>toMins(a["Start Time"])-toMins(b["Start Time"]));
   const nextItem=active===tl?items.find(x=>toMins(x["Start Time"])>=nowMins()):null;
-  let h=bar+`<div class="sec"><h2>Day ${idx+1} · ${esc(active)} ${active===tl?'<span class="pill">Today</span>':''}</h2></div>`;
+  let h=bar+`<div class="alertbox" style="margin:6px 0 2px;padding:10px 13px"><b>\u26a0\ufe0f Food Allergy:</b> Jonah has a serious nut allergy. <a onclick="event.stopPropagation();vAllergy()" style="color:#8a3b12;text-decoration:underline;cursor:pointer">Read the details</a></div><div class="sec"><h2>Day ${idx+1} · ${esc(active)} ${active===tl?'<span class="pill">Today</span>':''}</h2></div>`;
   h+= items.length? items.map(e=>evCard(e,e===nextItem)).join("") : `<div class="empty"><span class="em">🌤️</span>No ${cat==="Meals"?"meals":cat==="Activities"?"activities":"events"} this day.</div>`;
   V().innerHTML=h;
 }
@@ -768,10 +768,15 @@ function vActivities(){
   if(ROLE==='editor'&&window._CATALOG){var _un=(window._CATALOG.activities||[]).filter(function(z){return !z.scheduled;});h+=`<div class="sec" style="margin-top:16px"><h2 style="font-size:14px">Not on the schedule yet (${_un.length})</h2></div>`;h+= _un.length? _un.map(function(z){return `<div class="card"><div class="pad" style="display:flex;align-items:center;gap:10px"><div style="flex:1"><p class="evttl" style="font-size:15px;margin:0">${esc(z.name)}${z.is_kids?' <span class="pill kids">Kids</span>':''}</p><p class="muted" style="margin:2px 0 0;font-size:12.5px">${esc(z.category||'')}</p></div><button class="rr-mini" onclick='mAdd("activity",${JSON.stringify(z.id)},${JSON.stringify(z.name)})'>+ Add</button></div></div>`;}).join('') : `<p class="muted" style="padding:2px 4px">Everything is on the schedule.</p>`;}
   openSheetFull(h,"Activities");
 }
+function actExtra(x){var n=(x.Name||"").toLowerCase();
+if(/pool/.test(n))return "Water shoes are strongly recommended because the bottom of the pool is rough. Bring a swimsuit, towel, and sunscreen.";
+if(/michael jackson|dance night/.test(n))return "Dress for the occasion! Wear or bring something inspired by Michael Jackson. Sparkles, hats, a Michael Jackson outfit, and Michael Jackson-style accessories are encouraged. A signature Michael Jackson glove would be perfect!";
+if(/hike|hiking/.test(n))return "Please wear long pants, high socks, closed-toe shoes, and bug repellent. Bring a water bottle and check yourself and your children for ticks after the hike.";
+return "";}
 function actCard(x){
   const sched=(DATA["Schedule"]||[]).filter(e=>{const n=(x.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return n&&(t.includes(n)||n.includes(t));});
   const days=[...new Set(sched.map(e=>e.Date))];const req=(x.Required||"").toLowerCase()==="yes";const desc=actDesc(x);
-  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(first(x.Lead))}</span>Point of Contact: ${esc(pocLabel(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actday"><div class="actday-hd" onclick="actToggle(this)"><span>${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</span><span class="actchev">\u25b8</span></div><div class="actday-bd">${rsvpBlock(e)}</div></div>`).join(""):''}</div></div>`;
+  return `<div class="card">${img(x["Cover Image URL"]||x["Image URL"],"cover")}<div class="pad"><p class="evttl" style="font-size:18px;margin:0 0 5px">${esc(x.Name)}</p><div style="margin-bottom:8px">${x["Age Group"]?`<span class="pill ${x.Category==='Kids'?'kids':''}">${esc(x["Age Group"])}</span> `:''}${req?'<span class="pill req">Required</span> ':''}</div>${desc?`<p class="muted" style="color:#56564c">${esc(desc)}</p>`:''}${actExtra(x)?`<div class="alertbox" style="margin:8px 0 0;background:#eef6ee;border-color:#bcd9bc;color:#2f5233"><div class="ah" style="color:#3c7a3c">Good to know</div>${actExtra(x)}</div>`:''}${(x.Lead&&x.Lead!=="TBD")?`<div class="poc" style="margin-top:9px"><span class="pocav">${initials(first(x.Lead))}</span>Point of Contact: ${esc(pocLabel(x.Lead))}</div>`:''}${x.Supplies?`<p class="muted" style="margin-top:8px">🎒 <b>Bring:</b> ${esc(x.Supplies)}</p>`:''}${sched.length?`<div class="sec" style="margin:10px 0 2px"><h2 style="font-size:13px">RSVP</h2></div>`+sched.slice().sort((a,b)=>DAYS.findIndex(d=>d.label===a.Date)-DAYS.findIndex(d=>d.label===b.Date)||toMins(a["Start Time"])-toMins(b["Start Time"])).map(e=>`<div class="actday"><div class="actday-hd" onclick="actToggle(this)"><span>${esc(e.Date)} · ${esc(e["Start Time"]||"")}${e.Location?" · "+esc(e.Location):""}</span><span class="actchev">\u25b8</span></div><div class="actday-bd">${rsvpBlock(e)}</div></div>`).join(""):''}</div></div>`;
 }
 
 function vMyStuff(){
@@ -790,9 +795,10 @@ function vMyStuff(){
   openSheetFull(h,"My Stuff");
 }
 
+function jonahAlertHTML(){return `<div class="alertbox"><div class="ah">⚠️ Important Food Allergy Alert</div><b>Jonah has a serious nut allergy.</b> Please carefully check all ingredients before preparing or serving food. Jonah will have a separate designated food section. The exact location will be announced at the house. Please do not place other food, serving utensils, plates, or personal items in this section, and do not mix Jonah's food with the general food supply. Anyone preparing food should thoroughly clean their hands, surfaces, cookware, and utensils before handling Jonah's food to help prevent cross-contact.</div>`;}
 function vMeals(){
   const m=DATA["Meals"]||[];const byDay={};m.forEach(x=>{(byDay[x.Date]=byDay[x.Date]||[]).push(x);});
-  let h=`<div class="alertbox"><div class="ah">\u26a0\ufe0f Important to know</div><b>Jonah has a nut allergy.</b> Please keep nuts out of shared dishes, and clearly label anything that contains nuts.</div>`;
+  let h=jonahAlertHTML();
   for(const d of DAYS){if(!byDay[d.label])continue;h+=`<div class="mealday">${esc(d.label)}</div>`;
     h+=byDay[d.label].slice().sort((a,b)=>mealMins(a.Time)-mealMins(b.Time)).map(x=>{const setup=mealField(x,["Set Up Crew","Set Up","Setup","SetUp"]);const clean=mealField(x,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]);let crews="";if(setup)crews+=`<div class="crew"><span class="ci">🧺</span><span>${esc(setup)}<br><small>Set Up Crew</small></span></div>`;if(clean)crews+=`<div class="crew clean"><span class="ci">🧽</span><span>${esc(clean)}<br><small>Clean Up Crew</small></span></div>`;return `<div class="card">${img(x["Image URL"],"cover")}<div class="pad"><span class="pill meal">${esc(x.Meal)}</span> <span class="muted">${esc(x.Time)}</span><p class="evttl" style="font-size:16px;margin:6px 0 6px">${esc(x.Menu)}</p>${crews?`<div class="crewrow">${crews}</div>`:''}${x["Dietary Notes"]?`<p class="muted" style="margin-top:9px">🥗 ${esc(x["Dietary Notes"])}</p>`:''}${(ROLE==='editor'&&x._id)?`<button class="btn ghost sm" style="margin-top:10px" onclick="openCrewEdit('${x._id}')">✎ Edit crews</button>`:''}${(ROLE==='editor'&&x._id&&x._scheduled===false)?`<button class="rr-mini" style="margin-top:10px;margin-left:6px" onclick="mAddMeal('${x._id}')">+ Add to a day</button>`:''}</div></div>`;}).join("");}
   openSheetFull(h||'<div class="empty">No meals yet.</div>',"Meal Plan");
@@ -951,12 +957,38 @@ function vTVSchedule(){
 }
 function vMore(){
   setTitle("Everything else","More");const i=info();
-  const links=[{ic:"💬",t:"Messages & Announcements",s:"Announcements & messages",fn:"go('notifications')"},{ic:"⚙️",t:"Settings & Profile",s:"Your profile & sign out",fn:"openProfile()"},{ic:"🏠",t:"House Rules",s:"At The Ark",fn:"vRules()"},{ic:"❓",t:"FAQ",s:"Common questions",fn:"vFAQ()"},{ic:"🧳",t:"Packing List",s:"What to bring",fn:"vPacking()"},{ic:"🏡",t:"The Ark",s:"House, photos & maps",fn:"vPlaces()"},{ic:"📸",t:"Photos",s:"Share & view",fn:"vPhotos()"},{ic:"🎉",t:"Activities",s:"Browse & sign up",fn:"vActivities()"},{ic:"✅",t:"My Stuff",s:"Your plans & duties",fn:"vMyStuff()"},{ic:"🍽️",t:"Meal Plan",s:"Menus & crews",fn:"vMeals()"},{ic:"🏓",t:"Pickleball",s:"Teams & bracket",fn:"vPickle()"},{ic:"🥾",t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()"},{ic:"🎬",t:"Music Video",s:"Claim a part of “Unwritten”",fn:"vUnwritten()"},{ic:"🌮",t:"Taco Truck Menu",s:"Friday food-truck menu",fn:"vTacoMenu()"},{ic:"🍤",t:"Hibachi Preorders",s:"Your family’s Monday order",fn:"vHibachi()"},{ic:"📺",t:"TV Dashboard",s:"Today at a glance - cast to a TV",fn:"vTVSchedule()"}];
-  V().innerHTML=`<div class="card"><div class="pad"><p class="evttl serif" style="font-size:19px;margin:0">${esc(i["Location Name"]||"The Ark on Lake Lanier")}</p><p class="muted">${esc(i.Theme||"")} · ${esc(attendeeCount())} attending · Jul 25 - Aug 1</p></div></div>`+links.map(l=>`<div class="mlink" onclick="${l.fn}"><div class="ic">${l.ic}</div><div><div>${l.t}</div><div class="muted">${l.s}</div></div><span class="chev">›</span></div>`).join("");
+  const tiles=[
+    {t:"What to Bring",s:"Packing & attire",fn:"vBring()",ic:'<path d="M6 7V5a3 3 0 016 0v2M4 7h16l-1 13H5z"/>'},
+    {t:"Health & Safety",s:"Important notes",fn:"vHealth()",ic:'<path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6z"/><path d="M12 8v6M9 11h6"/>'},
+    {t:"Food Allergy Info",s:"Keep Jonah safe",fn:"vAllergy()",ic:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>'},
+    {t:"House Rules",s:"At The Ark",fn:"vRules()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"Emergency Info",s:"911 & hospital",fn:"vEmergency()",ic:'<path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/>'},
+    {t:"Family Tree",s:attendeeCount()+" coming",fn:"go('family')",ic:'<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3.5 20a5.5 5.5 0 0111 0"/>'},
+    {t:"About Our Reunion",s:"The week at a glance",fn:"vAbout()",ic:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v0"/>'},
+    {t:"Contact Team",s:"Activities Team",fn:"vContact()",ic:'<path d="M4 5h16v11H8l-4 4z"/>'},
+    {t:"Messages",s:"Announcements",fn:"go('notifications')",ic:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>'},
+    {t:"Settings & Profile",s:"Profile & sign out",fn:"openProfile()",ic:'<circle cx="12" cy="12" r="3"/><path d="M4 12a8 8 0 01.2-1.8l-2-1.5 2-3.4 2.3 1a8 8 0 011.6-.9L10 2h4l.9 2.4a8 8 0 011.6.9l2.3-1 2 3.4-2 1.5A8 8 0 0120 12"/>'},
+    {t:"FAQ",s:"Common questions",fn:"vFAQ()",ic:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 2-2.5 2-2.5 4M12 17v0"/>'},
+    {t:"Photos",s:"Share & view",fn:"vPhotos()",ic:'<rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="8.5" cy="10.5" r="1.8"/><path d="M21 17l-5-5-7 7"/>'},
+    {t:"Meal Plan",s:"Menus & crews",fn:"vMeals()",ic:'<path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v6M17 3c-1.5 1-2 3-2 6s.5 4 2 5v7"/>'},
+    {t:"My Stuff",s:"Plans & duties",fn:"vMyStuff()",ic:'<path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
+    {t:"The Ark",s:"House & maps",fn:"vPlaces()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"Activities",s:"Browse & sign up",fn:"vActivities()",ic:'<path d="M12 2l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
+    {t:"Pickleball",s:"Teams & bracket",fn:"vPickle()",ic:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/>'},
+    {t:"Hiking Carpool",s:"Drivers & seats",fn:"vHike()",ic:'<path d="M5 16l2-5h10l2 5M6 16h12M8 16v2M16 16v2"/>'},
+    {t:"Music Video",s:"Claim a part",fn:"vUnwritten()",ic:'<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="2.6"/><circle cx="16" cy="16" r="2.6"/>'},
+    {t:"Taco Truck",s:"Friday menu",fn:"vTacoMenu()",ic:'<path d="M3 13a9 9 0 0118 0z"/><path d="M2 13h20l-2 4H4z"/>'},
+    {t:"Hibachi",s:"Monday order",fn:"vHibachi()",ic:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>'},
+    {t:"TV Dashboard",s:"Cast to a TV",fn:"vTVSchedule()",ic:'<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8"/>'}
+  ];
+  let h=`<div class="card"><div class="pad"><p class="evttl serif" style="font-size:19px;margin:0">${esc(i["Location Name"]||"The Ark on Lake Lanier")}</p><p class="muted">${esc(i.Theme||"")} · ${esc(attendeeCount())} attending · Jul 25 - Aug 1</p></div></div>`;
+  h+=`<div class="sec"><h2>Reunion Info</h2></div><div class="grid">`+tiles.map(x=>`<div class="tile" onclick="${x.fn}"><div class="ic"><svg viewBox="0 0 24 24">${x.ic}</svg></div><div><div class="lab">${x.t}</div><div class="sub">${x.s}</div></div></div>`).join("")+`</div>`;
+  V().innerHTML=h;
 }
 function vPickle(){const p=(DATA["Pickleball"]||[]).filter(t=>t["Team Name"]||t["Player 1"]);let h=p.length?p.map(t=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(t["Team Name"]||"Team")}</p><p class="muted">${esc(t["Player 1"]||"")}${t["Player 2"]?" & "+esc(t["Player 2"]):""}</p>${t.Result?`<p class="muted">🏆 ${esc(t.Result)}</p>`:''}</div></div>`).join(""):`<div class="empty"><span class="em">🏓</span>No teams yet.</div>`;openSheetFull(h,"Pickleball");}
 function vHike(){window._reopenSheet=vHike;const d=hikeData();const drivers=Object.keys(d.drivers);
   let h=`<p class="muted" style="margin:0 0 12px;font-size:13px">Indian Seats Hike · Tue 8:00 AM · meet in the driveway 7:45 AM. Grab-and-go breakfast sandwiches provided. Are you hiking?</p>`;
+  h+=`<div class="alertbox" style="background:#eef6ee;border-color:#bcd9bc;color:#2f5233"><div class="ah" style="color:#3c7a3c">🥾 Hike Reminder</div>Please wear long pants, high socks, closed-toe shoes, and bug repellent. Bring a water bottle and check yourself and your children for ticks after the hike.</div>`;
   h+=`<div class="card"><div class="pad">`;
   if(d.drivers[ME]!==undefined){const left=hikeSeatsLeft(ME);const riders=Object.keys(d.riders).filter(n=>d.riders[n]===ME);
     h+=`<p class="evttl" style="font-size:15px;margin:0">🚗 You’re driving</p><p class="muted">${d.drivers[ME]} seats · ${left} open${riders.length?` · Riders: ${riders.map(r=>esc(first(r))).join(", ")}`:""}</p><button class="rbtn add" style="margin-top:10px" onclick="hikeClear()">I’m not driving</button>`;
@@ -981,11 +1013,58 @@ function hibachiInner(x){var bd=HIBACHI_BREAKDOWN[x.Name];if(bd)return '<div cla
 function vHibachi(){const mine=myHibachi();let h=`<p class="muted" style="margin:0 0 12px">Monday's hibachi dinner - here's what each person in your family ordered. 🍤</p>`;if(mine.length){h+=mine.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:16px;margin:0">Your family's order</p><p class="muted" style="margin:2px 0 9px">${esc(x.Party||"")}${x.Status?` · <b style="color:var(--sage-deep)">${esc(x.Status)}</b>`:""}</p>${hibachiInner(x)}</div></div>`).join("");}else{h+=`<div class="empty"><span class="em">🍤</span>No preorder found under <b>${esc(first(ME))}</b>.<br>If your family ordered under a different name, switch names in your profile.</div>`;}h+=`<button class="btn ghost full" style="margin-top:12px" onclick="vHibachiAll()">See everyone’s orders</button>`;openSheetFull(h,"My Hibachi Order");}
 function vHibachiAll(){const o=DATA["Hibachi Preorders"]||[];openSheetFull((o.length?o.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0 0 2px">${esc(x.Name)}</p><p class="muted" style="margin:0 0 7px">${esc(x.Party||"")}</p>${hibachiInner(x)}</div></div>`).join(""):'<div class="empty">No orders.</div>'),"All Hibachi Orders");}
 function vFAQ(){const f=DATA["FAQ"]||[];openSheetFull(f.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0 0 4px">${esc(x.Question)}</p><p class="muted" style="color:#56564c">${esc(x.Answer)}</p></div></div>`).join("")||'<div class="empty">No FAQs.</div>',"FAQ");}
-function vRules(){const r=DATA["House Rules"]||[];openSheetFull(r.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(x.Rule)}</p><p class="muted">${esc(x.Description||"")}</p></div></div>`).join("")||'<div class="empty">No rules.</div>',"House Rules");}
+function vRules(){const r=DATA["House Rules"]||[];let h=`<div class="card" style="border:1.5px solid #d8c58a;background:#fbf6e9"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">🌙 Quiet Hours - Alcohol</p><p class="muted" style="color:#56564c">Our family agreed that no hard liquor will be served or consumed after 11:00 PM. Thank you for helping us keep the reunion safe and enjoyable for everyone.</p></div></div>`;h+=r.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(x.Rule)}</p><p class="muted">${esc(x.Description||"")}</p></div></div>`).join("");openSheetFull(h,"House Rules");}
+
+function vBring(){
+  let h=`<p class="muted" style="margin:0 0 12px">A quick guide to what to pack and wear for the week. General reminders plus a few activity-specific notes.</p>`;
+  h+=`<div class="sec"><h2>General Reminders</h2></div><div class="card"><div class="pad muted" style="color:#56564c">Sunscreen, a reusable water bottle, comfortable walking shoes, a light layer for cooler evenings, any personal medications, and toiletries. Label your own items where you can.</div></div>`;
+  h+=`<div class="sec"><h2>🏊 For the Pool</h2></div><div class="card"><div class="pad"><b style="font-weight:600">Water shoes are strongly recommended.</b><div class="muted" style="color:#56564c;margin-top:3px">The bottom of the pool is rough, so water shoes help protect everyone's feet. Also bring a swimsuit, towel, and sunscreen.</div></div></div>`;
+  h+=`<div class="sec"><h2>🥾 For the Hike</h2></div><div class="card"><div class="pad muted" style="color:#56564c">Long pants, high socks or hiking socks, bug repellent, comfortable closed-toe shoes, and a water bottle. Check yourself and your children for ticks after the hike.</div></div>`;
+  h+=`<div class="sec"><h2>🕺 For Michael Jackson Night</h2></div><div class="card"><div class="pad muted" style="color:#56564c">Wear or bring something Michael Jackson-inspired. A full Michael Jackson outfit or a signature sparkly glove would be perfect, or any MJ-themed clothing or accessory. Sparkles, hats, and Michael Jackson-style accessories are all encouraged.</div></div>`;
+  const pk=(DATA["Packing List"]||[]).filter(x=>!/bring\s*cash/i.test((x.Item||"")+" "+(x.Notes||"")));
+  if(pk.length){const byCat={};pk.forEach(x=>{(byCat[x.Category||"More to Pack"]=byCat[x.Category||"More to Pack"]||[]).push(x);});Object.keys(byCat).forEach(c=>{h+=`<div class="sec"><h2>${esc(c)}</h2></div>`+byCat[c].map(x=>`<div class="card"><div class="pad" style="display:flex;gap:8px;align-items:baseline"><span style="color:var(--sage)">●</span><div><b style="font-weight:600">${esc(x.Item)}</b>${x.Notes?`<div class="muted">${esc(x.Notes)}</div>`:''}</div></div></div>`).join("");});}
+  openSheetFull(h,"What to Bring");
+}
+function vHealth(){
+  let h=`<p class="muted" style="margin:0 0 12px">A few health and safety notes to help everyone have a safe, happy reunion.</p>`;
+  h+=`<div class="alertbox"><div class="ah">🥬 Food Safety - Lettuce</div>Due to the current Cyclospora outbreak associated with some shredded iceberg lettuce, we will not use pre-shredded or bagged iceberg lettuce for reunion meals. Please purchase whole, intact heads of lettuce from a trusted grocery store instead. Wash the lettuce thoroughly under running water before preparing it. Do not purchase Mexican-grown iceberg lettuce supplied by Taylor Farms while the investigation and related withdrawals remain active. This information may be updated before the reunion if federal health guidance changes.</div>`;
+  h+=jonahAlertHTML();
+  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">☀️ Sun & Water</p><p class="muted" style="color:#56564c">Wear sunscreen, drink plenty of water, and keep an eye on children near the pool and lake at all times. Water shoes are recommended at the pool because the bottom is rough.</p></div></div>`;
+  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">🚑 In an Emergency</p><p class="muted" style="color:#56564c">For a life-threatening emergency, call 911.</p><button class="btn sm full" style="margin-top:10px" onclick="vEmergency()">See Emergency Information ›</button></div></div>`;
+  openSheetFull(h,"Health & Safety");
+}
+function vAllergy(){
+  let h=`<p class="muted" style="margin:0 0 12px">Please read carefully. Keeping our family safe means everyone helps prevent cross-contact.</p>`;
+  h+=jonahAlertHTML();
+  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">Have a food allergy to share?</p><p class="muted" style="color:#56564c">Let the Activities Team know so we can plan meals safely and add it here.</p><button class="btn sm full" style="margin-top:10px" onclick="vContact()">Contact the Activities Team ›</button></div></div>`;
+  openSheetFull(h,"Food Allergy Information");
+}
+function vEmergency(){
+  const hosp="Northeast Georgia Medical Center Gainesville";
+  const hospAddr="743 Spring Street NE, Gainesville, GA 30501";
+  const reAddr="6250 Old Dawsonville Road, Gainesville, GA";
+  let h=`<div class="alertbox" style="background:#fdecec;border-color:#e6a6a6;color:#8a2b2b"><div class="ah" style="color:#b23b3b">🚨 Emergency</div>For a life-threatening emergency, call <b>911</b>.</div>`;
+  h+=`<div class="sec"><h2>Nearest Hospital & Emergency Department</h2></div><div class="card"><div class="pad"><p class="evttl" style="font-size:16px;margin:0">${hosp}</p><p class="muted" style="color:#56564c;margin:6px 0 0">${hospAddr}</p><p class="muted" style="margin:6px 0 0">📞 <a href="tel:7702199000">770-219-9000</a></p><a class="btn sm full" style="margin-top:10px" href="https://maps.google.com/?q=${encodeURIComponent(hosp+", "+hospAddr)}" target="_blank">📍 Open in Maps</a></div></div>`;
+  h+=`<div class="sec"><h2>Reunion Address</h2></div><div class="card"><div class="pad"><p class="muted" style="color:#56564c;margin:0">${reAddr}</p><a class="btn sm full" style="margin-top:10px" href="https://maps.google.com/?q=${encodeURIComponent(reAddr)}" target="_blank">📍 Open in Maps</a></div></div>`;
+  openSheetFull(h,"Emergency Information");
+}
+function vAbout(){
+  const i=info();
+  let h=`<div class="card"><div class="pad"><p class="evttl serif" style="font-size:19px;margin:0">${esc(i["Location Name"]||"The Ark on Lake Lanier")}</p><p class="muted">${esc(i.Theme||"Back in Heaven")} · Jul 25 - Aug 1, 2026</p></div></div>`;
+  h+=`<div class="card"><div class="pad muted" style="color:#56564c">Our family reunion brings us together for a week of food, activities, and time with the people we love. Check the Schedule for each day's plans, RSVP to activities, and use the More menu for everything else you need to know.</div></div>`;
+  if(i.Address)h+=`<div class="card"><div class="pad"><p class="muted" style="margin:0">${esc(i.Address)}</p><a class="btn sm full" style="margin-top:10px" href="https://maps.google.com/?q=${encodeURIComponent(i.Address)}" target="_blank">📍 Open in Maps</a></div></div>`;
+  openSheetFull(h,"About Our Reunion");
+}
+function vContact(){
+  let h=`<p class="muted" style="margin:0 0 12px">Questions, ideas, or something to add? The Activities Team is here to help.</p>`;
+  h+=`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">Activities Team</p><p class="muted" style="color:#56564c">Reach out to Shelo or any family lead. The fastest way to reach everyone is through the family messages and announcements.</p><button class="btn sm full" style="margin-top:10px" onclick="go('notifications')">Go to Messages & Announcements ›</button></div></div>`;
+  openSheetFull(h,"Contact the Activities Team");
+}
+
 
 function openProfile(){
   const x=meRec();
-  let h=`<div class="grab"></div><h3 class="serif">Your Profile</h3><p class="muted" style="margin:0 0 12px">You\u2019re signed in as '+esc(first(ME))+'. Update your details or sign out below.</p>
+  let h=`<div class="grab"></div><h3 class="serif">Your Profile</h3><p class="muted" style="margin:0 0 12px">You\u2019re signed in as ${esc(first(ME))}. Update your details or sign out below.</p>
     <div class="prow" onclick='openMember(${JSON.stringify(ME)})'>${avHTML(x,'av')}<div><div class="nm">${esc(ME)}</div><div class="meta">View & edit my profile</div></div><span class="chev">›</span></div>
     <button class="btn ghost full" style="margin-top:6px" onclick="openSwitch()">🔄 Not ${esc(first(ME))}? Switch person</button>
     <button class="btn ghost full" style="margin-top:6px" onclick="vLog()">📝 Recent changes</button>
@@ -1209,8 +1288,8 @@ function schedFormHTML(day,start,end){
   var days=DAYS.map(function(d){return '<option '+(d.label===day?"selected":"")+'>'+d.label+'</option>';}).join("");
   return '<span class="label">Day</span><select class="field" id="fDay">'+days+'</select><span class="label">Start time</span><input class="field" id="fStart" placeholder="e.g. 3:00 PM" value="'+esc(start||"")+'"><span class="label">End time (optional)</span><input class="field" id="fEnd" placeholder="e.g. 4:30 PM" value="'+esc(end||"")+'">';
 }
-async function rrUndo(){var r=await rpc("rr_undo",{p_token:TOKEN});if(r&&r.ok){toast("Undone ✓");await loadSupabase();go(CUR);openManage();}else toast((r&&r.error)||"Nothing to undo");}
-async function rrRedo(){var r=await rpc("rr_redo",{p_token:TOKEN});if(r&&r.ok){toast("Redone ✓");await loadSupabase();go(CUR);openManage();}else toast((r&&r.error)||"Nothing to redo");}
+async function rrUndo(){var r=await rpc("rr_undo",{p_token:TOKEN});if(r&&r.ok){toast("Undone ✓");await loadSupabase();go(CUR);if($("modal").classList.contains("open")&&window._reopenSheet===openManage)openManage();}else toast((r&&r.error)||"Nothing to undo");}
+async function rrRedo(){var r=await rpc("rr_redo",{p_token:TOKEN});if(r&&r.ok){toast("Redone ✓");await loadSupabase();go(CUR);if($("modal").classList.contains("open")&&window._reopenSheet===openManage)openManage();}else toast((r&&r.error)||"Nothing to redo");}
 async function rrVerMarker(){try{var r=await fetch("index.html",{method:"HEAD",cache:"no-store"});return (r.headers.get("etag")||r.headers.get("last-modified")||r.headers.get("content-length")||"");}catch(e){return "";}}
 function rrShowUpdateBanner(){if(document.getElementById("rrUpd"))return;var d=document.createElement("div");d.id="rrUpd";d.style.cssText="position:fixed;left:12px;right:12px;bottom:16px;z-index:99999;background:#33564a;color:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.32);font-family:Inter,system-ui,sans-serif";d.innerHTML='<span style="flex:1;font-weight:600;font-size:14px">A newer version is ready</span><button style="background:#fff;color:#33564a;border:none;border-radius:10px;padding:8px 15px;font-weight:800;font-size:13px" onclick="location.reload(true)">Update</button>';document.body.appendChild(d);}
 async function rrArmUpdateCheck(){if(window._rrUC)return;window._rrUC=1;window._verBase=await rrVerMarker();var last=0;async function chk(){if(document.getElementById("rrUpd"))return;var now=Date.now();if(now-last<40000)return;last=now;var m=await rrVerMarker();if(m&&window._verBase&&m!==window._verBase)rrShowUpdateBanner();}document.addEventListener("visibilitychange",function(){if(!document.hidden)chk();});window.addEventListener("focus",chk);setInterval(chk,120000);}
@@ -1435,11 +1514,13 @@ function rrLoadMe(){
 
 
 /* ===== round-7: edit meal crews (editors) ===== */
+function crewReturn(){if(window._crewFrom==="sched"){closeModal();go(CUR);}else{vMeals();}}
+function crewCancel(){if(window._crewFrom==="sched"){closeModal();}else{vMeals();}}
 function crewNone(id){var e=$(id);if(e)e.value="";}
-function openCrewEdit(mid){
+function openCrewEdit(mid,from){
   var m=(DATA["Meals"]||[]).find(function(x){return x._id===mid;});
   if(!m){toast("Open the Meal Plan and try again");return;}
-  window._crewMid=mid;
+  window._crewMid=mid;window._crewFrom=from||"meals";
   var h='<div class="grab"></div><h3 class="serif">Meal Crews</h3>'
     +'<p class="muted" style="margin:0 0 10px">'+esc(m.Meal||"Meal")+(m.Date?" · "+esc(m.Date):"")+'. Leave a field blank if this meal doesn’t need a crew.</p>'
     +'<span class="label">Set Up Crew</span><input class="field" id="crewSetup" placeholder="Names - or leave blank for none" value="'+esc(m["Set Up"]||"")+'">'
@@ -1447,14 +1528,14 @@ function openCrewEdit(mid){
     +'<span class="label">Clean Up Crew</span><input class="field" id="crewClean" placeholder="Names - or leave blank for none" value="'+esc(m.Cleanup||"")+'">'
     +'<button class="rr-link" style="text-align:left;padding:2px 0 10px;width:auto" onclick="crewNone(&#39;crewClean&#39;)">✕ No clean up crew needed</button>'
     +'<button class="rr-primary" onclick="saveCrew()">Save crews</button>'
-    +'<button class="rr-link" onclick="vMeals()">Cancel</button>';
+    +'<button class="rr-link" onclick="crewCancel()">Cancel</button>';
   openSheet(h);
 }
 async function saveCrew(){
   var mid=window._crewMid;
   var setup=($("crewSetup").value||"").trim(), clean=($("crewClean").value||"").trim();
   var r=await rpc("rr_meal_crew",{p_token:TOKEN,p_meal_id:mid,p_setup:setup,p_cleanup:clean});
-  if(r&&r.ok){toast("Crews updated ✓");await loadSupabase();vMeals();}
+  if(r&&r.ok){toast("Crews updated ✓");await loadSupabase();crewReturn();}
   else toast((r&&r.error)||"Couldn’t save");
 }
 
