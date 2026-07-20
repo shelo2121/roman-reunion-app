@@ -765,18 +765,17 @@ function clearPhoto(name){name=name||ME;const p=LS.prof();if(p[name])delete p[na
 
 function actAudiences(x){
   var ag=((x["Age Group"]||"")+"").toLowerCase();
-  var kid=false,teen=false,adult=false;
+  var kid=false,teen=false,adult=false,all=false;
+  if(/all ages|all age|everyone/.test(ag))all=true;
   if(x.is_kids||(x.Category||"")==="Kids"||/kid/.test(ag))kid=true;
   if(/teen/.test(ag))teen=true;
   if(/adult/.test(ag))adult=true;
-  if(/all ages|all age|everyone/.test(ag)){kid=true;teen=true;adult=true;}
-  if(!kid&&!teen&&!adult){adult=true;teen=true;}
-  return {kid:kid,teen:teen,adult:adult};
+  return {kid:kid,teen:teen,adult:adult,all:all};
 }
 function actOutdoor(x){
   if((x.Category||"").toLowerCase()==="outdoor")return true;
   var loc=((x.Location||"")+"").toLowerCase();
-  if(/fire pit|pool|dock|backyard|court|mountain|preserve|lake|patio|outdoor|yard|beach|garden/.test(loc))return true;
+  if(/fire pit|pool|dock|backyard|court|mountain|preserve|lake|outdoor|yard|beach|garden/.test(loc))return true;
   var n=(x.Name||"").toLowerCase();
   if(/bonfire|pool|boat|hik|pickleball|lake|olympic|jet ski|s'?mores|water gun|kayak|swim/.test(n))return true;
   return false;
@@ -793,9 +792,9 @@ function vActivities(){
     if(cur==="All")return true;
     if(cur==="Outdoor")return actOutdoor(x);
     var au=actAudiences(x);
-    if(cur==="Adults")return au.adult;
-    if(cur==="Teens")return au.teen;
-    if(cur==="Kids")return au.kid;
+    if(cur==="Adults")return au.adult&&!au.all;
+    if(cur==="Teens")return au.teen&&!au.all;
+    if(cur==="Kids")return au.kid&&!au.all;
     return true;
   });
   h+= shown.length? shown.map(actCard).join("") : `<div class="empty" style="padding:22px">No activities in this category yet.</div>`;
