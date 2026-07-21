@@ -39,8 +39,8 @@ details.pk .pklist .muted{color:#7a7c70}
 <style id="mmCss">
 #mmOverlay{position:fixed;inset:0;z-index:99999;overflow-y:auto;-webkit-overflow-scrolling:touch;background:radial-gradient(120% 80% at 50% -10%, #23201d 0%, #0d0b0a 55%, #060505 100%);color:#efe9df;font-family:"Cormorant Garamond",Georgia,serif}
 #mmOverlay *{box-sizing:border-box}
-.mm-close{position:fixed;top:14px;right:15px;z-index:5;width:38px;height:38px;border-radius:50%;border:1px solid rgba(201,162,75,.5);background:rgba(10,9,8,.65);color:#c9a24b;font-size:20px;line-height:1;cursor:pointer}
-.mm-stage{max-width:440px;margin:0 auto;padding:34px 22px 72px;position:relative;min-height:100vh}
+.mm-close{position:fixed;top:calc(14px + env(safe-area-inset-top));right:15px;z-index:5;width:42px;height:42px;border-radius:50%;border:1px solid rgba(201,162,75,.5);background:rgba(10,9,8,.8);color:#c9a24b;font-size:24px;line-height:1;cursor:pointer}
+.mm-stage{max-width:440px;margin:0 auto;padding:calc(22px + env(safe-area-inset-top)) 22px 72px;position:relative;min-height:100vh}
 .mm-kicker{font-family:"Cinzel",serif;font-weight:600;letter-spacing:.4em;font-size:11px;color:#c9a24b;text-transform:uppercase;padding-left:.4em}
 .mm-h1{font-family:"Cinzel Decorative","Cinzel",serif;font-weight:900;font-size:38px;line-height:1.05;margin:14px 0 6px;color:#f6efe1;text-shadow:0 2px 26px rgba(201,162,75,.22)}
 .mm-sub{font-style:italic;font-size:17px;color:#b7ad9b;margin-bottom:28px}
@@ -1197,14 +1197,15 @@ async function vNeeds(){
   var mode=window._needsMode||'still';
   function isClaimed(it){return !!(it.claimed_by||(it.claimers&&it.claimers.length));}
   var needCount=items.filter(function(it){return !isClaimed(it);}).length;
-  var claimedCount=items.length-needCount;
+  function appClaimed(it){return !!(it.claimers&&it.claimers.length);}
+  var claimedCount=items.filter(appClaimed).length;
   var h='<p class="muted" style="margin:0 0 10px">Things we still need for the reunion. If you can bring something, tap it and everyone will see it is covered.</p>';
   function segBtn(id,label){return '<button style="flex:1;border:none;border-radius:26px;padding:9px 4px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;background:'+(mode===id?'#33564a':'transparent')+';color:'+(mode===id?'#fff':'#4a4f40')+'" onclick="window._needsMode=\''+id+'\';vNeeds()">'+label+'</button>';}
   h+='<div style="display:flex;gap:5px;background:#eee7d8;border-radius:30px;padding:4px;margin:0 0 8px">'+segBtn('still','Still needed')+segBtn('claimed','Claimed')+segBtn('all','Show everything')+'</div>';
-  var ct=mode==='still'?(needCount+' items still need someone'):mode==='claimed'?(claimedCount+' items are covered'):(items.length+' items total, '+needCount+' still need someone');
+  var ct=mode==='still'?(needCount+' items still need someone'):mode==='claimed'?(claimedCount+(claimedCount===1?' item claimed so far':' items claimed so far')):(items.length+' items total, '+needCount+' still need someone');
   h+='<p class="muted" style="font-size:11.5px;margin:0 3px 10px;font-weight:600">'+ct+'</p>';
   h+='<details class="pk" style="margin-bottom:12px"><summary>+ Add something we need</summary><div style="padding:2px 14px 14px"><input id="needAdd" class="field" placeholder="What do we need?" style="margin-bottom:8px"><input id="needFor" class="field" placeholder="What is it for? (optional)" style="margin-bottom:8px"><input id="needNote" class="field" placeholder="Note (optional)" style="margin-bottom:8px"><button class="btn sm full" onclick="needsAdd()">Add to the list</button></div></details>';
-  var shown=mode==='claimed'?items.filter(isClaimed):mode==='all'?items.slice():items.filter(function(it){return !isClaimed(it);});
+  var shown=mode==='claimed'?items.filter(appClaimed):mode==='all'?items.slice():items.filter(function(it){return !isClaimed(it);});
   if(!shown.length){h+='<div class="empty" style="padding:22px"><span class="em">&#127881;</span>'+(mode==='claimed'?'Nothing has been claimed yet.':mode==='still'?'Everything is covered. Nice work.':'No items yet.')+'</div>';}
   else{
     h+=shown.map(function(it){
