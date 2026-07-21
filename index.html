@@ -870,15 +870,37 @@ function actCard(x){
 }
 
 function actMatch(a,e){var n=(a.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return !!(n&&t&&(t.indexOf(n)>=0||n.indexOf(t)>=0));}
-function vMyStuff(){
+async function vMyStuff(){
   window._reopenSheet=vMyStuff;
   var x=meRec();var att=(x.Attending||"").toLowerCase();var attB=att==="yes"?"Attending":att==="no"?"Not this year":att==="maybe"?"Maybe":"Tap to set";
   var fnames=[ME].concat(myKids().map(function(k){return k.Name;}));
   var view=window._msView||'help';
   var h=`<div class="prow" onclick='openMember(${JSON.stringify(ME)})' style="padding:12px"><div><div class="nm">${esc(ME)}</div><div style="font-size:12.5px;color:#5c6151">Tap to view your profile</div></div><span class="badge ${att==="no"?"no":att==="maybe"?"maybe":""}" style="margin-left:auto">${attB}</span></div>`;
-  h+=`<div style="display:flex;gap:6px;background:#eee7d8;border-radius:30px;padding:4px;margin:10px 0 4px"><button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:${view==='help'?'#33564a':'transparent'};color:${view==='help'?'#fff':'#4a4f40'}" onclick="window._msView='help';vMyStuff()">What I'm helping with</button><button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:${view==='rsvp'?'#33564a':'transparent'};color:${view==='rsvp'?'#fff':'#4a4f40'}" onclick="window._msView='rsvp';vMyStuff()">What I RSVP'd to</button></div>`;
+  function tabBtn(id,label){return '<button style="flex:1;border:none;border-radius:26px;padding:9px 4px;font-weight:700;font-size:11.5px;cursor:pointer;font-family:inherit;background:'+(view===id?'#33564a':'transparent')+';color:'+(view===id?'#fff':'#4a4f40')+'" onclick="window._msView=\''+id+'\';vMyStuff()">'+label+'</button>';}
+  h+='<div style="display:flex;gap:5px;background:#eee7d8;border-radius:30px;padding:4px;margin:10px 0 4px">'+tabBtn('help',"Helping with")+tabBtn('rsvp',"RSVP'd to")+tabBtn('bring',"Bringing")+'</div>';
   function row(icon,label,time){return `<div style="display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line)"><span style="font-size:15px">${icon}</span><span style="flex:1;font-weight:600;color:#33332b;font-size:14px">${esc(label)}</span><span style="color:#5c6151;font-size:12.5px;white-space:nowrap;font-weight:600">${esc(time||"")}</span></div>`;}
   var any=false;
+  if(view==='bring'){
+    var items=[];try{items=await rpc('rr_needs_list');}catch(e){items=[];}
+    if(!Array.isArray(items))items=[];
+    var meF=first(ME).toLowerCase(),meL=ME.toLowerCase();
+    var mine=items.filter(function(it){
+      var cb=(it.claimed_by||'').toLowerCase().replace('(have)','').trim();
+      if(cb&&(cb===meL||cb.split(' ')[0]===meF))return true;
+      if((it.claimers||[]).some(function(n){return (n||'').toLowerCase()===meL;}))return true;
+      return false;
+    });
+    if(mine.length){
+      any=true;
+      h+='<p class="muted" style="margin:8px 3px 8px;font-size:12.5px">Everything you are bringing from home. Claim items on Things We Need and they show up here.</p>';
+      h+='<div class="card"><div class="pad" style="padding:0">'+mine.map(function(it){return '<div style="display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border-bottom:1px solid var(--line)"><span style="font-size:15px">&#128230;</span><span style="flex:1"><span style="font-weight:600;color:#33332b;font-size:14px">'+esc(it.item)+'</span><div style="color:#5c6151;font-size:12px;margin-top:1px">For: '+esc(it.for_activity||'the reunion')+'</div></span>'+(it.have?'<span style="flex:none;font-size:10.5px;font-weight:700;color:#5c7460;background:#e8efe6;border-radius:12px;padding:3px 8px;white-space:nowrap">Have it</span>':'')+'</div>';}).join('')+'</div>';
+      h+='<button class="btn ghost full sm" style="margin-top:12px" onclick="vNeeds()">Go to Things We Need &#8250;</button>';
+    } else {
+      h+='<div class="empty" style="padding:26px">You are not bringing anything yet. Open <b>Things We Need</b> to claim items.</div>';
+      h+='<button class="btn full sm" style="margin-top:4px" onclick="vNeeds()">Open Things We Need</button>';
+    }
+    openSheetFull(h,"My Stuff");return;
+  }
   DAYS.forEach(function(d){
     var rows=[];
     if(view==='help'){
@@ -909,6 +931,7 @@ function vMyStuff(){
   if(!any)h+=`<div class="empty" style="padding:26px">${view==='help'?"You are not assigned to help with anything yet.":"You have not RSVP'd to anything yet. Open the Schedule to join activities."}</div>`;
   openSheetFull(h,"My Stuff");
 }
+
 function jonahAlertHTML(){return `<div class="alertbox" style="padding:0;overflow:hidden"><button type="button" onclick="rrToggleAllergy(this)" style="width:100%;background:none;border:none;text-align:left;padding:13px 15px;cursor:pointer;font:inherit;color:inherit"><div class="ah" style="margin:0">⚠️ Important Food Allergy Alert</div><div style="text-transform:uppercase;font-weight:800;font-size:12.5px;letter-spacing:.3px;margin-top:4px;line-height:1.4">Jonah has a nut and seed allergy that requires extra care</div><div class="rr-allergy-more" style="color:#b9741e;font-size:12.5px;font-weight:700;margin-top:8px">View food safety details ▼</div></button><div class="rr-allergy-body" style="display:none;padding:0 15px 14px;line-height:1.55"><p style="margin:0 0 9px">Please carefully check all ingredients before preparing or serving food. Jonah will have a separate designated food section, and the exact location will be announced at the house.</p><p style="margin:0 0 9px">Please do not place other food, serving utensils, plates, or personal items in this section. Do not mix Jonah's food with the general food supply.</p><p style="margin:0">Anyone preparing Jonah's food should thoroughly clean their hands, surfaces, cookware, and utensils beforehand to help prevent cross-contact.</p></div></div>`;}
 function rrToggleAllergy(btn){var w=btn.parentNode.querySelector('.rr-allergy-body');var m=btn.querySelector('.rr-allergy-more');if(!w)return;var open=w.style.display!=='none';w.style.display=open?'none':'block';if(m)m.innerHTML=open?'View food safety details ▼':'Hide details ▲';}
 function vMeals(){
