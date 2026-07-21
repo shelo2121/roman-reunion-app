@@ -21,6 +21,21 @@ details.pk .pklist a{color:#33564a;font-weight:700;cursor:pointer;text-decoratio
 details.pk .pklist .muted{color:#7a7c70}
 </style>
 <style id="memCss">.rnode.mem .rnn{color:#8a8578;font-style:italic}</style>
+<style id="ndCss">
+.nd-item{background:#fffdf8;border:1px solid #e7dfce;border-radius:14px;margin-bottom:9px;overflow:hidden}
+.nd-item.dim{opacity:.72}
+.nd-row{display:flex;align-items:center;gap:11px;padding:13px 14px;cursor:pointer}
+.nd-row .chev{width:17px;height:17px;flex:none;color:#a7a496;transition:transform .2s}
+.nd-item.open .nd-row .chev{transform:rotate(90deg)}
+.nd-name{flex:1;font-weight:600;font-size:14.5px;line-height:1.3;color:#2f342c}
+.nd-item.dim .nd-name{color:#9a9788}
+.nd-claim{flex:none;border:1.5px solid #33564a;background:#fff;color:#33564a;border-radius:20px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.nd-claim:active{transform:scale(.96)}
+.nd-detail{display:none;padding:0 14px 13px 42px;color:#5c6151;font-size:13px;line-height:1.5}
+.nd-item.open .nd-detail{display:block}
+.nd-detail .for{color:#33564a;font-weight:700}
+.nd-detail .note{margin-top:5px;font-style:italic;color:#7a7c70}
+</style>
 <style id="mmCss">
 #mmOverlay{position:fixed;inset:0;z-index:99999;overflow-y:auto;-webkit-overflow-scrolling:touch;background:radial-gradient(120% 80% at 50% -10%, #23201d 0%, #0d0b0a 55%, #060505 100%);color:#efe9df;font-family:"Cormorant Garamond",Georgia,serif}
 #mmOverlay *{box-sizing:border-box}
@@ -627,16 +642,21 @@ function vHome(){
       <span class="day">Jul 25 → Aug 1 · ${esc(attendeeCount())} attending</span></div></div>`;
   }
   const tiles=[
-    {t:"My Room",s:"Where you\'re staying",fn:"vMyRoom()",ic:'<path d="M2 17v-3a2 2 0 012-2h16a2 2 0 012 2v3M2 17v2M22 17v2M2 13V7M6 12V9.5a1 1 0 011-1h3.5a1 1 0 011 1V12"/>'},
-    {t:"Schedule",s:"All 8 days",fn:"go('schedule')",ic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>'},
-    {t:"Activities",s:"Browse & RSVP",fn:"vActivities()",ic:'<path d="M12 2l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
-    {t:"Family Tree",s:attendeeCount()+" coming",fn:"go('family')",ic:'<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3.5 20a5.5 5.5 0 0111 0"/>'},
-    {t:"Alerts",s:"Updates",fn:"go('notifications')",ic:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>'},
-    {t:"Meals",s:"Menu & crews",fn:"vMeals()",ic:'<path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v6M17 3c-1.5 1-2 3-2 6s.5 4 2 5v7"/>'},
-    {t:"My Stuff",s:"Your plans",fn:"vMyStuff()",ic:'<path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
-    {t:"The Ark",s:"House & maps",fn:"vPlaces()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"Wi-Fi",s:"Network & password",fn:"vWifi()",ic:'<path d="M5 12.5a10 10 0 0114 0M8 15.5a6 6 0 018 0M12 19h.01"/>'},
+    {t:"FAQ",s:"Common questions",fn:"vFAQ()",ic:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 2-2.5 2-2.5 4M12 17v0"/>'},
+    {t:"My Stuff",s:"Plans & packing",fn:"vMyStuff()",ic:'<path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
     {t:"Photos",s:"Share & view",fn:"vPhotos()",ic:'<rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="8.5" cy="10.5" r="1.8"/><path d="M21 17l-5-5-7 7"/>'},
+    {t:"Schedule",s:"All 8 days",fn:"go('schedule')",ic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>'},
+    {t:"Murder Mystery",s:"Reveal your character",fn:"vMystery()",ic:'<path d="M12 2.4l2.2 8.4-2.2 2-2.2-2z"/><path d="M8.4 11.4h7.2"/><path d="M12 13.4V21"/>'},
+    {t:"Things We Need",s:"Claim what to bring",fn:"vNeeds()",ic:'<path d="M9 11l3 3 9-9"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>'},
     {t:"Music Video",s:"Claim a part",fn:"vUnwritten()",ic:'<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="2.6"/><circle cx="16" cy="16" r="2.6"/>'},
+    {t:"Hibachi",s:"Monday order",fn:"vHibachi()",ic:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>'},
+    {t:"My Room",s:"Your room",fn:"vMyRoom()",ic:'<path d="M2 17v-3a2 2 0 012-2h16a2 2 0 012 2v3M2 17v2M22 17v2M2 13V7M6 12V9.5a1 1 0 011-1h3.5a1 1 0 011 1V12"/>'},
+    {t:"Activities",s:"Browse & RSVP",fn:"vActivities()",ic:'<path d="M12 2l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
+    {t:"Meals",s:"Menu & crews",fn:"vMeals()",ic:'<path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v6M17 3c-1.5 1-2 3-2 6s.5 4 2 5v7"/>'},
+    {t:"Family Tree",s:attendeeCount()+" coming",fn:"go('family')",ic:'<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3.5 20a5.5 5.5 0 0111 0"/>'},
+    {t:"The Ark",s:"House & maps",fn:"vPlaces()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"Alerts",s:"Updates",fn:"go('notifications')",ic:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>'},
   ];
   h+=`<div class="sec"><h2>Explore</h2></div><div class="grid">`+tiles.map(x=>`<div class="tile" onclick="${x.fn}"><div class="ic"><svg viewBox="0 0 24 24">${x.ic}</svg></div><div><div class="lab">${x.t}</div><div class="sub">${x.s}</div></div></div>`).join("")+`</div>`;
   const ann=activeAnn();if(ann.length)h+=`<div class="sec"><h2>Latest</h2><a onclick="go('notifications')">All ›</a></div>`+noteCard(ann[0]);
@@ -960,6 +980,7 @@ function vDirections(){
   var h=`<p class="muted" style="margin:0 0 12px">Addresses and one-tap directions to the places you may need.</p>`;
   h+=`<div class="sec"><h2>The Ark (Reunion)</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(i.Address||i["Location Name"]||"")}','_blank')"><div class="ic">🏡</div><div><div>${esc(i["Location Name"]||"The Ark on Lake Lanier")}</div><div class="muted">${esc(i.Address||"")}</div></div><span class="chev">›</span></div>`;
   h+=`<div class="sec"><h2>Nearest Hospital</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(hosp+", "+hospAddr)}','_blank')"><div class="ic">🏥</div><div><div>${hosp}</div><div class="muted">${hospAddr} · 770-219-9000</div></div><span class="chev">›</span></div>`;
+  h+=`<div class="sec"><h2>Nearest Pharmacy</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent('CVS Pharmacy 3709 Thompson Bridge Rd Gainesville GA 30506')}','_blank')"><div class="ic">💊</div><div><div>CVS Pharmacy</div><div class="muted">3709 Thompson Bridge Rd, Gainesville, GA 30506</div></div><span class="chev">›</span></div>`;
   var l=(DATA["Locations"]||[]).filter(function(x){return x.Address&&!/old dawsonville/i.test(x.Address);});
   if(l.length){h+=`<div class="sec"><h2>Nearby Places</h2></div>`+l.map(function(x){return `<div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(x.Address)}','_blank')"><div class="ic">📍</div><div><div>${esc(x.Name)}</div><div class="muted">${esc(x.Address)}</div></div><span class="chev">›</span></div>`;}).join("");}
   openSheetFull(h,"Need Directions?");
@@ -1110,6 +1131,7 @@ function vMore(){
   const tiles=[
     {t:"My Room",s:"Where you\'re staying",fn:"vMyRoom()",ic:'<path d="M2 17v-3a2 2 0 012-2h16a2 2 0 012 2v3M2 17v2M22 17v2M2 13V7M6 12V9.5a1 1 0 011-1h3.5a1 1 0 011 1V12"/>'},
     {t:"Health & Safety",s:"Emergency, allergy & safety",fn:"vHealth()",ic:'<path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6z"/><path d="M12 8v6M9 11h6"/>'},
+    {t:"Wi-Fi",s:"Network & password",fn:"vWifi()",ic:'<path d="M5 12.5a10 10 0 0114 0M8 15.5a6 6 0 018 0M12 19h.01"/>'},
     {t:"What to Pack",s:"Packing & attire",fn:"vBring()",ic:'<path d="M6 7V5a3 3 0 016 0v2M4 7h16l-1 13H5z"/>'},
     {t:"Things We Need",s:"Claim what to bring",fn:"vNeeds()",ic:'<path d="M9 11l3 3 9-9"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>'},
     {t:"House Rules",s:"At The Ark",fn:"vRules()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
@@ -1172,24 +1194,39 @@ async function vNeeds(){
   var items=null;try{items=await rpc('rr_needs_list');}catch(e){items=null;}
   if(!Array.isArray(items))items=[];
   var mgr=(typeof mgrOn==='function'&&mgrOn());
-  var h='<p class="muted" style="margin:0 0 12px">Things we still need for the reunion. If you can bring something, tap it below and everyone will see that it is covered.</p>';
-  if(mgr){h+='<div class="card"><div class="pad"><input id="needAdd" class="field" placeholder="Add an item (managers only)" style="margin-bottom:8px"><input id="needNote" class="field" placeholder="Optional note: size, how many, etc." style="margin-bottom:8px"><button class="btn sm full" onclick="needsAdd()">Add to list</button></div></div>';}
-  if(!items.length){h+='<div class="empty"><span class="em">&#128221;</span>No items on the list yet.'+(mgr?' Add the first one above.':' Check back soon.')+'</div>';}
+  var mode=window._needsMode||'still';
+  function isClaimed(it){return !!(it.claimed_by||(it.claimers&&it.claimers.length));}
+  var needCount=items.filter(function(it){return !isClaimed(it);}).length;
+  var claimedCount=items.length-needCount;
+  var h='<p class="muted" style="margin:0 0 10px">Things we still need for the reunion. If you can bring something, tap it and everyone will see it is covered.</p>';
+  function segBtn(id,label){return '<button style="flex:1;border:none;border-radius:26px;padding:9px 4px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;background:'+(mode===id?'#33564a':'transparent')+';color:'+(mode===id?'#fff':'#4a4f40')+'" onclick="window._needsMode=\''+id+'\';vNeeds()">'+label+'</button>';}
+  h+='<div style="display:flex;gap:5px;background:#eee7d8;border-radius:30px;padding:4px;margin:0 0 8px">'+segBtn('still','Still needed')+segBtn('claimed','Claimed')+segBtn('all','Show everything')+'</div>';
+  var ct=mode==='still'?(needCount+' items still need someone'):mode==='claimed'?(claimedCount+' items are covered'):(items.length+' items total, '+needCount+' still need someone');
+  h+='<p class="muted" style="font-size:11.5px;margin:0 3px 10px;font-weight:600">'+ct+'</p>';
+  h+='<details class="pk" style="margin-bottom:12px"><summary>+ Add something we need</summary><div style="padding:2px 14px 14px"><input id="needAdd" class="field" placeholder="What do we need?" style="margin-bottom:8px"><input id="needFor" class="field" placeholder="What is it for? (optional)" style="margin-bottom:8px"><input id="needNote" class="field" placeholder="Note (optional)" style="margin-bottom:8px"><button class="btn sm full" onclick="needsAdd()">Add to the list</button></div></details>';
+  var shown=mode==='claimed'?items.filter(isClaimed):mode==='all'?items.slice():items.filter(function(it){return !isClaimed(it);});
+  if(!shown.length){h+='<div class="empty" style="padding:22px"><span class="em">&#127881;</span>'+(mode==='claimed'?'Nothing has been claimed yet.':mode==='still'?'Everything is covered. Nice work.':'No items yet.')+'</div>';}
   else{
-    h+=items.map(function(it){
-      var cl=it.claimers||[];
-      var mine=cl.some(function(n){return (n||'').toLowerCase()===ME.toLowerCase();});
-      var others=cl.filter(function(n){return (n||'').toLowerCase()!==ME.toLowerCase();});
-      var who='';
-      if(cl.length){who='<div class="muted" style="margin-top:6px;font-size:12.5px;color:#33564a">'+(mine?('&#10003; You'+(others.length?' and '+others.map(function(n){return esc(first(n));}).join(', '):'')):esc(cl.map(function(n){return first(n);}).join(', ')))+' bringing this</div>';}
-      return '<div class="card"><div class="pad"><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><p class="evttl" style="font-size:15px;margin:0">'+esc(it.item)+'</p>'+(it.note?'<p class="muted" style="color:#56564c;margin:2px 0 0">'+esc(it.note)+'</p>':'')+who+'</div>'+(mgr?'<button class="rr-mini danger" onclick="needsRemove('+it.id+')">Remove</button>':'')+'</div><button class="rbtn '+(mine?'yes on':'add')+'" style="margin-top:10px" onclick="needsToggle('+it.id+')">'+(mine?'&#10003; I am bringing this':'I can bring this')+'</button></div></div>';
+    h+=shown.map(function(it){
+      var claimed=isClaimed(it);
+      var mineClaim=(it.claimers||[]).some(function(n){return (n||'').toLowerCase()===ME.toLowerCase();});
+      var whoTxt='';
+      if(claimed){var names=[];if(it.claimed_by)names.push(esc(it.claimed_by));(it.claimers||[]).forEach(function(n){names.push((n||'').toLowerCase()===ME.toLowerCase()?'You':esc(first(n)));});whoTxt=names.join(', ');}
+      var canRemove=mgr||(it.added_by&&it.added_by.toLowerCase()===ME.toLowerCase());
+      var right=claimed
+        ? '<span style="flex:none;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#5c7460;white-space:nowrap"><span style="width:18px;height:18px;border-radius:50%;background:#e8efe6;color:#33564a;display:flex;align-items:center;justify-content:center;font-size:11px">&#10003;</span>'+whoTxt+'</span>'
+        : '<button class="nd-claim" onclick="event.stopPropagation();needsToggle('+it.id+')">I\'ll bring this</button>';
+      var det='<div class="nd-detail"><span class="for">For:</span> '+esc(it.for_activity||'the reunion')+(it.note?'<div class="note">'+esc(it.note)+'</div>':'')+(canRemove?'<div style="margin-top:8px"><button class="rr-mini danger" onclick="event.stopPropagation();needsRemove('+it.id+')">Remove</button></div>':'')+'</div>';
+      return '<div class="nd-item'+(claimed?' dim':'')+'" id="ndi'+it.id+'"><div class="nd-row" onclick="ndToggle('+it.id+')"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg><span class="nd-name">'+esc(it.item)+'</span>'+right+'</div>'+det+'</div>';
     }).join('');
   }
   openSheetFull(h,'Things We Need');
 }
+function ndToggle(id){var el=document.getElementById('ndi'+id);if(el)el.classList.toggle('open');}
 async function needsToggle(id){try{await rpc('rr_needs_toggle',{p_name:ME,p_item:id});}catch(e){}vNeeds();}
-async function needsAdd(){var ai=document.getElementById('needAdd'),ni=document.getElementById('needNote');var i=ai?ai.value:'',n=ni?ni.value:'';if(!i||!i.trim()){toast('Type an item first');return;}var r=await rpc('rr_needs_add',{p_token:TOKEN,p_item:i,p_note:n});if(r&&r.ok){toast('Added to the list');vNeeds();}else{toast((r&&r.error)||'Could not add');}}
-async function needsRemove(id){if(typeof confirm==='function'&&!confirm('Remove this item from the list?'))return;var r=await rpc('rr_needs_remove',{p_token:TOKEN,p_item:id});if(r&&r.ok){toast('Removed');vNeeds();}else{toast((r&&r.error)||'Could not remove');}}
+async function needsAdd(){var i=(document.getElementById('needAdd')||{}).value||'';var f=(document.getElementById('needFor')||{}).value||'';var n=(document.getElementById('needNote')||{}).value||'';if(!i.trim()){toast('Type an item first');return;}var r=await rpc('rr_needs_add_open',{p_name:ME,p_item:i,p_for:f,p_note:n});if(r&&r.ok){toast('Added to the list');vNeeds();}else{toast((r&&r.error)||'Could not add');}}
+async function needsRemove(id){if(typeof confirm==='function'&&!confirm('Remove this item from the list?'))return;var r=await rpc('rr_needs_remove',{p_token:TOKEN,p_name:ME,p_item:id});if(r&&r.ok){toast('Removed');vNeeds();}else{toast((r&&r.error)||'Could not remove');}}
+
 
 var RR_LOCS=["Dining Area","Backyard","Dining Deck","Dock","Pool","Pickleball Court","Kitchen","Back Patio","Front Porch"];
 function openLocationEdit(sid){
@@ -1215,6 +1252,29 @@ function rrAttendCtl(name,x){
   return h;
 }
 async function setAttending(name,status){var r=await rpc("rr_set_attending",{p_token:TOKEN,p_name:name,p_status:status});if(r&&r.ok){toast(first(name)+": "+(r.status||status));try{await loadSupabase();}catch(e){}try{closeModal();}catch(e){}openMember(name);if(CUR==="family"){try{vFamily();}catch(e){}}}else{toast((r&&r.error)||"Could not update attendance");}}
+
+function faqLinkify(a){return esc(a).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" style="color:#33564a;font-weight:700;word-break:break-all">$1</a>');}
+async function vWifi(){
+  window._reopenSheet=vWifi;
+  var st={};try{st=await rpc('rr_settings_get')||{};}catch(e){st={};}
+  var net=(st.wifi_network||'').trim();var pw=(st.wifi_password||'').trim();
+  var mgr=(typeof mgrOn==='function'&&mgrOn());
+  var h='';
+  if(net||pw){
+    h+='<div class="card"><div class="pad" style="text-align:center"><div style="font-size:34px">&#128246;</div>';
+    if(net){h+='<div style="margin-top:6px"><div class="muted" style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:700">Network</div><div style="font-size:20px;font-weight:700;color:#33332b;font-family:ui-monospace,Menlo,monospace;margin-top:2px;word-break:break-all">'+esc(net)+'</div><button class="btn ghost sm" style="margin-top:8px" data-wf="'+esc(net)+'" onclick="wifiCopy(this.getAttribute(\'data-wf\'))">Copy network</button></div>';}
+    if(pw){h+='<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line)"><div class="muted" style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-weight:700">Password</div><div style="font-size:23px;font-weight:800;color:#33564a;font-family:ui-monospace,Menlo,monospace;margin-top:2px;word-break:break-all">'+esc(pw)+'</div><button class="btn sm" style="margin-top:10px" data-wf="'+esc(pw)+'" onclick="wifiCopy(this.getAttribute(\'data-wf\'))">Copy password</button></div>';}
+    h+='</div></div>';
+  } else {
+    h+='<div class="empty" style="padding:30px 18px"><span class="em">&#128246;</span>The Wi-Fi details have not been posted yet.'+(mgr?' Add them below.':' Check back soon.')+'</div>';
+  }
+  if(mgr){
+    h+='<div class="card" style="margin-top:12px"><div class="pad"><p class="evttl" style="font-size:14px;margin:0 0 8px">Manager: set the Wi-Fi</p><input id="wfNet" class="field" placeholder="Network name" value="'+esc(net)+'" style="margin-bottom:8px"><input id="wfPw" class="field" placeholder="Password" value="'+esc(pw)+'" style="margin-bottom:8px"><button class="btn full sm" onclick="wifiSave()">Save Wi-Fi for everyone</button></div></div>';
+  }
+  openSheetFull(h,'Wi-Fi');
+}
+function wifiCopy(t){try{navigator.clipboard.writeText(t);toast('Copied');}catch(e){toast('Copy not available on this device');}}
+async function wifiSave(){var n=(document.getElementById('wfNet')||{}).value||'';var pw=(document.getElementById('wfPw')||{}).value||'';var a=await rpc('rr_setting_set',{p_token:TOKEN,p_key:'wifi_network',p_value:n});var b=await rpc('rr_setting_set',{p_token:TOKEN,p_key:'wifi_password',p_value:pw});if(a&&a.ok&&b&&b.ok){toast('Wi-Fi saved for everyone');vWifi();}else{toast((a&&a.error)||(b&&b.error)||'Could not save');}}
 
 function vPickle(){const p=(DATA["Pickleball"]||[]).filter(t=>t["Team Name"]||t["Player 1"]);let h=p.length?p.map(t=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(t["Team Name"]||"Team")}</p><p class="muted">${esc(t["Player 1"]||"")}${t["Player 2"]?" & "+esc(t["Player 2"]):""}</p>${t.Result?`<p class="muted">🏆 ${esc(t.Result)}</p>`:''}</div></div>`).join(""):`<div class="empty"><span class="em">🏓</span>No teams yet.</div>`;openSheetFull(h,"Pickleball");}
 function vHike(){window._reopenSheet=vHike;const d=hikeData();const drivers=Object.keys(d.drivers);
@@ -1243,7 +1303,7 @@ function myHibachi(){const o=DATA["Hibachi Preorders"]||[];const me=meRec();cons
 function hibachiInner(x){var bd=HIBACHI_BREAKDOWN[x.Name];if(bd)return '<div class="hibd">'+bd.map(function(r){return '<div class="hibd-row"><span class="hibd-n">'+esc(r[0])+'</span><span class="hibd-o">🍽️ '+esc(r[1])+'</span></div>';}).join("")+'</div>';return '<div style="background:var(--sage-soft);border-radius:12px;padding:11px 13px;font-size:15px;font-weight:600;color:var(--ink);line-height:1.5">🍽️ '+esc(x["Protein Order"]||"")+'</div>';}
 function vHibachi(){const mine=myHibachi();let h=`<p class="muted" style="margin:0 0 12px">Monday's hibachi dinner - here's what each person in your family ordered. 🍤</p>`;if(mine.length){h+=mine.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:16px;margin:0">Your family's order</p><p class="muted" style="margin:2px 0 9px">${esc(x.Party||"")}${x.Status?` · <b style="color:var(--sage-deep)">${esc(x.Status)}</b>`:""}</p>${hibachiInner(x)}</div></div>`).join("");}else{h+=`<div class="empty"><span class="em">🍤</span>No preorder found under <b>${esc(first(ME))}</b>.<br>If your family ordered under a different name, switch names in your profile.</div>`;}h+=`<button class="btn ghost full" style="margin-top:12px" onclick="vHibachiAll()">See everyone’s orders</button>`;openSheetFull(h,"My Hibachi Order");}
 function vHibachiAll(){const o=DATA["Hibachi Preorders"]||[];openSheetFull((o.length?o.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0 0 2px">${esc(x.Name)}</p><p class="muted" style="margin:0 0 7px">${esc(x.Party||"")}</p>${hibachiInner(x)}</div></div>`).join(""):'<div class="empty">No orders.</div>'),"All Hibachi Orders");}
-function vFAQ(){const f=DATA["FAQ"]||[];openSheetFull(f.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0 0 4px">${esc(x.Question)}</p><p class="muted" style="color:#56564c">${esc(x.Answer)}</p></div></div>`).join("")||'<div class="empty">No FAQs.</div>',"FAQ");}
+function vFAQ(){const f=DATA["FAQ"]||[];openSheetFull(f.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0 0 4px">${esc(x.Question)}</p><p class="muted" style="color:#56564c">${faqLinkify(x.Answer)}</p></div></div>`).join("")||'<div class="empty">No FAQs.</div>',"FAQ");}
 function vRules(){const r=DATA["House Rules"]||[];let h=`<div class="card" style="border:1.5px solid #d8c58a;background:#fbf6e9"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">🌙 Quiet Hours - Alcohol</p><p class="muted" style="color:#56564c">Our family agreed that no hard liquor will be served or consumed after 11:00 PM. Thank you for helping us keep the reunion safe and enjoyable for everyone.</p></div></div>`;h+=r.map(x=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(x.Rule)}</p><p class="muted">${esc(x.Description||"")}</p></div></div>`).join("");openSheetFull(h,"House Rules");}
 
 function vBring(){
@@ -1353,7 +1413,7 @@ $("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal();})
 function toast(msg){let t=document.createElement("div");t.textContent=msg;t.style.cssText="position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:var(--sage-deep);color:#fff;padding:11px 19px;border-radius:30px;font-size:14px;font-weight:600;z-index:200;box-shadow:var(--shadow)";document.body.appendChild(t);setTimeout(()=>t.remove(),1600);}
 
 /* live refresh - every open pulls the latest sheet. Members only overwrites when the live tab actually has attendees, so an incomplete sheet never wipes the roster. */
-const LIVE_TABS=["Reunion Info","Pickleball","Hiking Carpool","Announcements","Locations","Photos","FAQ","House Rules","Packing List","Bringing From Home","Unwritten","Unwritten Claims","Taco Truck Menu","Hibachi Preorders"];
+const LIVE_TABS=["Reunion Info","Pickleball","Hiking Carpool","Announcements","Locations","Photos","House Rules","Packing List","Bringing From Home","Unwritten","Unwritten Claims","Taco Truck Menu","Hibachi Preorders"];
 function csvUrl(tab){return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`;}
 function parseCSV(t){const rows=[];let row=[],cur="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){cur+='"';i++;}else q=false;}else cur+=c;}else{if(c==='"')q=true;else if(c===','){row.push(cur);cur="";}else if(c==='\n'){row.push(cur);rows.push(row);row=[];cur="";}else if(c==='\r'){}else cur+=c;}}if(cur!==""||row.length){row.push(cur);rows.push(row);}return rows;}
 function toObj(rows){if(!rows.length)return[];const h=rows[0].map(x=>x.trim());return rows.slice(1).map(r=>{const o={};h.forEach((k,i)=>o[k]=(r[i]||"").trim());return o;}).filter(o=>Object.values(o).some(v=>v));}
