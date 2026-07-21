@@ -20,6 +20,21 @@ details.pk .pklist li{margin:5px 0}
 details.pk .pklist a{color:#33564a;font-weight:700;cursor:pointer;text-decoration:underline}
 details.pk .pklist .muted{color:#7a7c70}
 </style>
+<style id="ndCss">
+.nd-item{background:#fffdf8;border:1px solid #e7dfce;border-radius:14px;margin-bottom:9px;overflow:hidden}
+.nd-item.dim{opacity:.72}
+.nd-row{display:flex;align-items:center;gap:11px;padding:13px 14px;cursor:pointer}
+.nd-row .chev{width:17px;height:17px;flex:none;color:#a7a496;transition:transform .2s}
+.nd-item.open .nd-row .chev{transform:rotate(90deg)}
+.nd-name{flex:1;font-weight:600;font-size:14.5px;line-height:1.3;color:#2f342c}
+.nd-item.dim .nd-name{color:#9a9788}
+.nd-claim{flex:none;border:1.5px solid #33564a;background:#fff;color:#33564a;border-radius:20px;padding:7px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.nd-claim:active{transform:scale(.96)}
+.nd-detail{display:none;padding:0 14px 13px 42px;color:#5c6151;font-size:13px;line-height:1.5}
+.nd-item.open .nd-detail{display:block}
+.nd-detail .for{color:#33564a;font-weight:700}
+.nd-detail .note{margin-top:5px;font-style:italic;color:#7a7c70}
+</style>
 <style id="mmCss">
 #mmOverlay{position:fixed;inset:0;z-index:99999;overflow-y:auto;-webkit-overflow-scrolling:touch;background:radial-gradient(120% 80% at 50% -10%, #23201d 0%, #0d0b0a 55%, #060505 100%);color:#efe9df;font-family:"Cormorant Garamond",Georgia,serif}
 #mmOverlay *{box-sizing:border-box}
@@ -623,16 +638,20 @@ function vHome(){
       <span class="day">Jul 25 → Aug 1 · ${esc(attendeeCount())} attending</span></div></div>`;
   }
   const tiles=[
-    {t:"My Room",s:"Where you\'re staying",fn:"vMyRoom()",ic:'<path d="M2 17v-3a2 2 0 012-2h16a2 2 0 012 2v3M2 17v2M22 17v2M2 13V7M6 12V9.5a1 1 0 011-1h3.5a1 1 0 011 1V12"/>'},
-    {t:"Schedule",s:"All 8 days",fn:"go('schedule')",ic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>'},
-    {t:"Activities",s:"Browse & RSVP",fn:"vActivities()",ic:'<path d="M12 2l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
-    {t:"Family Tree",s:attendeeCount()+" coming",fn:"go('family')",ic:'<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3.5 20a5.5 5.5 0 0111 0"/>'},
-    {t:"Alerts",s:"Updates",fn:"go('notifications')",ic:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>'},
-    {t:"Meals",s:"Menu & crews",fn:"vMeals()",ic:'<path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v6M17 3c-1.5 1-2 3-2 6s.5 4 2 5v7"/>'},
-    {t:"My Stuff",s:"Your plans",fn:"vMyStuff()",ic:'<path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
-    {t:"The Ark",s:"House & maps",fn:"vPlaces()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"My Stuff",s:"Plans & packing",fn:"vMyStuff()",ic:'<path d="M9 11l3 3 8-8M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>'},
     {t:"Photos",s:"Share & view",fn:"vPhotos()",ic:'<rect x="3" y="5" width="18" height="15" rx="2"/><circle cx="8.5" cy="10.5" r="1.8"/><path d="M21 17l-5-5-7 7"/>'},
+    {t:"Schedule",s:"All 8 days",fn:"go('schedule')",ic:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>'},
+    {t:"Murder Mystery",s:"Reveal your character",fn:"vMystery()",ic:'<path d="M12 2.4l2.2 8.4-2.2 2-2.2-2z"/><path d="M8.4 11.4h7.2"/><path d="M12 13.4V21"/>'},
     {t:"Music Video",s:"Claim a part",fn:"vUnwritten()",ic:'<path d="M9 18V6l10-2v12"/><circle cx="6" cy="18" r="2.6"/><circle cx="16" cy="16" r="2.6"/>'},
+    {t:"FAQ",s:"Common questions",fn:"vFAQ()",ic:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 015 0c0 2-2.5 2-2.5 4M12 17v0"/>'},
+    {t:"Hibachi",s:"Monday order",fn:"vHibachi()",ic:'<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>'},
+    {t:"Things We Need",s:"Claim what to bring",fn:"vNeeds()",ic:'<path d="M9 11l3 3 9-9"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/>'},
+    {t:"My Room",s:"Your room",fn:"vMyRoom()",ic:'<path d="M2 17v-3a2 2 0 012-2h16a2 2 0 012 2v3M2 17v2M22 17v2M2 13V7M6 12V9.5a1 1 0 011-1h3.5a1 1 0 011 1V12"/>'},
+    {t:"Activities",s:"Browse & RSVP",fn:"vActivities()",ic:'<path d="M12 2l2.5 6H21l-5 4 2 7-6-4-6 4 2-7-5-4h6.5z"/>'},
+    {t:"Meals",s:"Menu & crews",fn:"vMeals()",ic:'<path d="M4 3v8a3 3 0 003 3v7M7 3v6M10 3v6M17 3c-1.5 1-2 3-2 6s.5 4 2 5v7"/>'},
+    {t:"Family Tree",s:attendeeCount()+" coming",fn:"go('family')",ic:'<circle cx="9" cy="8" r="3.2"/><circle cx="17" cy="9" r="2.6"/><path d="M3.5 20a5.5 5.5 0 0111 0"/>'},
+    {t:"The Ark",s:"House & maps",fn:"vPlaces()",ic:'<path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>'},
+    {t:"Alerts",s:"Updates",fn:"go('notifications')",ic:'<path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>'},
   ];
   h+=`<div class="sec"><h2>Explore</h2></div><div class="grid">`+tiles.map(x=>`<div class="tile" onclick="${x.fn}"><div class="ic"><svg viewBox="0 0 24 24">${x.ic}</svg></div><div><div class="lab">${x.t}</div><div class="sub">${x.s}</div></div></div>`).join("")+`</div>`;
   const ann=activeAnn();if(ann.length)h+=`<div class="sec"><h2>Latest</h2><a onclick="go('notifications')">All ›</a></div>`+noteCard(ann[0]);
@@ -866,15 +885,37 @@ function actCard(x){
 }
 
 function actMatch(a,e){var n=(a.Name||"").toLowerCase(),t=(e.Title||"").toLowerCase();return !!(n&&t&&(t.indexOf(n)>=0||n.indexOf(t)>=0));}
-function vMyStuff(){
+async function vMyStuff(){
   window._reopenSheet=vMyStuff;
   var x=meRec();var att=(x.Attending||"").toLowerCase();var attB=att==="yes"?"Attending":att==="no"?"Not this year":att==="maybe"?"Maybe":"Tap to set";
   var fnames=[ME].concat(myKids().map(function(k){return k.Name;}));
   var view=window._msView||'help';
   var h=`<div class="prow" onclick='openMember(${JSON.stringify(ME)})' style="padding:12px"><div><div class="nm">${esc(ME)}</div><div style="font-size:12.5px;color:#5c6151">Tap to view your profile</div></div><span class="badge ${att==="no"?"no":att==="maybe"?"maybe":""}" style="margin-left:auto">${attB}</span></div>`;
-  h+=`<div style="display:flex;gap:6px;background:#eee7d8;border-radius:30px;padding:4px;margin:10px 0 4px"><button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:${view==='help'?'#33564a':'transparent'};color:${view==='help'?'#fff':'#4a4f40'}" onclick="window._msView='help';vMyStuff()">What I'm helping with</button><button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:${view==='rsvp'?'#33564a':'transparent'};color:${view==='rsvp'?'#fff':'#4a4f40'}" onclick="window._msView='rsvp';vMyStuff()">What I RSVP'd to</button></div>`;
+  function tabBtn(id,label){return '<button style="flex:1;border:none;border-radius:26px;padding:9px 4px;font-weight:700;font-size:11.5px;cursor:pointer;font-family:inherit;background:'+(view===id?'#33564a':'transparent')+';color:'+(view===id?'#fff':'#4a4f40')+'" onclick="window._msView=\''+id+'\';vMyStuff()">'+label+'</button>';}
+  h+='<div style="display:flex;gap:5px;background:#eee7d8;border-radius:30px;padding:4px;margin:10px 0 4px">'+tabBtn('help',"Helping with")+tabBtn('rsvp',"RSVP'd to")+tabBtn('bring',"Bringing")+'</div>';
   function row(icon,label,time){return `<div style="display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--line)"><span style="font-size:15px">${icon}</span><span style="flex:1;font-weight:600;color:#33332b;font-size:14px">${esc(label)}</span><span style="color:#5c6151;font-size:12.5px;white-space:nowrap;font-weight:600">${esc(time||"")}</span></div>`;}
   var any=false;
+  if(view==='bring'){
+    var items=[];try{items=await rpc('rr_needs_list');}catch(e){items=[];}
+    if(!Array.isArray(items))items=[];
+    var meF=first(ME).toLowerCase(),meL=ME.toLowerCase();
+    var mine=items.filter(function(it){
+      var cb=(it.claimed_by||'').toLowerCase().replace('(have)','').trim();
+      if(cb&&(cb===meL||cb.split(' ')[0]===meF))return true;
+      if((it.claimers||[]).some(function(n){return (n||'').toLowerCase()===meL;}))return true;
+      return false;
+    });
+    if(mine.length){
+      any=true;
+      h+='<p class="muted" style="margin:8px 3px 8px;font-size:12.5px">Everything you are bringing from home. Claim items on Things We Need and they show up here.</p>';
+      h+='<div class="card"><div class="pad" style="padding:0">'+mine.map(function(it){return '<div style="display:flex;align-items:flex-start;gap:9px;padding:11px 13px;border-bottom:1px solid var(--line)"><span style="font-size:15px">&#128230;</span><span style="flex:1"><span style="font-weight:600;color:#33332b;font-size:14px">'+esc(it.item)+'</span><div style="color:#5c6151;font-size:12px;margin-top:1px">For: '+esc(it.for_activity||'the reunion')+'</div></span>'+(it.have?'<span style="flex:none;font-size:10.5px;font-weight:700;color:#5c7460;background:#e8efe6;border-radius:12px;padding:3px 8px;white-space:nowrap">Have it</span>':'')+'</div>';}).join('')+'</div>';
+      h+='<button class="btn ghost full sm" style="margin-top:12px" onclick="vNeeds()">Go to Things We Need &#8250;</button>';
+    } else {
+      h+='<div class="empty" style="padding:26px">You are not bringing anything yet. Open <b>Things We Need</b> to claim items.</div>';
+      h+='<button class="btn full sm" style="margin-top:4px" onclick="vNeeds()">Open Things We Need</button>';
+    }
+    openSheetFull(h,"My Stuff");return;
+  }
   DAYS.forEach(function(d){
     var rows=[];
     if(view==='help'){
@@ -933,6 +974,7 @@ function vDirections(){
   var h=`<p class="muted" style="margin:0 0 12px">Addresses and one-tap directions to the places you may need.</p>`;
   h+=`<div class="sec"><h2>The Ark (Reunion)</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(i.Address||i["Location Name"]||"")}','_blank')"><div class="ic">🏡</div><div><div>${esc(i["Location Name"]||"The Ark on Lake Lanier")}</div><div class="muted">${esc(i.Address||"")}</div></div><span class="chev">›</span></div>`;
   h+=`<div class="sec"><h2>Nearest Hospital</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(hosp+", "+hospAddr)}','_blank')"><div class="ic">🏥</div><div><div>${hosp}</div><div class="muted">${hospAddr} · 770-219-9000</div></div><span class="chev">›</span></div>`;
+  h+=`<div class="sec"><h2>Nearest Pharmacy</h2></div><div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent('CVS Pharmacy 3709 Thompson Bridge Rd Gainesville GA 30506')}','_blank')"><div class="ic">💊</div><div><div>CVS Pharmacy</div><div class="muted">3709 Thompson Bridge Rd, Gainesville, GA 30506</div></div><span class="chev">›</span></div>`;
   var l=(DATA["Locations"]||[]).filter(function(x){return x.Address&&!/old dawsonville/i.test(x.Address);});
   if(l.length){h+=`<div class="sec"><h2>Nearby Places</h2></div>`+l.map(function(x){return `<div class="mlink" onclick="window.open('https://maps.google.com/?q=${encodeURIComponent(x.Address)}','_blank')"><div class="ic">📍</div><div><div>${esc(x.Name)}</div><div class="muted">${esc(x.Address)}</div></div><span class="chev">›</span></div>`;}).join("");}
   openSheetFull(h,"Need Directions?");
@@ -1145,24 +1187,38 @@ async function vNeeds(){
   var items=null;try{items=await rpc('rr_needs_list');}catch(e){items=null;}
   if(!Array.isArray(items))items=[];
   var mgr=(typeof mgrOn==='function'&&mgrOn());
-  var h='<p class="muted" style="margin:0 0 12px">Things we still need for the reunion. If you can bring something, tap it below and everyone will see that it is covered.</p>';
-  if(mgr){h+='<div class="card"><div class="pad"><input id="needAdd" class="field" placeholder="Add an item (managers only)" style="margin-bottom:8px"><input id="needNote" class="field" placeholder="Optional note: size, how many, etc." style="margin-bottom:8px"><button class="btn sm full" onclick="needsAdd()">Add to list</button></div></div>';}
-  if(!items.length){h+='<div class="empty"><span class="em">&#128221;</span>No items on the list yet.'+(mgr?' Add the first one above.':' Check back soon.')+'</div>';}
+  var mode=window._needsMode||'still';
+  function isClaimed(it){return !!(it.claimed_by||(it.claimers&&it.claimers.length));}
+  var needCount=items.filter(function(it){return !isClaimed(it);}).length;
+  var h='<p class="muted" style="margin:0 0 10px">Things we still need for the reunion. If you can bring something, tap it and everyone will see it is covered.</p>';
+  h+='<div style="display:flex;gap:6px;background:#eee7d8;border-radius:30px;padding:4px;margin:0 0 8px">'
+   +'<button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:'+(mode==='still'?'#33564a':'transparent')+';color:'+(mode==='still'?'#fff':'#4a4f40')+'" onclick="window._needsMode=\'still\';vNeeds()">Still needed</button>'
+   +'<button style="flex:1;border:none;border-radius:26px;padding:9px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;background:'+(mode==='all'?'#33564a':'transparent')+';color:'+(mode==='all'?'#fff':'#4a4f40')+'" onclick="window._needsMode=\'all\';vNeeds()">Show everything</button>'
+   +'</div>';
+  h+='<p class="muted" style="font-size:11.5px;margin:0 3px 10px;font-weight:600">'+(mode==='still'?(needCount+' items still need someone'):(items.length+' items total, '+needCount+' still need someone'))+'</p>';
+  h+='<details class="pk" style="margin-bottom:12px"><summary>+ Add something we need</summary><div style="padding:2px 14px 14px"><input id="needAdd" class="field" placeholder="What do we need?" style="margin-bottom:8px"><input id="needFor" class="field" placeholder="What is it for? (optional)" style="margin-bottom:8px"><input id="needNote" class="field" placeholder="Note (optional)" style="margin-bottom:8px"><button class="btn sm full" onclick="needsAdd()">Add to the list</button></div></details>';
+  var shown=items.filter(function(it){return mode==='all'||!isClaimed(it);});
+  if(!shown.length){h+='<div class="empty" style="padding:22px"><span class="em">&#127881;</span>'+(mode==='still'?'Everything is covered. Nice work.':'No items yet.')+'</div>';}
   else{
-    h+=items.map(function(it){
-      var cl=it.claimers||[];
-      var mine=cl.some(function(n){return (n||'').toLowerCase()===ME.toLowerCase();});
-      var others=cl.filter(function(n){return (n||'').toLowerCase()!==ME.toLowerCase();});
-      var who='';
-      if(cl.length){who='<div class="muted" style="margin-top:6px;font-size:12.5px;color:#33564a">'+(mine?('&#10003; You'+(others.length?' and '+others.map(function(n){return esc(first(n));}).join(', '):'')):esc(cl.map(function(n){return first(n);}).join(', ')))+' bringing this</div>';}
-      return '<div class="card"><div class="pad"><div style="display:flex;align-items:flex-start;gap:10px"><div style="flex:1"><p class="evttl" style="font-size:15px;margin:0">'+esc(it.item)+'</p>'+(it.note?'<p class="muted" style="color:#56564c;margin:2px 0 0">'+esc(it.note)+'</p>':'')+who+'</div>'+(mgr?'<button class="rr-mini danger" onclick="needsRemove('+it.id+')">Remove</button>':'')+'</div><button class="rbtn '+(mine?'yes on':'add')+'" style="margin-top:10px" onclick="needsToggle('+it.id+')">'+(mine?'&#10003; I am bringing this':'I can bring this')+'</button></div></div>';
+    h+=shown.map(function(it){
+      var claimed=isClaimed(it);
+      var mineClaim=(it.claimers||[]).some(function(n){return (n||'').toLowerCase()===ME.toLowerCase();});
+      var whoTxt='';
+      if(claimed){var names=[];if(it.claimed_by)names.push(esc(it.claimed_by));(it.claimers||[]).forEach(function(n){names.push((n||'').toLowerCase()===ME.toLowerCase()?'You':esc(first(n)));});whoTxt=names.join(', ');}
+      var canRemove=mgr||(it.added_by&&it.added_by.toLowerCase()===ME.toLowerCase());
+      var right=claimed
+        ? '<span style="flex:none;display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#5c7460;white-space:nowrap"><span style="width:18px;height:18px;border-radius:50%;background:#e8efe6;color:#33564a;display:flex;align-items:center;justify-content:center;font-size:11px">&#10003;</span>'+whoTxt+'</span>'
+        : '<button class="nd-claim" onclick="event.stopPropagation();needsToggle('+it.id+')">I\'ll bring this</button>';
+      var det='<div class="nd-detail"><span class="for">For:</span> '+esc(it.for_activity||'the reunion')+(it.note?'<div class="note">'+esc(it.note)+'</div>':'')+(canRemove?'<div style="margin-top:8px"><button class="rr-mini danger" onclick="event.stopPropagation();needsRemove('+it.id+')">Remove</button></div>':'')+'</div>';
+      return '<div class="nd-item'+(claimed?' dim':'')+'" id="ndi'+it.id+'"><div class="nd-row" onclick="ndToggle('+it.id+')"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg><span class="nd-name">'+esc(it.item)+'</span>'+right+'</div>'+det+'</div>';
     }).join('');
   }
   openSheetFull(h,'Things We Need');
 }
+function ndToggle(id){var el=document.getElementById('ndi'+id);if(el)el.classList.toggle('open');}
 async function needsToggle(id){try{await rpc('rr_needs_toggle',{p_name:ME,p_item:id});}catch(e){}vNeeds();}
-async function needsAdd(){var ai=document.getElementById('needAdd'),ni=document.getElementById('needNote');var i=ai?ai.value:'',n=ni?ni.value:'';if(!i||!i.trim()){toast('Type an item first');return;}var r=await rpc('rr_needs_add',{p_token:TOKEN,p_item:i,p_note:n});if(r&&r.ok){toast('Added to the list');vNeeds();}else{toast((r&&r.error)||'Could not add');}}
-async function needsRemove(id){if(typeof confirm==='function'&&!confirm('Remove this item from the list?'))return;var r=await rpc('rr_needs_remove',{p_token:TOKEN,p_item:id});if(r&&r.ok){toast('Removed');vNeeds();}else{toast((r&&r.error)||'Could not remove');}}
+async function needsAdd(){var i=(document.getElementById('needAdd')||{}).value||'';var f=(document.getElementById('needFor')||{}).value||'';var n=(document.getElementById('needNote')||{}).value||'';if(!i.trim()){toast('Type an item first');return;}var r=await rpc('rr_needs_add_open',{p_name:ME,p_item:i,p_for:f,p_note:n});if(r&&r.ok){toast('Added to the list');vNeeds();}else{toast((r&&r.error)||'Could not add');}}
+async function needsRemove(id){if(typeof confirm==='function'&&!confirm('Remove this item from the list?'))return;var r=await rpc('rr_needs_remove',{p_token:TOKEN,p_name:ME,p_item:id});if(r&&r.ok){toast('Removed');vNeeds();}else{toast((r&&r.error)||'Could not remove');}}
 
 function vPickle(){const p=(DATA["Pickleball"]||[]).filter(t=>t["Team Name"]||t["Player 1"]);let h=p.length?p.map(t=>`<div class="card"><div class="pad"><p class="evttl" style="font-size:15px;margin:0">${esc(t["Team Name"]||"Team")}</p><p class="muted">${esc(t["Player 1"]||"")}${t["Player 2"]?" & "+esc(t["Player 2"]):""}</p>${t.Result?`<p class="muted">🏆 ${esc(t.Result)}</p>`:''}</div></div>`).join(""):`<div class="empty"><span class="em">🏓</span>No teams yet.</div>`;openSheetFull(h,"Pickleball");}
 function vHike(){window._reopenSheet=vHike;const d=hikeData();const drivers=Object.keys(d.drivers);
