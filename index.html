@@ -637,7 +637,7 @@ function joinKey(ev){return (ev.Date||"")+"__"+(ev.Title||"");}
 function joinable(ev){return !["Meal","Logistics"].includes(ev.Category);}
 
 function go(tab){CUR=tab;document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));window.scrollTo(0,0);({home:vHome,schedule:vSchedule,notifications:vBoard,family:vFamily,more:vMore}[tab]||vHome)();}
-function setTitle(k,t){$("topKicker").textContent=k;$("topTitle").textContent=t;}
+function setTitle(k,t){$("topKicker").textContent=rrT(k);$("topTitle").textContent=rrT(t);}
 function greet(){const m=LS.demo()?9:new Date().getHours();return m<12?"Good morning":m<17?"Good afternoon":"Good evening";}
 
 function vHome(){
@@ -1185,7 +1185,65 @@ var MM_KNIFE_SM='<svg width="38" height="38" viewBox="0 0 120 120" fill="none" s
 function mmBlock(l,t){return '<div class="mm-block"><h4><span class="d"></span>'+esc(l)+'</h4><p>'+esc(t||'')+'</p></div>';}
 function mmClose(){var o=document.getElementById('mmOverlay');if(o&&o.parentNode)o.parentNode.removeChild(o);document.body.style.overflow='';}
 function mmShowRevealed(){var sN=document.getElementById('mmSealed'),rN=document.getElementById('mmRevealed');if(sN)sN.style.display='none';if(rN)rN.classList.add('show');var o=document.getElementById('mmOverlay');if(o)o.scrollTop=0;}
-function rrLangES(){return ['Orlando','Washington'].indexOf(ME)>=0;}
+function rrLangES(){try{var v=localStorage.getItem('rr_lang');if(v==='es')return true;if(v==='en')return false;}catch(e){}return ['Orlando','Washington'].indexOf(ME)>=0;}
+function rrSetLang(es){try{localStorage.setItem('rr_lang',es?'es':'en');}catch(e){}try{location.reload();}catch(e){}}
+var RR_T={
+"Home":"Inicio","Schedule":"Agenda","Alerts":"Avisos","Family":"Familia","More":"Mas",
+"Explore":"Explorar","Up Next":"A Continuacion","UP NEXT":"AHORA","Today's Schedule":"Agenda de Hoy","Latest":"Lo Ultimo","Full day ›":"Dia completo ›","All ›":"Todos ›","Nothing scheduled.":"Nada programado.",
+"attending":"asisten","today":"hoy","days until the reunion":"dias para la reunion","day until the reunion":"dia para la reunion",
+"My Room":"Mi Cuarto","My Stuff":"Mis Cosas","Photos":"Fotos","Murder Mystery":"Misterio","Things We Need":"Lo que Necesitamos","Music Video":"Video Musical","Activities":"Actividades","Meals":"Comidas","Family Tree":"Arbol Familiar","The Ark":"El Arca","FAQ":"Preguntas",
+"Network & password":"Red y contrasena","Common questions":"Preguntas comunes","Plans & packing":"Planes y equipaje","Share & view":"Compartir y ver","All 8 days":"Los 8 dias","Reveal your character":"Revela tu personaje","Claim what to bring":"Reclama que traer","Claim a part":"Reclama una parte","Monday order":"Pedido del lunes","Your room":"Tu cuarto","Browse & RSVP":"Explora y confirma","Menu & crews":"Menu y equipos","House & maps":"Casa y mapas","Updates":"Novedades","Where you're staying":"Donde te quedas","Your plans":"Tus planes","Plans & duties":"Planes y tareas","Browse & sign up":"Explora e inscribete",
+"Profile":"Perfil","Close":"Cerrar","Save":"Guardar","Add":"Agregar","Cancel":"Cancelar","Remove":"Quitar","Recent changes":"Cambios recientes","Demo mode":"Modo demo","Tap to view your profile":"Toca para ver tu perfil","Tap to set":"Toca para elegir","Attending":"Asistira","Not this year":"Este ano no","Maybe":"Quiza",
+"Helping with":"Ayudando con","RSVP'd to":"Confirmado","Bringing":"Trayendo",
+"Still needed":"Aun se necesita","Claimed":"Reclamado","Show everything":"Mostrar todo","Add something we need":"Agregar algo que necesitamos","Add to the list":"Agregar a la lista",
+"Pick a part, record it with your group, and send it in. Tap a part to see lyrics & claim it.":"Elige una parte, grabala con tu grupo y enviala. Toca una parte para ver la letra y reclamarla.",
+"Open":"Abierta","All":"Todas","Full Family":"Toda la Familia","Claim this part":"Reclama esta parte","Join this part":"Unete a esta parte","This part’s full":"Parte llena","Lyrics coming soon":"Letra proximamente","Claims save on your phone for now.":"Las reservas se guardan en tu telefono por ahora.",
+"Network":"Red","Password":"Contrasena","Copy network":"Copiar red","Copy password":"Copiar contrasena","Copied":"Copiado",
+"Nearest Hospital":"Hospital mas cercano","Nearest Pharmacy":"Farmacia mas cercana","Nearby Places":"Lugares cercanos",
+"Reveal my character":"Revela mi personaje","For your eyes only":"Solo para tus ojos",
+"House Rules":"Reglas de la Casa","What to Pack":"Que Empacar","Health & Safety":"Salud y Seguridad","Need Directions?":"Necesitas Direcciones?","Wi-Fi":"Wi-Fi",
+"Monday":"Lunes","Tuesday":"Martes","Wednesday":"Miercoles","Thursday":"Jueves","Friday":"Viernes","Saturday":"Sabado","Sunday":"Domingo",
+"Coming":"Viene","Not coming":"No viene",
+"Go to Things We Need ›":"Ir a Lo que Necesitamos ›","Open Things We Need":"Abrir Lo que Necesitamos"
+};
+function rrT(x){if(x==null)return x;if(!rrLangES())return x;var k=(''+x).trim();return RR_T.hasOwnProperty(k)?RR_T[k]:x;}
+function rrLangPat(t){var m;
+  if(m=t.match(/^(Good morning|Good afternoon|Good evening), ([\s\S]+)$/)){var g={"Good morning":"Buenos dias","Good afternoon":"Buenas tardes","Good evening":"Buenas noches"};return g[m[1]]+", "+m[2];}
+  if(m=t.match(/^Day (\d+) · ([\s\S]+)$/)){return "Dia "+m[1]+" · "+(RR_T[m[2].trim()]||m[2]);}
+  if(m=t.match(/^(\d+) of (\d+) parts claimed$/))return m[1]+" de "+m[2]+" partes reclamadas";
+  if(m=t.match(/^(\d+) coming$/))return m[1]+" vienen";
+  if(m=t.match(/^(\d+) more can join$/))return m[1]+" mas pueden unirse";
+  if(m=t.match(/^(\d+) items? still need someone$/))return m[1]+" cosas aun necesitan a alguien";
+  if(m=t.match(/^(\d+) items? claimed so far$/))return m[1]+" cosas reclamadas hasta ahora";
+  return null;}
+var _rrLangBusy=false;
+function rrApplyLang(root){
+  if(!rrLangES()||!root||!root.querySelectorAll)return;
+  _rrLangBusy=true;
+  try{
+    var wk=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),n;
+    while(n=wk.nextNode()){
+      var raw=n.nodeValue;if(!raw)continue;var key=raw.trim();if(!key||key.length>240)continue;
+      if(RR_T.hasOwnProperty(key)){n.nodeValue=raw.replace(key,RR_T[key]);continue;}
+      var pt=rrLangPat(key);if(pt!==null)n.nodeValue=raw.replace(key,pt);
+    }
+    var ph=root.querySelectorAll('[placeholder]');for(var i=0;i<ph.length;i++){var pv=(ph[i].getAttribute('placeholder')||'').trim();if(RR_T.hasOwnProperty(pv))ph[i].setAttribute('placeholder',RR_T[pv]);}
+  }catch(e){}
+  _rrLangBusy=false;
+}
+function rrArmLang(){
+  try{
+    if(rrLangES()){rrApplyLang(document.getElementById('view'));rrApplyLang(document.getElementById('nav'));}
+    ['view','sheet'].forEach(function(id){
+      var el=document.getElementById(id);if(!el)return;
+      var obs=new MutationObserver(function(){
+        if(_rrLangBusy||!rrLangES())return;
+        obs.disconnect();rrApplyLang(el);try{obs.observe(el,{childList:true,subtree:true,characterData:true});}catch(e){}
+      });
+      obs.observe(el,{childList:true,subtree:true,characterData:true});
+    });
+  }catch(e){}
+}
 async function openMysteryReveal(){
   var es=(typeof rrLangES==='function'&&rrLangES());
   var data=null;try{data=await rpc('rr_my_character',{p_name:ME});}catch(e){data=null;}
@@ -1416,6 +1474,8 @@ function openProfile(){
   h+=`<button class="btn full" style="margin-top:14px" onclick="rrEditProfile('${esc(ME).replace(/'/g,"\\'")}')">✎ Edit my profile</button>`;
   h+=`<button class="btn ghost full" style="margin-top:8px" onclick="openSwitch()">🔄 Not ${esc(first(ME))}? Switch person</button>`;
   h+=`<button class="btn ghost full" style="margin-top:8px" onclick="vLog()">📝 Recent changes</button>`;
+  h+=`<span class="label">Language · Idioma</span>`;
+  h+=`<div class="setrow"><div><div class="sl">Español</div><div class="ss">Turn on to read the app in Spanish · Actívalo para ver la app en español</div></div><label class="toggle"><input type="checkbox" id="langTog" ${rrLangES()?"checked":""} onchange="rrSetLang(this.checked)"><span class="tr"></span></label></div>`;
   h+=`<span class="label">Demo mode</span>`;
   h+=`<div class="setrow"><div><div class="sl">Always show "Today"</div><div class="ss">Preview the app as if the reunion is happening now</div></div><label class="toggle"><input type="checkbox" id="demoTog" ${LS.demo()?"checked":""} onchange="LS.setDemo(this.checked);refreshDay()"><span class="tr"></span></label></div>`;
   h+=`<div class="setrow" id="demoDayRow" style="${LS.demo()?'':'display:none'}"><div><div class="sl">Demo day</div><div class="ss">Which reunion day to show</div></div><select class="field" style="width:auto;margin:0" id="demoDaySel" onchange="LS.setDemoDay(this.value);refreshDay()">${DAYS.map(function(d){return `<option ${d.label===LS.demoDay()?"selected":""}>${d.label}</option>`;}).join("")}</select></div>`;
@@ -1509,6 +1569,7 @@ async function rrAfterLogin(){
   try{rrArmAutoRefresh();}catch(e){}
   try{rrArmUpdateCheck();}catch(e){}
   try{rrArmPush();}catch(e){}
+  try{rrArmLang();}catch(e){}
 }
 async function loadSupabase(){
   var sched=await rpc("rr_get_schedule");
