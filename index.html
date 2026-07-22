@@ -1888,7 +1888,7 @@ async function vBoard(){
   var res=await Promise.all([rpc("rr_ann_list",{p_token:TOKEN}),rpc("rr_messages_list",{p_token:TOKEN})]);
   var ann=res[0]||{},msgs=res[1]||{};
   if(ann.ok===false&&ann.error){ V().innerHTML='<div class="empty" style="padding:26px">Please sign in to see messages.</div>'; return; }
-  var h='<div style="display:flex;gap:8px;margin:2px 0 8px"><button class="btn full" style="flex:1;min-width:0" onclick="composeAnn()">📣 Announce</button><button class="btn ghost full" style="flex:1;min-width:0" onclick="composeMsg()">💬 Ask / post</button></div>';
+  var h='<div style="display:flex;gap:8px;margin:2px 0 8px">'+(mgrOn()?'<button class="btn full" style="flex:1;min-width:0" onclick="composeAnn()">📣 Announce</button>':'')+'<button class="btn ghost full" style="flex:1;min-width:0" onclick="composeMsg()">💬 Ask / post</button></div>';
   h+='<button class="btn ghost full sm" style="margin:0 0 6px" onclick="vNotifications()">🔔 Event reminders &amp; today</button>';
   h+='<div id="pushBar" style="margin:0 0 8px"></div>';
   h+='<div class="sec"><h2>Announcements</h2></div>';
