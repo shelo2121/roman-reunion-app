@@ -575,7 +575,7 @@ const LS={
   me:()=>localStorage.getItem("rr_me")||"",
   setMe:v=>localStorage.setItem("rr_me",v),
   hasMe:()=>!!localStorage.getItem("rr_me"),
-  demo:()=>localStorage.getItem("rr_demo")!=="off",
+  demo:()=>localStorage.getItem("rr_demo")==="on",
   setDemo:v=>localStorage.setItem("rr_demo",v?"on":"off"),
   demoDay:()=>localStorage.getItem("rr_demoday")||"Sat 7/25",
   setDemoDay:v=>localStorage.setItem("rr_demoday",v),
