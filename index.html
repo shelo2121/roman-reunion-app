@@ -704,7 +704,7 @@ function goingBase(k,ev){let h=0;const s=((ev&&ev.Title)||k);for(const c of s)h=
 function rrMergedJoins(){var out={},s=window._RSVP||{},k,l;for(k in s){out[k]=Object.assign({},s[k]);}l=LS.joins();for(k in l){out[k]=Object.assign(out[k]||{},l[k]);}return out;}
 function joinedSet(k){var m=rrMergedJoins();return m[k]||{};}
 function statusOf(k,p){return joinedSet(k)[p]||"";}
-function setStatus(k,p,st){var j=LS.joins();if(!j[k])j[k]={};if(st)j[k][p]=st;else delete j[k][p];if(!Object.keys(j[k]).length)delete j[k];LS.setJoins(j);if(!window._RSVP)window._RSVP={};if(st){(window._RSVP[k]=window._RSVP[k]||{})[p]=st;}else if(window._RSVP[k]){delete window._RSVP[k][p];if(!Object.keys(window._RSVP[k]).length)delete window._RSVP[k];}try{if(TOKEN)rpc("rr_set_rsvp",{p_token:TOKEN,p_key:k,p_person:p,p_status:st||""});}catch(e){}}
+function setStatus(k,p,st){var j=LS.joins();if(!j[k])j[k]={};if(st)j[k][p]=st;else delete j[k][p];if(!Object.keys(j[k]).length)delete j[k];LS.setJoins(j);if(!window._RSVP)window._RSVP={};if(st){(window._RSVP[k]=window._RSVP[k]||{})[p]=st;}else if(window._RSVP[k]){delete window._RSVP[k][p];if(!Object.keys(window._RSVP[k]).length)delete window._RSVP[k];}try{if(TOKEN&&!isHidden(p))rpc("rr_set_rsvp",{p_token:TOKEN,p_key:k,p_person:p,p_status:st||""});}catch(e){}}
 function joinCount(k){const s=joinedSet(k);return Object.keys(s).filter(p=>s[p]==="in").length;}
 function myKids(){const me=ME.toLowerCase(),meF=first(ME).toLowerCase();return attendees().filter(p=>{const par=(p.Parent||"").toLowerCase();if(!par)return false;const toks=par.split(/\s+and\s+|,|&/).map(x=>x.trim());return (toks.includes(me)||toks.includes(meF))&&["kid","toddler"].includes((p["Age Group"]||"").toLowerCase());});}
 function setMy(e,k,st){e.stopPropagation();const cur=statusOf(k,ME);const nv=cur===st?"":st;setStatus(k,ME,nv);addLog((nv==="in"?"RSVP’d Coming":nv==="out"?"Not coming":"Cleared RSVP")+" · "+kLabel(k));toast(st==="in"?"You’re in! 🎉":st==="out"?"Noted - can’t make it":"Cleared");rerender();}
@@ -712,8 +712,8 @@ function toggleKid(e,k,name){e.stopPropagation();const on=statusOf(k,name)!=="in
 function rerender(){({home:vHome,schedule:vSchedule,notifications:vBoard,family:vFamily}[CUR]||function(){})();if($("modal").classList.contains("open")&&window._reopenSheet)window._reopenSheet();}
 
 function kidChip(k,kk,kd){return `<span class="kidchip ${statusOf(k,kd.Name)==='in'?'on':''}" onclick="toggleKid(event,'${kk}','${esc(kd.Name).replace(/'/g,"\\'")}')">${statusOf(k,kd.Name)==='in'?'✓ ':'＋ '}${esc(first(kd.Name))}</span>`;}
-function whoIn(k){const st=joinedSet(k);return Object.keys(st).filter(p=>st[p]==="in");}
-function whoOut(k){const st=joinedSet(k);return Object.keys(st).filter(p=>st[p]==="out");}
+function whoIn(k){const st=joinedSet(k);return Object.keys(st).filter(p=>st[p]==="in"&&!isHidden(p));}
+function whoOut(k){const st=joinedSet(k);return Object.keys(st).filter(p=>st[p]==="out"&&!isHidden(p));}
 function whoList(k){const inN=whoIn(k),outN=whoOut(k);let h=`<div class="wholist"><span class="wlhead">✓ Coming${inN.length?' ('+inN.length+')':''}</span>`+(inN.length?inN.map(n=>`<span class="wlpill in">${esc(first(n))}</span>`).join(""):`<span class="wlnone">No one yet</span>`)+`</div>`;if(outN.length)h+=`<div class="wholist"><span class="wlhead">✗ Not coming</span>`+outN.map(n=>`<span class="wlpill out">${esc(first(n))}</span>`).join("")+`</div>`;return h;}
 function rsvpBlock(ev){const k=joinKey(ev),kk=esc(k).replace(/'/g,"\\'");let h="";
   if(ev.Category==="Kids"){const ppl=myPeople(true);
@@ -1601,7 +1601,7 @@ async function rrMigrateLocalMisc(){
 }
 async function rrMigrateLocalJoins(){
   if(!TOKEN)return;
-  var l=LS.joins();var keys=Object.keys(l||{});if(!keys.length)return;
+  var l0=LS.joins();var l={};Object.keys(l0||{}).forEach(function(kk){var o=l0[kk];if(!o)return;var oo={};Object.keys(o).forEach(function(pp){if(!isHidden(pp))oo[pp]=o[pp];});if(Object.keys(oo).length)l[kk]=oo;});if(!Object.keys(l).length)return;
   if(localStorage.getItem("rr_joins_migrated")==="1")return;
   try{var r=await rpc("rr_migrate_rsvps",{p_token:TOKEN,p_data:l});
     if(r&&r.ok){localStorage.setItem("rr_joins_migrated","1");
