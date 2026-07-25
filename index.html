@@ -1024,7 +1024,7 @@ function uwSecs(){return (DATA["Unwritten"]||[]).slice().filter(s=>s.slot_id).so
 function uwMax(s){const m=parseInt(s.max_people,10);return isNaN(m)?4:m;}
 function uwAllClaims(){
   const sheet=(DATA["Unwritten Claims"]||[]).map(o=>({slot_id:o.slot_id||o.Slot||"",name:o.name||o.Name||"",group_members:o.group_members||o.members||o.Members||"",group_name:o.group_name||o.Group||""}));
-  const merged=sheet.concat(LS.uwClaims());const seen={},out=[];
+  const merged=sheet.concat(window._UWCLAIMS||[]).concat(LS.uwClaims());const seen={},out=[];
   merged.forEach(c=>{if(!c.slot_id)return;const k=c.slot_id+"|"+(c.name||"").toLowerCase()+"|"+(c.group_name||"").toLowerCase();if(seen[k])return;seen[k]=1;out.push(c);});
   return out;
 }
@@ -1087,6 +1087,8 @@ function uwSubmit(id){
   if(!name){$("uwf_name").focus();$("uwf_name").style.borderColor="#d98b6a";return;}
   const rec={slot_id:id,name:name,group_members:($("uwf_group").value||"").trim(),group_name:($("uwf_gname").value||"").trim(),contact:"",ts:new Date().toISOString()};
   LS.addUwClaim(rec);
+  if(!window._UWCLAIMS)window._UWCLAIMS=[];window._UWCLAIMS.push({slot_id:rec.slot_id,name:rec.name,group_members:rec.group_members,group_name:rec.group_name});
+  try{if(TOKEN)rpc("rr_uw_claim",{p_token:TOKEN,p_slot:rec.slot_id,p_name:rec.name,p_group_members:rec.group_members,p_group_name:rec.group_name});}catch(e){}
   if(CLAIM_ENDPOINT){try{fetch(CLAIM_ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(rec)});}catch(e){}}
   addLog("Claimed a music-video part");UWFILTER="claimed";vUnwritten();toast("You’ve got it! 🎉 Record it & send it in.");
 }
@@ -1100,11 +1102,12 @@ function addSomeone(k){const inSet=joinedSet(k);const avail=attendees().filter(p
   openSheet(h);
 }
 function addSomeoneSave(k){const chips=[...document.querySelectorAll('.addchip.on')];if(!chips.length){toast("Tap a name first");return;}chips.forEach(c=>setStatus(k,c.getAttribute('data-n'),"in"));addLog("Added "+chips.map(c=>first(c.getAttribute('data-n'))).join(", ")+" · "+kLabel(k));closeModal();rerender();toast(chips.length+(chips.length===1?" person":" people")+" added ✓");}
-function hikeData(){const d=LS.hike();d.drivers=d.drivers||{};d.riders=d.riders||{};return d;}
+function rrHikeStore(){if(!window._HIKE)window._HIKE={drivers:{},riders:{}};window._HIKE.drivers=window._HIKE.drivers||{};window._HIKE.riders=window._HIKE.riders||{};return window._HIKE;}
+function hikeData(){var sv=window._HIKE||{};var l=LS.hike();return {drivers:Object.assign({},sv.drivers||{},l.drivers||{}),riders:Object.assign({},sv.riders||{},l.riders||{})};}
 function hikeSeatsLeft(name){const d=hikeData();const seats=parseInt(d.drivers[name],10)||0;const taken=Object.keys(d.riders).filter(n=>d.riders[n]===name).length;return seats-taken;}
-function setDriver(n){const d=hikeData();d.drivers[ME]=n;delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("You’re driving 🚗");}
-function hikeClear(){const d=hikeData();delete d.drivers[ME];delete d.riders[ME];LS.setHike(d);window._hikeMode=null;vHike();}
-function rideWith(dn){const d=hikeData();if(hikeSeatsLeft(dn)<=0){toast("That car is full");return;}d.riders[ME]=dn;delete d.drivers[ME];LS.setHike(d);window._hikeMode=null;vHike();toast("Ride booked 🙌");}
+function setDriver(n){var l=LS.hike();l.drivers=l.drivers||{};l.riders=l.riders||{};l.drivers[ME]=n;delete l.riders[ME];LS.setHike(l);var h=rrHikeStore();h.drivers[ME]=n;delete h.riders[ME];try{if(TOKEN)rpc("rr_hike_set",{p_token:TOKEN,p_role:"driver",p_seats:parseInt(n,10)||0,p_driver:null});}catch(e){}window._hikeMode=null;vHike();toast("You’re driving 🚗");}
+function hikeClear(){var l=LS.hike();l.drivers=l.drivers||{};l.riders=l.riders||{};delete l.drivers[ME];delete l.riders[ME];LS.setHike(l);var h=rrHikeStore();delete h.drivers[ME];delete h.riders[ME];try{if(TOKEN)rpc("rr_hike_set",{p_token:TOKEN,p_role:"",p_seats:0,p_driver:null});}catch(e){}window._hikeMode=null;vHike();}
+function rideWith(dn){if(hikeSeatsLeft(dn)<=0){toast("That car is full");return;}var l=LS.hike();l.drivers=l.drivers||{};l.riders=l.riders||{};l.riders[ME]=dn;delete l.drivers[ME];LS.setHike(l);var h=rrHikeStore();h.riders[ME]=dn;delete h.drivers[ME];try{if(TOKEN)rpc("rr_hike_set",{p_token:TOKEN,p_role:"rider",p_seats:0,p_driver:dn});}catch(e){}window._hikeMode=null;vHike();toast("Ride booked 🙌");}
 function tvFit(){var w=document.getElementById("tvfit");if(!w)return;w.style.transformOrigin="top left";w.style.transform="none";w.style.width="100%";var avail=window.innerHeight-8;function clamp(x){return x>1.7?1.7:(x<0.3?0.3:x);}var sc=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc)+"%";var sc2=clamp(avail/(w.scrollHeight||1));w.style.width=(100/sc2)+"%";w.style.transform="scale("+sc2+")";}
 function tvEmoji(ev){var c=ev.Category||"",t=(ev.Title||"").toLowerCase();if(c==="Meal"){if(/breakfast/.test(t))return "🍳";if(/brunch/.test(t))return "🥞";if(/lunch/.test(t))return "🥪";if(/dessert|s'?mores|sweet/.test(t))return "🍰";if(/dinner|feast|bbq|hibachi|food truck|ziti|ham|cuban|night/.test(t))return "🍽️";return "🍴";}if(c==="Boat")return "⛵";if(c==="Kids")return "🎨";if(c==="Bonfire")return "🔥";if(c==="Photos")return "📸";if(c==="Logistics")return "📍";return "🎉";}
 function wxIcon(c){c=+c;if(c===0)return["☀️","Clear"];if(c<=2)return["🌤️","Partly cloudy"];if(c===3)return["☁️","Cloudy"];if(c<=48)return["🌫️","Fog"];if(c<=57)return["🌦️","Drizzle"];if(c<=67)return["🌧️","Rain"];if(c<=77)return["🌨️","Snow"];if(c<=82)return["🌦️","Showers"];if(c<=86)return["🌨️","Snow"];return["⛈️","Storms"];}
@@ -1591,6 +1594,11 @@ async function rrAfterLogin(){
   try{rrArmPush();}catch(e){}
   try{rrArmLang();}catch(e){}
 }
+async function rrMigrateLocalMisc(){
+  if(!TOKEN)return;
+  try{var lh=LS.hike();if(lh&&((lh.drivers&&Object.keys(lh.drivers).length)||(lh.riders&&Object.keys(lh.riders).length))&&localStorage.getItem("rr_hike_migrated")!=="1"){var r=await rpc("rr_hike_migrate",{p_token:TOKEN,p_data:lh});if(r&&r.ok){localStorage.setItem("rr_hike_migrated","1");var _hk=await rpc("rr_hike_get");if(_hk&&typeof _hk==="object"&&!Array.isArray(_hk))window._HIKE=_hk;}}}catch(e){}
+  try{var lu=LS.uwClaims();if(lu&&lu.length&&localStorage.getItem("rr_uw_migrated")!=="1"){var r2=await rpc("rr_uw_migrate",{p_token:TOKEN,p_data:lu});if(r2&&r2.ok){localStorage.setItem("rr_uw_migrated","1");var _uw=await rpc("rr_uw_list");if(Array.isArray(_uw))window._UWCLAIMS=_uw;}}}catch(e){}
+}
 async function rrMigrateLocalJoins(){
   if(!TOKEN)return;
   var l=LS.joins();var keys=Object.keys(l||{});if(!keys.length)return;
@@ -1614,6 +1622,9 @@ async function loadSupabase(){
   try{var _att=await rpc("rr_attendance_list");if(Array.isArray(_att))applyAttendance(_att);}catch(e){}
   try{var _rs=await rpc("rr_get_rsvps");if(_rs&&typeof _rs==="object"&&!Array.isArray(_rs))window._RSVP=_rs;}catch(e){}
   try{await rrMigrateLocalJoins();}catch(e){}
+  try{var _hk=await rpc("rr_hike_get");if(_hk&&typeof _hk==="object"&&!Array.isArray(_hk))window._HIKE=_hk;}catch(e){}
+  try{var _uw=await rpc("rr_uw_list");if(Array.isArray(_uw))window._UWCLAIMS=_uw;}catch(e){}
+  try{await rrMigrateLocalMisc();}catch(e){}
   try{await rrLoadEditTargets();}catch(e){}
   try{rrScrubData();}catch(e){}
   try{normalizeDates();}catch(e){}
