@@ -701,9 +701,10 @@ function evCard(ev,isNext){
 
 function joinVerb(ev){if(/boat/i.test(ev.Title)||ev.Category==="Boat")return "RSVP";if(/tournament|pickleball|relay|race/i.test(ev.Title))return "Sign up";return "Join";}
 function goingBase(k,ev){let h=0;const s=((ev&&ev.Title)||k);for(const c of s)h=(h*17+c.charCodeAt(0))%9;return h+2;}
-function joinedSet(k){const j=LS.joins();return j[k]||{};}
+function rrMergedJoins(){var out={},s=window._RSVP||{},k,l;for(k in s){out[k]=Object.assign({},s[k]);}l=LS.joins();for(k in l){out[k]=Object.assign(out[k]||{},l[k]);}return out;}
+function joinedSet(k){var m=rrMergedJoins();return m[k]||{};}
 function statusOf(k,p){return joinedSet(k)[p]||"";}
-function setStatus(k,p,st){const j=LS.joins();if(!j[k])j[k]={};if(st)j[k][p]=st;else delete j[k][p];if(!Object.keys(j[k]).length)delete j[k];LS.setJoins(j);}
+function setStatus(k,p,st){var j=LS.joins();if(!j[k])j[k]={};if(st)j[k][p]=st;else delete j[k][p];if(!Object.keys(j[k]).length)delete j[k];LS.setJoins(j);if(!window._RSVP)window._RSVP={};if(st){(window._RSVP[k]=window._RSVP[k]||{})[p]=st;}else if(window._RSVP[k]){delete window._RSVP[k][p];if(!Object.keys(window._RSVP[k]).length)delete window._RSVP[k];}try{if(TOKEN)rpc("rr_set_rsvp",{p_token:TOKEN,p_key:k,p_person:p,p_status:st||""});}catch(e){}}
 function joinCount(k){const s=joinedSet(k);return Object.keys(s).filter(p=>s[p]==="in").length;}
 function myKids(){const me=ME.toLowerCase(),meF=first(ME).toLowerCase();return attendees().filter(p=>{const par=(p.Parent||"").toLowerCase();if(!par)return false;const toks=par.split(/\s+and\s+|,|&/).map(x=>x.trim());return (toks.includes(me)||toks.includes(meF))&&["kid","toddler"].includes((p["Age Group"]||"").toLowerCase());});}
 function setMy(e,k,st){e.stopPropagation();const cur=statusOf(k,ME);const nv=cur===st?"":st;setStatus(k,ME,nv);addLog((nv==="in"?"RSVP’d Coming":nv==="out"?"Not coming":"Cleared RSVP")+" · "+kLabel(k));toast(st==="in"?"You’re in! 🎉":st==="out"?"Noted - can’t make it":"Cleared");rerender();}
@@ -723,7 +724,7 @@ function rsvpBlock(ev){const k=joinKey(ev),kk=esc(k).replace(/'/g,"\\'");let h="
     h+=`<button class="rbtn add" style="margin-top:8px" onclick="event.stopPropagation();addSomeone('${kk}')">＋ Add someone else</button>`;
     if(ppl.length)h+=`<div class="kidsignup"><span class="ksl">Your family</span>${ppl.map(kd=>kidChip(k,kk,kd)).join("")}</div>`;
   }
-  h+='<div class="whowrap"><button class="wtoggle" onclick="event.stopPropagation();wToggle(this)">See who\u2019s coming <span class="wchev">\u25b8</span></button><div class="wbody">'+whoList(k)+'</div></div>';return h;}
+  var _ci=whoIn(k).length,_co=whoOut(k).length;h+='<div class="whowrap"><button class="wtoggle" onclick="event.stopPropagation();wToggle(this)">See who\u2019s coming'+((_ci||_co)?' ('+_ci+' in'+(_co?' \u00b7 '+_co+' out':'')+')':'')+' <span class="wchev">\u25b8</span></button><div class="wbody">'+whoList(k)+'</div></div>';return h;}
 function kLabel(k){const p=(k||"").split("__");return (p[1]||"")+(p[0]?" ("+p[0]+")":"");}
 function addLog(action){try{let a=LS.log();a.unshift({t:Date.now(),who:ME,act:action});a=a.slice(0,150);localStorage.setItem("rr_log",JSON.stringify(a));}catch(e){}}
 function vLog(){var log=LS.log();var h=`<p class="muted" style="margin:0 0 12px;font-size:13px">A record of RSVP and claim changes on this phone, newest first.</p>`;if(log.length)h+=`<button class="btn ghost full sm" style="margin:0 0 12px" onclick="clearLog()">🗑️ Clear all</button>`;h+= log.length? log.map(function(e){return `<div class="card"><div class="pad" style="padding:10px 12px"><div style="font-weight:600;font-size:14px;color:#33332b">${esc(e.who||"?")}</div><div style="font-size:12.5px;color:#4a4f40">${esc(e.act||"")}</div><div style="font-size:11px;margin-top:2px;color:#7a7f6f">${esc(new Date(e.t).toLocaleString())}</div></div></div>`;}).join("") : `<div class="empty">No changes recorded yet.</div>`;openSheetFull(h,"Recent changes");}
@@ -1590,6 +1591,16 @@ async function rrAfterLogin(){
   try{rrArmPush();}catch(e){}
   try{rrArmLang();}catch(e){}
 }
+async function rrMigrateLocalJoins(){
+  if(!TOKEN)return;
+  var l=LS.joins();var keys=Object.keys(l||{});if(!keys.length)return;
+  if(localStorage.getItem("rr_joins_migrated")==="1")return;
+  try{var r=await rpc("rr_migrate_rsvps",{p_token:TOKEN,p_data:l});
+    if(r&&r.ok){localStorage.setItem("rr_joins_migrated","1");
+      try{var _rs=await rpc("rr_get_rsvps");if(_rs&&typeof _rs==="object"&&!Array.isArray(_rs))window._RSVP=_rs;}catch(e){}
+    }
+  }catch(e){}
+}
 async function loadSupabase(){
   var sched=await rpc("rr_get_schedule");
   if(Array.isArray(sched)) applySchedule(sched);
@@ -1601,6 +1612,8 @@ async function loadSupabase(){
   try{var ml=await rpc("rr_get_meals");if(Array.isArray(ml))applyMeals(ml);}catch(e){}
   try{if(TOKEN){var mb=await rpc("rr_get_members",{p_token:TOKEN});if(mb&&mb.ok)applyMembers(mb.members);}}catch(e){}
   try{var _att=await rpc("rr_attendance_list");if(Array.isArray(_att))applyAttendance(_att);}catch(e){}
+  try{var _rs=await rpc("rr_get_rsvps");if(_rs&&typeof _rs==="object"&&!Array.isArray(_rs))window._RSVP=_rs;}catch(e){}
+  try{await rrMigrateLocalJoins();}catch(e){}
   try{await rrLoadEditTargets();}catch(e){}
   try{rrScrubData();}catch(e){}
   try{normalizeDates();}catch(e){}
