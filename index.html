@@ -614,7 +614,7 @@ function isDeceased(m){return ((m&&m["Living Status"])||"").toLowerCase()==="dec
 var RR_HIDDEN=["ghost"];
 function isHidden(m){var n=(typeof m==="string"?m:(m&&m.Name)||"").toLowerCase();return RR_HIDDEN.indexOf(n)>=0;}
 function living(){return members().filter(m=>(m["Living Status"]||"Living").toLowerCase()!=="deceased");}
-function attendees(){return members().filter(m=>(m.Attending||"").toLowerCase()==="yes");}
+function attendees(){return members().filter(m=>(m.Attending||"").toLowerCase()==="yes"&&!isHidden(m));}
 function attendeeCount(){return attendees().filter(function(m){return !isHidden(m);}).length;}
 function meRec(){return members().find(m=>m.Name===ME)||{Name:ME};}
 function isMe(n){return n===ME;}
