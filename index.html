@@ -625,6 +625,8 @@ function nowMins(){if(LS.demo())return 11*60+30;const n=new Date();return n.getH
 function catClass(c){return {Boat:"boat",Meal:"meal",Kids:"kids",Bonfire:"gold",Photos:"gold",Activity:"",Logistics:"lake"}[c]||"";}
 function catEmoji(c){return {Boat:"⛵",Meal:"🍽️",Kids:"🎨",Bonfire:"🔥",Photos:"📸",Activity:"🎉",Logistics:"📋"}[c]||"📍";}
 function img(src,cls){return src?`<img class="${cls}" loading="lazy" src="${esc(src)}" onerror="this.style.display='none'">`:"";}
+function crewTokens(x){return (x||"").split(/\s*&\s*|\s+and\s+|,\s*|\//).map(function(t){return t.trim().toLowerCase();}).filter(Boolean);}
+function crewHas(x,name){if(!name)return false;var toks=crewTokens(x);var full=(""+name).trim().toLowerCase();var fn=first(name||"").toLowerCase();if(toks.indexOf(full)>=0)return true;if(fn.length>2&&fn===full&&toks.indexOf(fn)>=0)return true;return false;}
 function hasMe(field){if(!ME)return false;const f=(field||"").toLowerCase();return f.includes(ME.toLowerCase())||f.includes(first(ME).toLowerCase());}
 function photoOf(m){const ov=LS.prof()[m.Name]||{};return ov.photo||m["Photo URL"]||"";}
 function avHTML(m,cls){const p=photoOf(m);return p?`<div class="${cls}" style="background-image:url('${esc(p)}')"></div>`:`<div class="${cls}" style="background:${avColor(m.Name)}">${initials(m.Name)}</div>`;}
@@ -845,8 +847,8 @@ function openMember(name,branch){
   const av=photo?`<div style="width:88px;height:88px;border-radius:50%;background:url('${esc(photo)}') center/cover;border:3px solid #fff;box-shadow:var(--shadow-sm);margin:0 auto"></div>`:`<div style="width:88px;height:88px;border-radius:50%;background:${avColor(name)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;margin:0 auto">${initials(name)}</div>`;
   const att=(x.Attending||"").toLowerCase();const attB=att==="yes"?'<span class="badge">Attending ✓</span>':att==="no"?'<span class="badge no">Not this year</span>':att==="maybe"?'<span class="badge maybe">Maybe</span>':'';
   const rel=[];if(x.Spouse)rel.push(["💍 Spouse",x.Spouse]);if(x.Parent)rel.push(["👆 Parent",x.Parent]);if(x.Children)rel.push(["👶 Children",x.Children]);if(x.Siblings)rel.push(["👫 Siblings",x.Siblings]);
-  const meals=(DATA["Meals"]||[]).filter(m=>(mealField(m,["Chef","Cook"])+" "+mealField(m,["Set Up Crew","Set Up","Setup"])+" "+mealField(m,["Clean Up Crew","Clean Up","Cleanup"])).includes(first(name)));
-  const leads=(DATA["Activities"]||[]).filter(a=>(a.Lead||"").includes(first(name)));
+  const meals=(DATA["Meals"]||[]).filter(m=>crewHas(mealField(m,["Chef","Cook"]),name)||crewHas(mealField(m,["Set Up Crew","Set Up","Setup"]),name)||crewHas(mealField(m,["Clean Up Crew","Clean Up","Cleanup"]),name));
+  const leads=(DATA["Activities"]||[]).filter(a=>crewHas(a.Lead,name));
   let h=`<div class="grab"></div><div style="text-align:center">${av}<h3 style="margin:12px 0 2px">${esc(name)}</h3>${isDeceased(x)?`<div style="margin-top:8px"><span class="badge" style="background:#ece7db;color:#6b6555">🕊️ In loving memory</span></div>`:(attB?`<div style="margin-top:8px">${attB}</div>`:"")}</div>`;
   if(editing){h+=`<span class="label">Profile photo</span><div class="photoedit"><div class="pe-prev" id="pePrev" style="${photo?`background-image:url('${esc(photo)}')`:`background:${avColor(name)}`}">${photo?'':initials(name)}</div><div><button class="btn sm" type="button" onclick="document.getElementById('pePick').click()">📷 Upload photo</button>${photo?`<button class="btn ghost sm" type="button" style="margin-left:6px" onclick="clearPhoto('${esc(name).replace(/'/g,"\\'")}')">Remove</button>`:''}<div class="muted" style="margin-top:7px;font-size:11.5px">${me?'Saved to your profile · syncs everywhere':'Saved and shared with the whole family'}</div></div></div><input type="file" id="pePick" accept="image/*" style="display:none" onchange="handlePhoto(this,'${esc(name).replace(/'/g,"\\'")}')"><span class="label">Birthday</span><input class="field" type="date" id="bd" value="${esc(bdayISO(bday))}"><span class="label">About</span><textarea class="field" id="ab" placeholder="Add a short note…">${esc(about)}</textarea><button class="btn full" onclick="saveProfile('${esc(name).replace(/'/g,"\\'")}')">${me?'Save my profile':'Save '+esc(first(name))+"&#39;s profile"}</button>`;h+=`<button class="btn ghost full" style="margin-top:8px" onclick="rrCancelEdit('${esc(name).replace(/'/g,"\\'")}')">Cancel</button>`;}
   else {if(mgrOn()&&!isDeceased(x))h+=rrAttendCtl(name,x);if(about)h+=`<span class="label" style="display:block;text-align:center">About</span><p class="rr-about">${esc(about)}</p>`;if(bday)h+=`<span class="label">Birthday</span><p>🎂 ${esc(fmtBday(bday))}</p>`;if(canEdit)h+=`<button class="btn full" style="margin-top:10px" onclick="rrEditProfile('${esc(name).replace(/'/g,"\\'")}')">${me?'✎ Edit my profile':'✎ Edit '+esc(first(name))+'&#39;s profile'}</button>`;}
@@ -957,13 +959,13 @@ async function vMyStuff(){
     var rows=[];
     if(view==='help'){
       (DATA["Meals"]||[]).filter(function(m){return m.Date===d.label;}).sort(function(a,b){return mealMins(a.Time)-mealMins(b.Time);}).forEach(function(m){
-        var roles=[];var f=first(ME);
-        if(mealField(m,["Chef","Cook"]).indexOf(f)>=0)roles.push("Chef");
-        if(mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]).indexOf(f)>=0)roles.push("Set Up");
-        if(mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]).indexOf(f)>=0)roles.push("Clean Up");
+        var roles=[];
+        if(crewHas(mealField(m,["Chef","Cook"]),ME))roles.push("Chef");
+        if(crewHas(mealField(m,["Set Up Crew","Set Up","Setup","SetUp"]),ME))roles.push("Set Up");
+        if(crewHas(mealField(m,["Clean Up Crew","Clean Up","Cleanup","CleanUp"]),ME))roles.push("Clean Up");
         if(roles.length)rows.push({t:mealMins(m.Time),h:row("🍽️",m.Meal+" · "+roles.join(" & "),m.Time)});
       });
-      (DATA["Activities"]||[]).filter(function(a){return (a.Lead||"").indexOf(first(ME))>=0;}).forEach(function(a){
+      (DATA["Activities"]||[]).filter(function(a){return crewHas(a.Lead,ME);}).forEach(function(a){
         (DATA["Schedule"]||[]).filter(function(e){return e.Date===d.label&&actMatch(a,e);}).forEach(function(e){
           rows.push({t:toMins(e["Start Time"]),h:row("⭐",a.Name+" · Point of contact",e["Start Time"])});
         });
@@ -1498,8 +1500,8 @@ function openProfile(){
   var photo=ov.photo||x["Photo URL"];var about=ov.about||x["About Me"]||x.About||"";
   var av=photo?`<div style="width:78px;height:78px;border-radius:50%;background:url('${esc(photo)}') center/cover;border:3px solid #fff;box-shadow:var(--shadow-sm);margin:0 auto"></div>`:`<div style="width:78px;height:78px;border-radius:50%;background:${avColor(ME)};color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;margin:0 auto">${initials(ME)}</div>`;
   var att=(x.Attending||"").toLowerCase();var attB=att==="yes"?'<span class="badge">Attending ✓</span>':att==="no"?'<span class="badge no">Not this year</span>':att==="maybe"?'<span class="badge maybe">Maybe</span>':'';
-  var meals=(DATA["Meals"]||[]).filter(function(m){return (mealField(m,["Chef","Cook"])+" "+mealField(m,["Set Up Crew","Set Up","Setup"])+" "+mealField(m,["Clean Up Crew","Clean Up","Cleanup"])).indexOf(first(ME))>=0;});
-  var leads=(DATA["Activities"]||[]).filter(function(a){return (a.Lead||"").indexOf(first(ME))>=0;});
+  var meals=(DATA["Meals"]||[]).filter(function(m){return crewHas(mealField(m,["Chef","Cook"]),ME)||crewHas(mealField(m,["Set Up Crew","Set Up","Setup"]),ME)||crewHas(mealField(m,["Clean Up Crew","Clean Up","Cleanup"]),ME);});
+  var leads=(DATA["Activities"]||[]).filter(function(a){return crewHas(a.Lead,ME);});
   var h=`<div class="grab"></div><div style="text-align:center">${av}<h3 class="serif" style="margin:10px 0 2px">${esc(ME)}</h3>${attB?`<div style="margin-top:4px">${attB}</div>`:''}</div>`;
   if(about)h+=`<span class="label" style="display:block;text-align:center;margin-top:12px">About</span><p class="rr-about" style="color:#3a3a30">${esc(about)}</p>`;
   if(meals.length||leads.length){h+=`<span class="label">Helping with</span>`;meals.forEach(function(m){h+=`<div style="color:#3a3a30;font-size:13.5px;padding:3px 0">🍽️ ${esc(m.Meal)} <span style="color:#5c6151">(${esc(m.Date)})</span></div>`;});leads.forEach(function(a){h+=`<div style="color:#3a3a30;font-size:13.5px;padding:3px 0">⭐ Point of contact: ${esc(a.Name)}</div>`;});}
