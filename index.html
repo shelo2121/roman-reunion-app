@@ -625,7 +625,7 @@ function nowMins(){if(LS.demo())return 11*60+30;const n=new Date();return n.getH
 function catClass(c){return {Boat:"boat",Meal:"meal",Kids:"kids",Bonfire:"gold",Photos:"gold",Activity:"",Logistics:"lake"}[c]||"";}
 function catEmoji(c){return {Boat:"⛵",Meal:"🍽️",Kids:"🎨",Bonfire:"🔥",Photos:"📸",Activity:"🎉",Logistics:"📋"}[c]||"📍";}
 function img(src,cls){return src?`<img class="${cls}" loading="lazy" src="${esc(src)}" onerror="this.style.display='none'">`:"";}
-function crewTokens(x){return (x||"").split(/\s*&\s*|\s+and\s+|,\s*|\//).map(function(t){return t.trim().toLowerCase();}).filter(Boolean);}
+function crewTokens(x){return (x||"").split(/\s*&\s*|\s+and\s+|,\s*|\//).map(function(t){return t.trim().toLowerCase().replace(/\.+$/,"");}).filter(Boolean);}
 function crewHas(x,name){if(!name)return false;var toks=crewTokens(x);var full=(""+name).trim().toLowerCase();var fn=first(name||"").toLowerCase();if(toks.indexOf(full)>=0)return true;if(fn.length>2&&fn===full&&toks.indexOf(fn)>=0)return true;return false;}
 function hasMe(field){if(!ME)return false;const f=(field||"").toLowerCase();return f.includes(ME.toLowerCase())||f.includes(first(ME).toLowerCase());}
 function photoOf(m){const ov=LS.prof()[m.Name]||{};return ov.photo||m["Photo URL"]||"";}
